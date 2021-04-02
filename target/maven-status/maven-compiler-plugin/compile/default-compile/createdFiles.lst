@@ -1,0 +1,11 @@
+br\ufc\mdcc\jaoc\model\AoCInfo.class
+br\ufc\mdcc\jaoc\util\Util.class
+br\ufc\mdcc\jaoc\searcher\IncDecSearcher$1.class
+br\ufc\mdcc\jaoc\model\AoCSuite.class
+br\ufc\mdcc\jaoc\model\AoC.class
+br\ufc\mdcc\jaoc\searcher\ConditionalOperatorSearcher.class
+br\ufc\mdcc\jaoc\searcher\InfixOperatorPrecedenceSearcher.class
+br\ufc\mdcc\jaoc\model\Dataset.class
+br\ufc\mdcc\jaoc\searcher\InfixOperatorPrecedenceSearcher$1.class
+br\ufc\mdcc\jaoc\searcher\IncDecSearcher.class
+br\ufc\mdcc\jaoc\JAoCAPI.class
