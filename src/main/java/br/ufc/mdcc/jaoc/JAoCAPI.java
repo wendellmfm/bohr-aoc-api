@@ -36,6 +36,7 @@ public class JAoCAPI {
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.IncDecSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ConditionalOperatorSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.InfixOperatorPrecedenceSearcher");
+		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.OmittedCurlyBracesSearcher");
 	}
 
 	private static void configure(String[] searchers) {
