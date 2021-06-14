@@ -10,8 +10,10 @@ import br.ufc.mdcc.jaoc.model.Dataset;
 import br.ufc.mdcc.jaoc.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
@@ -26,25 +28,12 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 
 			for (CtMethod<?> method : element.getAllMethods()) {
 				for (CtStatement stmt : method.getBody().getStatements()) {
-					if (stmt instanceof CtIf) {
-						CtIf ifStmt = (CtIf) stmt;
-						if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-							if (!ifStmt.getThenStatement().prettyprint().startsWith("{")) {
-								candidates.push(ifStmt.getThenStatement());
-							}
-						}
-						
-						if (ifStmt.getElseStatement() != null) {
-							if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
-								if (!ifStmt.getElseStatement().prettyprint().startsWith("{")) {
-									candidates.pop();
-									candidates.push(ifStmt.getElseStatement());
-								}
-							}
-						}
-					} else if (!candidates.empty()) {
-						confirmed.add(candidates.pop());
-					}
+					
+					getIfElseOmitted(candidates, confirmed, stmt);
+					
+					getWhileOmitted(confirmed, stmt);
+					
+					getForOmitted(confirmed, stmt);
 				}
 			}
 
@@ -55,4 +44,49 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 			}
 		}
 	}
+	
+	private void getIfElseOmitted(Stack<CtStatement> candidates, List<CtStatement> confirmed, CtStatement stmt) {
+		if (stmt instanceof CtIf) {
+			CtIf ifStmt = (CtIf) stmt;
+			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
+				if (!ifStmt.getThenStatement().prettyprint().startsWith("{")) {
+					candidates.push(ifStmt.getThenStatement());
+				}
+			}
+			
+			if (ifStmt.getElseStatement() != null) {
+				if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
+					if (!ifStmt.getElseStatement().prettyprint().startsWith("{")) {
+						candidates.pop();
+						candidates.push(ifStmt.getElseStatement());
+					}
+				}
+			}
+		} else if (!candidates.empty()) {
+			confirmed.add(candidates.pop());
+		}
+	}
+
+	private void getForOmitted(List<CtStatement> confirmed, CtStatement stmt) {
+		if (stmt instanceof CtFor) {
+			CtFor forStmt = (CtFor) stmt;
+			if (!forStmt.prettyprint().contains("{")) {
+				System.out.println("Line: " + forStmt.getPosition().getEndLine());
+				System.out.println(forStmt.prettyprint());
+				confirmed.add(forStmt);
+			}
+		}
+	}
+
+	private void getWhileOmitted(List<CtStatement> confirmed, CtStatement stmt) {
+		if (stmt instanceof CtWhile) {
+			CtWhile whileStmt = (CtWhile) stmt;
+			if (!whileStmt.prettyprint().contains("{")) {
+				System.out.println("Line: " + whileStmt.getPosition().getEndLine());
+				System.out.println(whileStmt.prettyprint());
+				confirmed.add(whileStmt);
+			}
+		}
+	}
+
 }
