@@ -38,7 +38,7 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 
 			for (CtStatement stmt : confirmed) {
 				int lineNumber = stmt.getPosition().getEndLine();
-				String snippet = stmt.prettyprint();
+				String snippet = stmt.getOriginalSourceFragment().getSourceCode();
 				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, lineNumber, snippet));
 			}
 		}
@@ -48,14 +48,14 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-				if (!ifStmt.getThenStatement().prettyprint().startsWith("{")) {
+				if (!ifStmt.getThenStatement().getOriginalSourceFragment().getSourceCode().startsWith("{")) {
 					candidates.push(ifStmt.getThenStatement());
 				}
 			}
 			
 			if (ifStmt.getElseStatement() != null) {
 				if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
-					if (!ifStmt.getElseStatement().prettyprint().startsWith("{")) {
+					if (!ifStmt.getElseStatement().getOriginalSourceFragment().getSourceCode().startsWith("{")) {
 						candidates.pop();
 						candidates.push(ifStmt.getElseStatement());
 					}
@@ -69,9 +69,7 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 	private void getForOmitted(List<CtStatement> confirmed, CtStatement stmt) {
 		if (stmt instanceof CtFor) {
 			CtFor forStmt = (CtFor) stmt;
-			if (!forStmt.prettyprint().contains("{")) {
-				System.out.println("Line: " + forStmt.getPosition().getEndLine());
-				System.out.println(forStmt.prettyprint());
+			if (!forStmt.getOriginalSourceFragment().getSourceCode().contains("{")) {
 				confirmed.add(forStmt);
 			}
 		}
@@ -80,9 +78,7 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 	private void getWhileOmitted(List<CtStatement> confirmed, CtStatement stmt) {
 		if (stmt instanceof CtWhile) {
 			CtWhile whileStmt = (CtWhile) stmt;
-			if (!whileStmt.prettyprint().contains("{")) {
-				System.out.println("Line: " + whileStmt.getPosition().getEndLine());
-				System.out.println(whileStmt.prettyprint());
+			if (!whileStmt.getOriginalSourceFragment().getSourceCode().contains("{")) {
 				confirmed.add(whileStmt);
 			}
 		}
