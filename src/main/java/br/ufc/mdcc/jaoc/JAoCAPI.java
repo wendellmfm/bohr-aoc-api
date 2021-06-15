@@ -33,12 +33,13 @@ public class JAoCAPI {
 	}
 
 	private static void configure() {
-		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.IncDecSearcher");
+		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.PreAndPostIncrementDecrementSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ConditionalOperatorSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.InfixOperatorPrecedenceSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.OmittedCurlyBracesSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.LogicAsControlFlowSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ArithmeticAsLogicSearcher");
+		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ChangeOfLiteralEncodingSearcher");
 	}
 
 	private static void configure(String[] searchers) {

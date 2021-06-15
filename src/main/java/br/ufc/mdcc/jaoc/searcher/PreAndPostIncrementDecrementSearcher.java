@@ -11,7 +11,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class IncDecSearcher extends AbstractProcessor<CtClass<?>> {
+public class PreAndPostIncrementDecrementSearcher extends AbstractProcessor<CtClass<?>> {
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
