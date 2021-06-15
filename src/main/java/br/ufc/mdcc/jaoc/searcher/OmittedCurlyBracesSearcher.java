@@ -20,7 +20,6 @@ import spoon.reflect.declaration.CtMethod;
 public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 
 	public void process(CtClass<?> element) {
-
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 			Stack<CtStatement> candidates = new Stack<CtStatement>();
