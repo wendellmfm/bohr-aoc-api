@@ -20,7 +20,6 @@ public class ConditionalOperatorSearcher extends AbstractProcessor<CtClass<?>> {
 				int lineNumber = condOpr.getPosition().getEndLine();
 				String snippet = condOpr.prettyprint();
 				Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
-
 			}
 		}
 	}
