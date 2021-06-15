@@ -17,9 +17,7 @@ public class ChangeOfLiteralEncodingSearcher extends AbstractProcessor<CtClass<?
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 
-			TypeFilter<CtLiteral<?>> assignmetFilter = new TypeFilter<CtLiteral<?>>(CtLiteral.class);
-
-			for (CtLiteral<?> literal : element.getElements(assignmetFilter)) {
+			for (CtLiteral<?> literal : element.getElements(new TypeFilter<CtLiteral<?>>(CtLiteral.class))) {
 				if ((literal.getParent() != null) && !(literal.getParent() instanceof CtLiteral<?>)
 						&& (literal.getParent() instanceof CtAssignment)
 						|| (literal.getParent() instanceof CtLocalVariable)) {
@@ -27,7 +25,6 @@ public class ChangeOfLiteralEncodingSearcher extends AbstractProcessor<CtClass<?
 					if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
 						int lineNumber = literal.getPosition().getEndLine();
 						String snippet = literal.getParent().getOriginalSourceFragment().getSourceCode();
-						System.out.println(snippet);
 						Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
 					}
 				}
@@ -42,5 +39,5 @@ public class ChangeOfLiteralEncodingSearcher extends AbstractProcessor<CtClass<?
 		}
 		
 		return false;
-		}
+	}
 }

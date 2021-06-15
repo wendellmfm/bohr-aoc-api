@@ -6,14 +6,14 @@ public class ChangeOfLiteralEncodingSample {
 	}
 
 	public void firstMethod() {
-		int a;
-		a = 013;
+		int a = 013;
 		
-		int b = 013;
+		System.out.println(a);
 	}
 	
 	public void secondMethod() {
-		int a = 013;
+		int a;
+		a = 013;
 		
 		System.out.println(a);
 	}
