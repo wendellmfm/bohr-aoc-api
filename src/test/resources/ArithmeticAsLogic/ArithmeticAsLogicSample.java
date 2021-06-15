@@ -3,10 +3,14 @@ import java.util.Iterator;
 
 public class ArithmeticAsLogicSample {
 	
+	public ArithmeticAsLogicSample() {
+
+	}
+	
 	public void firstMethod(){
-		int v1 = 1;
+		int a = 8;
 		
-		if((v1 - 3) * (7 - v1) <= 0) {
+		if((a - 3) * (7 - a) <= 0) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
@@ -14,9 +18,19 @@ public class ArithmeticAsLogicSample {
 	}
 	
 	public void secondMethod(){
-		int v1 = 1;
+		int a = 2;
 		
-		if(v1 + 5 != 0) {
+		if((a - 2) * (6 - a) > 0) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
+	
+	public void thirdMethod(){
+		int a = 5;
+		
+		if(a + 5 != 0) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
