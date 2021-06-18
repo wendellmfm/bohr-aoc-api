@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Stream;
 
 import br.ufc.mdcc.jaoc.model.AoC;
@@ -26,14 +25,13 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
-			Stack<CtStatement> candidates = new Stack<CtStatement>();
-			List<CtStatement> confirmed = new ArrayList<CtStatement>();
+			List<OmittedCurlyBracesAtom> confirmed = new ArrayList<OmittedCurlyBracesAtom>();
 
 			for (CtMethod<?> method : element.getAllMethods()) {
 				List<CtStatement> statements = method.getBody().getStatements();
 				for (int i = 0; i < statements.size() - 1; i++) {
 					
-					getIfElseOmitted(candidates, confirmed, statements.get(i), statements.get(i + 1));
+					getIfElseOmitted(confirmed, statements.get(i), statements.get(i + 1));
 						
 					getWhileOmitted(confirmed, statements.get(i), statements.get(i + 1));
 						
@@ -41,20 +39,13 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 				}
 			}
 
-			for (CtStatement stmt : confirmed) {
-				String snippet = "";
-				if(stmt instanceof CtBlock) {
-					snippet = stmt.getParent().getOriginalSourceFragment().getSourceCode();
-				} else {
-					snippet = stmt.getOriginalSourceFragment().getSourceCode();
-				}
-				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, stmt.getPosition().getLine(), snippet));
-				
+			for (OmittedCurlyBracesAtom atom : confirmed) {
+				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, atom.getLine(), atom.getAtomSnippet()));
 			}
 		}
 	}
 	
-	private void getIfElseOmitted(Stack<CtStatement> candidates, List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
+	private void getIfElseOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
@@ -62,7 +53,10 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 						&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
 						|| (!ifStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
 								&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
-					confirmed.add(ifStmt);
+					OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+					atom.setBlockStmt(ifStmt);
+					atom.setNextLineStmt(nextStmt);
+					confirmed.add(atom);
 				}
 			}
 			
@@ -73,31 +67,37 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 							&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1))
 							|| (!elseStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
 									&& elseStmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
-						confirmed.add(ifStmt);
+						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+						atom.setBlockStmt(ifStmt);
+						atom.setNextLineStmt(nextStmt);
+						confirmed.add(atom);
 					}
 				}
 			}
 		} 
 	}
 
-	private void getForOmitted(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
+	private void getForOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtFor) {
 			addConfirmedOCB(confirmed, stmt, nextStmt);
 		}
 	}
 
-	private void getWhileOmitted(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
+	private void getWhileOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtWhile) {
 			addConfirmedOCB(confirmed, stmt, nextStmt);
 		}
 	}
 
-	private void addConfirmedOCB(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
+	private void addConfirmedOCB(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if ((!stmt.getOriginalSourceFragment().getSourceCode().contains("{")
 				&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
 				|| (!stmt.getOriginalSourceFragment().getSourceCode().contains("{") 
 						&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
-			confirmed.add(stmt);
+			OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+			atom.setBlockStmt(stmt);
+			atom.setNextLineStmt(nextStmt);
+			confirmed.add(atom);
 		}
 	}
 	
@@ -138,6 +138,29 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		    } 
 		}
 		return tabCount;
+	}
+	
+	private class OmittedCurlyBracesAtom {
+		private CtStatement blockStmt;
+		
+		private CtStatement nextLineStmt;
+
+		public void setBlockStmt(CtStatement blockStmt) {
+			this.blockStmt = blockStmt;
+		}
+
+		public void setNextLineStmt(CtStatement nextLineStmt) {
+			this.nextLineStmt = nextLineStmt;
+		}
+		
+		public String getAtomSnippet() {
+			return blockStmt.getOriginalSourceFragment().getSourceCode() 
+					+ nextLineStmt.getOriginalSourceFragment().getSourceCode();
+		}
+		
+		public int getLine() {
+			return blockStmt.getPosition().getLine();
+		}
 	}
 
 }
