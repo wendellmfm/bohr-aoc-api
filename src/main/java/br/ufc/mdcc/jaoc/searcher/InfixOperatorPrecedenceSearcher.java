@@ -113,7 +113,7 @@ public class InfixOperatorPrecedenceSearcher extends AbstractProcessor<CtClass<?
 	}
 
 	private CtExpression<?> getHighLevelParent(CtExpression<?> expression) {
-		System.out.println("Expression type: " + expression.getType());
+		//System.out.println("Expression type: " + expression.getType());
 		if ((expression.getParent() != null) && (expression.getParent() instanceof CtExpression<?>)) {
 			return this.getHighLevelParent((CtExpression<?>) expression.getParent());
 		} else {

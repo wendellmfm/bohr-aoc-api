@@ -1,8 +1,12 @@
 package br.ufc.mdcc.jaoc.searcher;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Stream;
 
 import br.ufc.mdcc.jaoc.model.AoC;
 import br.ufc.mdcc.jaoc.model.AoCInfo;
@@ -26,62 +30,114 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 			List<CtStatement> confirmed = new ArrayList<CtStatement>();
 
 			for (CtMethod<?> method : element.getAllMethods()) {
-				for (CtStatement stmt : method.getBody().getStatements()) {
+				List<CtStatement> statements = method.getBody().getStatements();
+				for (int i = 0; i < statements.size() - 1; i++) {
 					
-					getIfElseOmitted(candidates, confirmed, stmt);
-					
-					getWhileOmitted(confirmed, stmt);
-					
-					getForOmitted(confirmed, stmt);
+					getIfElseOmitted(candidates, confirmed, statements.get(i), statements.get(i + 1));
+						
+					getWhileOmitted(confirmed, statements.get(i), statements.get(i + 1));
+						
+					getForOmitted(confirmed, statements.get(i), statements.get(i + 1));
 				}
 			}
 
 			for (CtStatement stmt : confirmed) {
-				int lineNumber = stmt.getPosition().getEndLine();
-				String snippet = stmt.getOriginalSourceFragment().getSourceCode();
-				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, lineNumber, snippet));
+				String snippet = "";
+				if(stmt instanceof CtBlock) {
+					snippet = stmt.getParent().getOriginalSourceFragment().getSourceCode();
+				} else {
+					snippet = stmt.getOriginalSourceFragment().getSourceCode();
+				}
+				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, stmt.getPosition().getLine(), snippet));
+				
 			}
 		}
 	}
 	
-	private void getIfElseOmitted(Stack<CtStatement> candidates, List<CtStatement> confirmed, CtStatement stmt) {
+	private void getIfElseOmitted(Stack<CtStatement> candidates, List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-				if (!ifStmt.getThenStatement().getOriginalSourceFragment().getSourceCode().startsWith("{")) {
-					candidates.push(ifStmt.getThenStatement());
+				if ((!ifStmt.getOriginalSourceFragment().getSourceCode().contains("{")
+						&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
+						|| (!ifStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+								&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
+					confirmed.add(ifStmt);
 				}
 			}
 			
 			if (ifStmt.getElseStatement() != null) {
 				if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
-					if (!ifStmt.getElseStatement().getOriginalSourceFragment().getSourceCode().startsWith("{")) {
-						candidates.pop();
-						candidates.push(ifStmt.getElseStatement());
+					CtStatement elseStmt = ifStmt.getElseStatement();
+					if ((!elseStmt.getOriginalSourceFragment().getSourceCode().contains("{")
+							&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1))
+							|| (!elseStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+									&& elseStmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
+						confirmed.add(ifStmt);
 					}
 				}
 			}
-		} else if (!candidates.empty()) {
-			confirmed.add(candidates.pop());
-		}
+		} 
 	}
 
-	private void getForOmitted(List<CtStatement> confirmed, CtStatement stmt) {
+	private void getForOmitted(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtFor) {
-			CtFor forStmt = (CtFor) stmt;
-			if (!forStmt.getOriginalSourceFragment().getSourceCode().contains("{")) {
-				confirmed.add(forStmt);
-			}
+			addConfirmedOCB(confirmed, stmt, nextStmt);
 		}
 	}
 
-	private void getWhileOmitted(List<CtStatement> confirmed, CtStatement stmt) {
+	private void getWhileOmitted(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtWhile) {
-			CtWhile whileStmt = (CtWhile) stmt;
-			if (!whileStmt.getOriginalSourceFragment().getSourceCode().contains("{")) {
-				confirmed.add(whileStmt);
-			}
+			addConfirmedOCB(confirmed, stmt, nextStmt);
 		}
+	}
+
+	private void addConfirmedOCB(List<CtStatement> confirmed, CtStatement stmt, CtStatement nextStmt) {
+		if ((!stmt.getOriginalSourceFragment().getSourceCode().contains("{")
+				&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
+				|| (!stmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+						&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
+			confirmed.add(stmt);
+		}
+	}
+	
+	private boolean hasIndentationProblem(String filePath, int ommitedCurlyBraceLineNumber) {
+		
+		try {
+			String ommitedCurlyBraceLine = "";
+			String nextLine = "";
+			
+			try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
+				ommitedCurlyBraceLine = lines.skip(ommitedCurlyBraceLineNumber).findFirst().get();
+			}
+			
+			try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
+				nextLine = lines.skip(ommitedCurlyBraceLineNumber + 1).findFirst().get();
+			}
+		    
+		    int count = countLineTabs(ommitedCurlyBraceLine);
+		    
+		    int countNextLine = countLineTabs(nextLine);
+		    
+		    if(countNextLine >= count) {
+		    	return true;
+		    }
+		    
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	private int countLineTabs(String ommitedCurlyBraceLine) {
+		int tabCount = 0;
+		for(char c : ommitedCurlyBraceLine.toCharArray()) {
+		    if("\t".equals("" + c)) {
+		    	tabCount++;
+		    } 
+		}
+		return tabCount;
 	}
 
 }
