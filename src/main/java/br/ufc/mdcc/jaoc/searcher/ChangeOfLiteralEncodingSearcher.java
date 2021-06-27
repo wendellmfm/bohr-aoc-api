@@ -25,7 +25,7 @@ public class ChangeOfLiteralEncodingSearcher extends AbstractProcessor<CtClass<?
 					if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
 						int lineNumber = literal.getPosition().getEndLine();
 						String snippet = literal.getParent().getOriginalSourceFragment().getSourceCode();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
+						Dataset.store(qualifiedName, new AoCInfo(AoC.CoLE, lineNumber, snippet));
 					}
 				}
 			}
