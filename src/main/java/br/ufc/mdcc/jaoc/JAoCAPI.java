@@ -40,6 +40,7 @@ public class JAoCAPI {
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.LogicAsControlFlowSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ArithmeticAsLogicSearcher");
 		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.ChangeOfLiteralEncodingSearcher");
+		spoon.addProcessor("br.ufc.mdcc.jaoc.searcher.TypeConversionSearcher");
 	}
 
 	private static void configure(String[] searchers) {

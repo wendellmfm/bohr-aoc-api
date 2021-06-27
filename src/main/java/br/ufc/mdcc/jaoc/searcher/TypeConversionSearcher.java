@@ -23,7 +23,7 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 				if(hasTypeConversion(localVariable.getOriginalSourceFragment().getSourceCode())) {
 					int lineNumber = localVariable.getPosition().getEndLine();
 					String snippet = localVariable.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
+					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
 			}
 			
@@ -31,7 +31,7 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 				if(hasTypeConversion(assignment.getOriginalSourceFragment().getSourceCode())) {
 					int lineNumber = assignment.getPosition().getEndLine();
 					String snippet = assignment.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
+					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
 			}
 			
