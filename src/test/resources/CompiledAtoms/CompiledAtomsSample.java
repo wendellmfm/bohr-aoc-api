@@ -1,5 +1,5 @@
 
-public class CompiledAtoms {
+public class CompiledAtomsSample {
 	
 	public void firstPostIncrementDecrementMethod() {
 		int a = 2;
