@@ -19,18 +19,19 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 
+			String snippet = "";
 			for (CtLocalVariable<?> localVariable : element.getElements(new TypeFilter<CtLocalVariable<?>>(CtLocalVariable.class))) {
-				if(hasTypeConversion(localVariable.getOriginalSourceFragment().getSourceCode())) {
+				snippet = localVariable.getOriginalSourceFragment().getSourceCode();
+				if(hasTypeConversionAtom(localVariable)) {
 					int lineNumber = localVariable.getPosition().getEndLine();
-					String snippet = localVariable.getOriginalSourceFragment().getSourceCode();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
 			}
 			
 			for (CtAssignment<?, ?> assignment : element.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class))) {
-				if(hasTypeConversion(assignment.getOriginalSourceFragment().getSourceCode())) {
+				snippet = assignment.getOriginalSourceFragment().getSourceCode();
+				if(hasTypeConversionAtom(assignment)) {
 					int lineNumber = assignment.getPosition().getEndLine();
-					String snippet = assignment.getOriginalSourceFragment().getSourceCode();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
 			}
@@ -39,7 +40,46 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 		
 	}
 	
-	private static boolean hasTypeConversion(String statement) {
+	private static boolean hasTypeConversionAtom(CtLocalVariable<?> localVariable) {
+		String sourceCode = localVariable.getOriginalSourceFragment().getSourceCode();
+		
+		if(localVariable.getAssignment() != null) {
+			String assignmentType = localVariable.getAssignment().getType().toString();
+			String assignedType = localVariable.getType().toString();
+			
+			return checkTypesConversion(sourceCode, assignmentType, assignedType);
+		}
+		
+		return false;
+	}
+	
+	private static boolean hasTypeConversionAtom(CtAssignment<?, ?> assignment) {
+		String sourceCode = assignment.getOriginalSourceFragment().getSourceCode();
+		String assignmentType = assignment.getAssignment().getType().toString();
+		String assignedType = assignment.getAssigned().getType().toString();
+		
+		if(checkTypesConversion(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	private static boolean checkTypesConversion(String sourceCode, String assignmentType, String assignedType) {
+		if(assignmentType.equalsIgnoreCase("float")
+				&& assignedType.equalsIgnoreCase("int")) {
+			return hasIntTypeConversionProblem(sourceCode) || hasByteTypeConversionProblem(sourceCode);
+		}
+		
+		if(assignmentType.equalsIgnoreCase("int")
+				&& assignedType.equalsIgnoreCase("byte")) {
+			return hasIntTypeConversionProblem(sourceCode) || hasByteTypeConversionProblem(sourceCode);
+		}
+		
+		return false;
+	}
+	
+	private static boolean hasIntTypeConversionProblem(String statement) {
 		Pattern pattern = Pattern.compile("\\((\\s*int\\s*)\\)");
 		Matcher matcher = pattern.matcher(statement); 
 		
@@ -50,4 +90,21 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 		
 		return false;
 	}
+	
+	private static boolean hasByteTypeConversionProblem(String statement) {
+		Pattern pattern = Pattern.compile("\\((\\s*byte\\s*)\\)");
+		Matcher matcher = pattern.matcher(statement);
+		boolean hasByteCasting = matcher.find();
+				
+		pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
+		matcher = pattern.matcher(statement);
+		boolean hasModulusOperation = matcher.find();
+		
+		if(hasByteCasting && !hasModulusOperation) {
+			return true;
+		}
+		
+		return false;
+	}
+
 }

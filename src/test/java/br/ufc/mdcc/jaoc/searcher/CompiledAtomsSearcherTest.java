@@ -47,7 +47,7 @@ class CompiledAtomsSearcherTest {
 
 			assertEquals("CompiledAtomsSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 42, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 43, "There are more or less AoC than expected.");
 			
 			atomsCount = 0;
 			
@@ -67,7 +67,7 @@ class CompiledAtomsSearcherTest {
 				typeConversionTests(aocInfo);
 			}
 			
-			assertTrue(atomsCount == 42, "Number of AoC types not mached");
+			assertTrue(atomsCount == 43, "Number of AoC types not mached");
 		}
 	}
 
@@ -154,7 +154,8 @@ class CompiledAtomsSearcherTest {
 		checkAoCInfo(aocInfo, AoC.TPC, 500);
 		checkAoCInfo(aocInfo, AoC.TPC, 528);
 		checkAoCInfo(aocInfo, AoC.TPC, 514);
-		checkAoCInfo(aocInfo, AoC.TPC, 530);
+		checkAoCInfo(aocInfo, AoC.TPC, 542);
+		checkAoCInfo(aocInfo, AoC.TPC, 544);
 	}
 	
 }

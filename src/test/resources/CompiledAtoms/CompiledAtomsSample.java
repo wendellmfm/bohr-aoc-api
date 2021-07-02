@@ -509,24 +509,38 @@ public class CompiledAtomsSample {
 		System.out.println(a);
 	}
 	
-	public void secondTypeConversionMethod(int b) {
+	public void secondTypeConversionMethod() {
+		int a = 288;
+		byte b = (byte) a;
+		
+		System.out.println(b);
+	}
+	
+	public void secondTypeConversionTransformedMethod() {
+		int a = 288;
+		byte b = (byte) (a % 256);
+		
+		System.out.println(b);
+	}
+	
+	public void firstTypeConversionVariationMethod(int b) {
 		float a = 1.99f;
 		b = (int) a;
 		
 		System.out.println(b);
 	}
 	
-	public void secondTypeConversionTransformedMethod(int b) {
+	public void secondTypeConversionVariationMethod(int b) {
 		float a = 1.99f;
 		b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
-	public int typeConversionVariationMethod(){
-		int a = 2;
-		float b = (int) a;
-		float c;
+	public int thirdTypeConversionVariationMethod(){
+		float a = 2.99f;
+		int b = (int) a;
+		int c;
 		c = (int) a;
 		
 		return c;
