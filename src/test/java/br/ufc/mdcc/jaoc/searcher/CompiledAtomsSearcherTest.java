@@ -47,7 +47,7 @@ class CompiledAtomsSearcherTest {
 
 			assertEquals("CompiledAtomsSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 43, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 44, "There are more or less AoC than expected.");
 			
 			atomsCount = 0;
 			
@@ -67,7 +67,7 @@ class CompiledAtomsSearcherTest {
 				typeConversionTests(aocInfo);
 			}
 			
-			assertTrue(atomsCount == 43, "Number of AoC types not mached");
+			assertTrue(atomsCount == 44, "Number of AoC types not mached");
 		}
 	}
 
@@ -111,13 +111,13 @@ class CompiledAtomsSearcherTest {
 	}
 	
 	private void omittedCurlyBracesTests(AoCInfo aocInfo) {
-		checkAoCInfo(aocInfo, AoC.OCB, 458);
-		checkAoCInfo(aocInfo, AoC.OCB, 469);
 		checkAoCInfo(aocInfo, AoC.OCB, 390);
-		checkAoCInfo(aocInfo, AoC.OCB, 370);
 		checkAoCInfo(aocInfo, AoC.OCB, 410);
 		checkAoCInfo(aocInfo, AoC.OCB, 430);
-		checkAoCInfo(aocInfo, AoC.OCB, 436);
+		checkAoCInfo(aocInfo, AoC.OCB, 450);
+		checkAoCInfo(aocInfo, AoC.OCB, 456);
+		checkAoCInfo(aocInfo, AoC.OCB, 478);
+		checkAoCInfo(aocInfo, AoC.OCB, 489);
 	}
 	
 	private void logicAsControlFlowTests(AoCInfo aocInfo) {
@@ -146,16 +146,17 @@ class CompiledAtomsSearcherTest {
 	private void changeOfLiteralEncodingTests(AoCInfo aocInfo) {
 		checkAoCInfo(aocInfo, AoC.CoLE, 333);
 		checkAoCInfo(aocInfo, AoC.CoLE, 346);
-		checkAoCInfo(aocInfo, AoC.CoLE, 360);
-		checkAoCInfo(aocInfo, AoC.CoLE, 362);
+		checkAoCInfo(aocInfo, AoC.CoLE, 359);
+		checkAoCInfo(aocInfo, AoC.CoLE, 372);
+		checkAoCInfo(aocInfo, AoC.CoLE, 374);
 	}
 	
 	private void typeConversionTests(AoCInfo aocInfo) {
-		checkAoCInfo(aocInfo, AoC.TPC, 500);
-		checkAoCInfo(aocInfo, AoC.TPC, 528);
-		checkAoCInfo(aocInfo, AoC.TPC, 514);
-		checkAoCInfo(aocInfo, AoC.TPC, 542);
-		checkAoCInfo(aocInfo, AoC.TPC, 544);
+		checkAoCInfo(aocInfo, AoC.TPC, 520);
+		checkAoCInfo(aocInfo, AoC.TPC, 534);
+		checkAoCInfo(aocInfo, AoC.TPC, 548);
+		checkAoCInfo(aocInfo, AoC.TPC, 562);
+		checkAoCInfo(aocInfo, AoC.TPC, 564);
 	}
 	
 }

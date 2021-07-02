@@ -41,13 +41,15 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private static boolean hasTypeConversionAtom(CtLocalVariable<?> localVariable) {
-		String sourceCode = localVariable.getOriginalSourceFragment().getSourceCode();
 		
-		if(localVariable.getAssignment() != null) {
-			String assignmentType = localVariable.getAssignment().getType().toString();
-			String assignedType = localVariable.getType().toString();
-			
-			return checkTypesConversion(sourceCode, assignmentType, assignedType);
+		if(localVariable.getAssignment() != null ) {
+			if(localVariable.getAssignment().getType() != null) {
+				String sourceCode = localVariable.getOriginalSourceFragment().getSourceCode();
+				String assignmentType = localVariable.getAssignment().getType().toString();
+				String assignedType = localVariable.getType().toString();
+				
+				return checkTypesConversion(sourceCode, assignmentType, assignedType);				
+			}
 		}
 		
 		return false;

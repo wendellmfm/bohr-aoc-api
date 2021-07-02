@@ -355,13 +355,33 @@ public class CompiledAtomsSample {
 		System.out.println(a);
 	}
 	
-	public void changeOfLiteralEncodingVariationMethod() {
+	public int thirdChangeOfLiteralEncodingMethod() {
+		int a = 11 & 32;
+		
+		return a;
+	}
+	
+	public void thirdChangeOfLiteralEncodingTransformedMethod() {
+		int a = 0b1100 & 0b0011;
+		
+		System.out.println(a);
+	}
+	
+	public void firstChangeOfLiteralEncodingVariationMethod() {
 		int a;
 		a = 018;
 		
 		int b = 019;
 		
 		System.out.println(a + b);
+	}
+	
+	public int secondChangeOfLiteralEncodingVariationMethod() {
+		float b = 11;
+		float c = 32;
+		int a = b & c;
+		
+		return a;
 	}
 	
 	public void firstOmittedCurlyBracesMethod() {
