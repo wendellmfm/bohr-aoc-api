@@ -21,16 +21,16 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 
 			String snippet = "";
 			for (CtLocalVariable<?> localVariable : element.getElements(new TypeFilter<CtLocalVariable<?>>(CtLocalVariable.class))) {
-				snippet = localVariable.getOriginalSourceFragment().getSourceCode();
 				if(hasTypeConversionAtom(localVariable)) {
+					snippet = localVariable.prettyprint();
 					int lineNumber = localVariable.getPosition().getEndLine();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
 			}
 			
 			for (CtAssignment<?, ?> assignment : element.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class))) {
-				snippet = assignment.getOriginalSourceFragment().getSourceCode();
 				if(hasTypeConversionAtom(assignment)) {
+					snippet = assignment.prettyprint();
 					int lineNumber = assignment.getPosition().getEndLine();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
@@ -44,7 +44,7 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 		
 		if(localVariable.getAssignment() != null ) {
 			if(localVariable.getAssignment().getType() != null) {
-				String sourceCode = localVariable.getOriginalSourceFragment().getSourceCode();
+				String sourceCode = localVariable.prettyprint();
 				String assignmentType = localVariable.getAssignment().getType().toString();
 				String assignedType = localVariable.getType().toString();
 				
@@ -56,7 +56,13 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private static boolean hasTypeConversionAtom(CtAssignment<?, ?> assignment) {
-		String sourceCode = assignment.getOriginalSourceFragment().getSourceCode();
+		
+		if(assignment.getAssignment().getType() == null
+				|| assignment.getAssigned().getType() == null) {
+			return false;
+		}
+		
+		String sourceCode = assignment.prettyprint();
 		String assignmentType = assignment.getAssignment().getType().toString();
 		String assignedType = assignment.getAssigned().getType().toString();
 		

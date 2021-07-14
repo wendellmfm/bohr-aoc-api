@@ -26,7 +26,7 @@ public class LogicAsControlFlowSearcher extends AbstractProcessor<CtClass<?>> {
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 					if(!leftHandOperand.getElements(binaryOperatorFilter).isEmpty()) {
 						int lineNumber = operator.getPosition().getEndLine();
-						String snippet = operator.getParent().getOriginalSourceFragment().getSourceCode();
+						String snippet = operator.getParent().prettyprint();
 						
 						Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
 					}

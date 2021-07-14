@@ -15,10 +15,10 @@ public class ConditionalOperatorSearcher extends AbstractProcessor<CtClass<?>> {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 
-			for (CtConditional<?> condOpr : element
-					.getElements(new TypeFilter<CtConditional<?>>(CtConditional.class))) {
+			TypeFilter<CtConditional<?>> filter = new TypeFilter<CtConditional<?>>(CtConditional.class);
+			for (CtConditional<?> condOpr : element.getElements(filter)) {
 				int lineNumber = condOpr.getPosition().getEndLine();
-				String snippet = condOpr.prettyprint();
+				String snippet = condOpr.getParent().prettyprint();
 				Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
 			}
 		}

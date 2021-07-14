@@ -18,7 +18,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 
@@ -26,9 +26,10 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 			List<OmittedCurlyBracesAtom> confirmed = new ArrayList<OmittedCurlyBracesAtom>();
-
-			for (CtMethod<?> method : element.getAllMethods()) {
-				List<CtStatement> statements = method.getBody().getStatements();
+			
+			for (CtBlock<?> ctBlock : element.getElements(new TypeFilter<CtBlock<?>>(CtBlock.class))) {
+				
+				List<CtStatement> statements = ctBlock.getStatements();
 				for (int i = 0; i < statements.size() - 1; i++) {
 					
 					getIfElseOmitted(confirmed, statements.get(i), statements.get(i + 1));
@@ -49,9 +50,9 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-				if ((!ifStmt.getOriginalSourceFragment().getSourceCode().contains("{")
+				if ((!ifStmt.prettyprint().contains("{")
 						&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
-						|| (!ifStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+						|| (!ifStmt.prettyprint().contains("{") 
 								&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
 					OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
 					atom.setBlockStmt(ifStmt);
@@ -63,9 +64,9 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 			if (ifStmt.getElseStatement() != null) {
 				if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
 					CtStatement elseStmt = ifStmt.getElseStatement();
-					if ((!elseStmt.getOriginalSourceFragment().getSourceCode().contains("{")
+					if ((!elseStmt.prettyprint().contains("{")
 							&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1))
-							|| (!elseStmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+							|| (!elseStmt.prettyprint().contains("{") 
 									&& elseStmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
 						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
 						atom.setBlockStmt(ifStmt);
@@ -90,9 +91,9 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 	}
 
 	private void addConfirmedOCB(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
-		if ((!stmt.getOriginalSourceFragment().getSourceCode().contains("{")
+		if ((!stmt.prettyprint().contains("{")
 				&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
-				|| (!stmt.getOriginalSourceFragment().getSourceCode().contains("{") 
+				|| (!stmt.prettyprint().contains("{") 
 						&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
 			OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
 			atom.setBlockStmt(stmt);
@@ -154,8 +155,8 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		}
 		
 		public String getAtomSnippet() {
-			return blockStmt.getOriginalSourceFragment().getSourceCode() 
-					+ nextLineStmt.getOriginalSourceFragment().getSourceCode();
+			return blockStmt.prettyprint() 
+					+ nextLineStmt.prettyprint();
 		}
 		
 		public int getLine() {
