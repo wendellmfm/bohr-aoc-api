@@ -62,20 +62,23 @@ public class ChangeOfLiteralEncodingSearcher extends AbstractProcessor<CtClass<?
 		
 		String[] binaryLiterals = {"byte", "short", "int", "long"};
 		
-		if(Arrays.asList(binaryLiterals).contains(leftHandOperand.getType().toString())
-				&& Arrays.asList(binaryLiterals).contains(operator.getRightHandOperand().getType().toString())) {
-			
-			String leftHandOperandString = leftHandOperand.getOriginalSourceFragment().getSourceCode();
-			String rightHandOperandString = rightHandOperand.getOriginalSourceFragment().getSourceCode();
-			
-			String binaryPattern = "-?0[bB][01][01]+";
-			
-			if(leftHandOperandString.matches(binaryPattern) && rightHandOperandString.matches(binaryPattern)) {
-				return false;
-			} else {
-				return true;
+		if(leftHandOperand.getType() != null) {
+			if(Arrays.asList(binaryLiterals).contains(leftHandOperand.getType().toString())
+					&& Arrays.asList(binaryLiterals).contains(operator.getRightHandOperand().getType().toString())) {
+				
+				String leftHandOperandString = leftHandOperand.prettyprint();
+				String rightHandOperandString = rightHandOperand.prettyprint();
+				
+				String binaryPattern = "-?0[bB][01][01]+";
+				
+				if(leftHandOperandString.matches(binaryPattern) && rightHandOperandString.matches(binaryPattern)) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		}
+		
 		
 		return false;
 	}

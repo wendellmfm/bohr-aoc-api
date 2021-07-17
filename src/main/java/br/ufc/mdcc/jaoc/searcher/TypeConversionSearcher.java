@@ -7,6 +7,7 @@ import br.ufc.mdcc.jaoc.model.AoC;
 import br.ufc.mdcc.jaoc.model.AoCInfo;
 import br.ufc.mdcc.jaoc.model.Dataset;
 import br.ufc.mdcc.jaoc.util.Util;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLocalVariable;
@@ -44,9 +45,17 @@ public class TypeConversionSearcher extends AbstractProcessor<CtClass<?>> {
 		
 		if(localVariable.getAssignment() != null ) {
 			if(localVariable.getAssignment().getType() != null) {
-				String sourceCode = localVariable.prettyprint();
-				String assignmentType = localVariable.getAssignment().getType().toString();
-				String assignedType = localVariable.getType().toString();
+				String sourceCode = "";
+				String assignmentType = "";
+				String assignedType = "";
+				try {
+					sourceCode = localVariable.prettyprint();
+					assignmentType = localVariable.getAssignment().getType().toString();
+					assignedType = localVariable.getType().toString();
+				} catch (SpoonException e) {
+					// TODO: handle exception
+					System.out.println(e.getMessage());
+				}
 				
 				return checkTypesConversion(sourceCode, assignmentType, assignedType);				
 			}

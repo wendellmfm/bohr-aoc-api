@@ -50,14 +50,19 @@ public class OmittedCurlyBracesSearcher extends AbstractProcessor<CtClass<?>> {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-				if ((!ifStmt.prettyprint().contains("{")
-						&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
-						|| (!ifStmt.prettyprint().contains("{") 
-								&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
-					OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-					atom.setBlockStmt(ifStmt);
-					atom.setNextLineStmt(nextStmt);
-					confirmed.add(atom);
+				try {
+					if ((!ifStmt.prettyprint().contains("{")
+							&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
+							|| (!ifStmt.prettyprint().contains("{") 
+									&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
+						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+						atom.setBlockStmt(ifStmt);
+						atom.setNextLineStmt(nextStmt);
+						confirmed.add(atom);
+					}					
+				} catch (Exception e) {
+					// TODO: handle exception
+					System.out.println(e.getMessage());
 				}
 			}
 			
