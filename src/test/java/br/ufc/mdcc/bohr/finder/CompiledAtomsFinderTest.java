@@ -39,7 +39,7 @@ class CompiledAtomsFinderTest {
 				"br.ufc.mdcc.bohr.finder.ChangeOfLiteralEncodingFinder",
 				"br.ufc.mdcc.bohr.finder.TypeConversionFinder"};
 		
-		Collection<AoCSuite> aocSuiteList = BohrAPI.searchAoC(path, finders);
+		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders);
 		
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());
 		

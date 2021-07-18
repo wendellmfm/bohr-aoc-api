@@ -11,7 +11,7 @@ public class BohrAPI {
 
 	private static SpoonAPI spoon;
 
-	public static Collection<AoCSuite> searchAoC(String sourceCodePath) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath) {
 		build(sourceCodePath);
 		configure();
 		process();
@@ -19,7 +19,7 @@ public class BohrAPI {
 	}
 
 	
-	public static Collection<AoCSuite> searchAoC(String sourceCodePath, String[] finders) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath, String[] finders) {
 		build(sourceCodePath);
 		configure(finders);
 		process();
