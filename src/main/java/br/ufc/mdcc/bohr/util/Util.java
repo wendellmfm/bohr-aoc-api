@@ -1,4 +1,4 @@
-package br.ufc.mdcc.jaoc.util;
+package br.ufc.mdcc.bohr.util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,8 +10,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
-import br.ufc.mdcc.jaoc.model.AoCInfo;
-import br.ufc.mdcc.jaoc.model.AoCSuite;
+import br.ufc.mdcc.bohr.model.AoCInfo;
+import br.ufc.mdcc.bohr.model.AoCSuite;
 import spoon.reflect.declaration.CtType;
 
 public class Util {

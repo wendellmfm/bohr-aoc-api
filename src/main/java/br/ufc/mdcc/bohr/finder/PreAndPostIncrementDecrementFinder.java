@@ -1,9 +1,9 @@
-package br.ufc.mdcc.jaoc.searcher;
+package br.ufc.mdcc.bohr.finder;
 
-import br.ufc.mdcc.jaoc.model.AoC;
-import br.ufc.mdcc.jaoc.model.AoCInfo;
-import br.ufc.mdcc.jaoc.model.Dataset;
-import br.ufc.mdcc.jaoc.util.Util;
+import br.ufc.mdcc.bohr.model.AoC;
+import br.ufc.mdcc.bohr.model.AoCInfo;
+import br.ufc.mdcc.bohr.model.Dataset;
+import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -11,7 +11,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class PreAndPostIncrementDecrementSearcher extends AbstractProcessor<CtClass<?>> {
+public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClass<?>> {
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {

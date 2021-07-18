@@ -1,4 +1,4 @@
-package br.ufc.mdcc.jaoc.searcher;
+package br.ufc.mdcc.bohr.finder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,37 +9,37 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import br.ufc.mdcc.jaoc.JAoCAPI;
-import br.ufc.mdcc.jaoc.model.AoC;
-import br.ufc.mdcc.jaoc.model.AoCInfo;
-import br.ufc.mdcc.jaoc.model.AoCSuite;
+import br.ufc.mdcc.bohr.BohrAPI;
+import br.ufc.mdcc.bohr.model.AoC;
+import br.ufc.mdcc.bohr.model.AoCInfo;
+import br.ufc.mdcc.bohr.model.AoCSuite;
 
-class CompiledAtomsSearcherTest {
+class CompiledAtomsFinderTest {
 	
 	private int atomsCount;
 
 	@BeforeEach
 	void init() {
-		JAoCAPI.clean();
+		BohrAPI.clean();
 	}
 
 	@AfterEach
 	void tearDown() {
-		JAoCAPI.clean();
+		BohrAPI.clean();
 	}
 	
 	@Test
 	void testProcess() {
 		String path = "./src/test/resources/CompiledAtoms/";
-		String[] searchers = new String[] { "br.ufc.mdcc.jaoc.searcher.PreAndPostIncrementDecrementSearcher",
-				"br.ufc.mdcc.jaoc.searcher.ConditionalOperatorSearcher",
-				"br.ufc.mdcc.jaoc.searcher.OmittedCurlyBracesSearcher",
-				"br.ufc.mdcc.jaoc.searcher.LogicAsControlFlowSearcher",
-				"br.ufc.mdcc.jaoc.searcher.ArithmeticAsLogicSearcher",
-				"br.ufc.mdcc.jaoc.searcher.ChangeOfLiteralEncodingSearcher",
-				"br.ufc.mdcc.jaoc.searcher.TypeConversionSearcher"};
+		String[] finders = new String[] { "br.ufc.mdcc.bohr.finder.PreAndPostIncrementDecrementFinder",
+				"br.ufc.mdcc.bohr.finder.ConditionalOperatorFinder",
+				"br.ufc.mdcc.bohr.finder.OmittedCurlyBracesFinder",
+				"br.ufc.mdcc.bohr.finder.LogicAsControlFlowFinder",
+				"br.ufc.mdcc.bohr.finder.ArithmeticAsLogicFinder",
+				"br.ufc.mdcc.bohr.finder.ChangeOfLiteralEncodingFinder",
+				"br.ufc.mdcc.bohr.finder.TypeConversionFinder"};
 		
-		Collection<AoCSuite> aocSuiteList = JAoCAPI.searchAoC(path, searchers);
+		Collection<AoCSuite> aocSuiteList = BohrAPI.searchAoC(path, finders);
 		
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());
 		

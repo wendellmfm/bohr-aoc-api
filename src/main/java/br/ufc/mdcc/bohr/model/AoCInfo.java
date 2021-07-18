@@ -1,4 +1,4 @@
-package br.ufc.mdcc.jaoc.model;
+package br.ufc.mdcc.bohr.model;
 
 public class AoCInfo {
 

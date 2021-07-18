@@ -1,4 +1,4 @@
-package br.ufc.mdcc.jaoc.searcher;
+package br.ufc.mdcc.bohr.finder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,28 +9,28 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import br.ufc.mdcc.jaoc.JAoCAPI;
-import br.ufc.mdcc.jaoc.model.AoC;
-import br.ufc.mdcc.jaoc.model.AoCInfo;
-import br.ufc.mdcc.jaoc.model.AoCSuite;
+import br.ufc.mdcc.bohr.BohrAPI;
+import br.ufc.mdcc.bohr.model.AoC;
+import br.ufc.mdcc.bohr.model.AoCInfo;
+import br.ufc.mdcc.bohr.model.AoCSuite;
 
-class TypeConversionTest {
+class TypeConversionFinderTest {
 
 	@BeforeEach
 	void init() {
-		JAoCAPI.clean();
+		BohrAPI.clean();
 	}
 
 	@AfterEach
 	void tearDown() {
-		JAoCAPI.clean();
+		BohrAPI.clean();
 	}
 
 	@Test
 	void testProcess() {
 		String path = "./src/test/resources/TypeConversion/";
-		String[] searchers = new String[] { "br.ufc.mdcc.jaoc.searcher.TypeConversionSearcher" };
-		Collection<AoCSuite> aocSuiteList = JAoCAPI.searchAoC(path, searchers);
+		String[] finders = new String[] { "br.ufc.mdcc.bohr.finder.TypeConversionFinder" };
+		Collection<AoCSuite> aocSuiteList = BohrAPI.searchAoC(path, finders);
 
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());
 

@@ -6,11 +6,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>br.ufc.mdcc</groupId>
-	<artifactId>br.ufc.mdcc.jaoc</artifactId>
+	<artifactId>br.ufc.mdcc.bohr</artifactId>
 	<version>0.1</version>
 	<packaging>jar</packaging>
 
-	<name>JAoC</name>
+	<name>BohrAPI</name>
 
 	<properties>
 	    <maven.compiler.source>1.8</maven.compiler.source>
