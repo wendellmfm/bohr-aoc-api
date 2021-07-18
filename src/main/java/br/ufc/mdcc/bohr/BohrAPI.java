@@ -28,6 +28,7 @@ public class BohrAPI {
 
 	private static void build(String sourceCodePath) {
 		spoon = new Launcher();
+		spoon.getEnvironment().setCommentEnabled(false);
 		spoon.addInputResource(sourceCodePath);
 		spoon.buildModel();
 	}
