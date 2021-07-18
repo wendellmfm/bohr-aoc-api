@@ -29,7 +29,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 
 					if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
 						int lineNumber = literal.getPosition().getEndLine();
-						String snippet = literal.getParent().getOriginalSourceFragment().getSourceCode();
+						String snippet = literal.getParent().prettyprint();
 						Dataset.store(qualifiedName, new AoCInfo(AoC.CoLE, lineNumber, snippet));
 					}
 				}
@@ -39,7 +39,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 				if(operator.getKind() == BinaryOperatorKind.BITAND) {
 					if(hasChangeOfLiteralEncoding(operator)) {
 						int lineNumber = operator.getPosition().getEndLine();
-						String snippet = operator.getParent().getOriginalSourceFragment().getSourceCode();
+						String snippet = operator.getParent().prettyprint();
 						Dataset.store(qualifiedName, new AoCInfo(AoC.CoLE, lineNumber, snippet));
 					}
 				}

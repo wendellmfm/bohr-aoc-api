@@ -26,7 +26,7 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 					for (CtElement e : leftHandOperand.getElements(binaryOperatorFilter)) {
 						if(hasArithmeticOperators((CtBinaryOperator<?>) e)) {
 							int lineNumber = operator.getPosition().getEndLine();
-							String snippet = operator.getParent().getOriginalSourceFragment().getSourceCode();
+							String snippet = operator.getParent().prettyprint();
 							
 							Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
 							
