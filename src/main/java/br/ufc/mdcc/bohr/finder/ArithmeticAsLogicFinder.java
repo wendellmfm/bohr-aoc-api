@@ -22,18 +22,34 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
 				if(hasCompareOperators(operator)) {
+					
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-					for (CtElement e : leftHandOperand.getElements(binaryOperatorFilter)) {
-						if(hasArithmeticOperators((CtBinaryOperator<?>) e)) {
-							int lineNumber = operator.getPosition().getEndLine();
-							String snippet = operator.getParent().prettyprint();
-							
-							Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
-							
-							break;
-						}
+					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
+					
+					if(leftHandOperand.prettyprint().equalsIgnoreCase("0") 
+							|| rightHandOperand.prettyprint().equalsIgnoreCase("0")) {
+						
+						checkOperand(qualifiedName, binaryOperatorFilter, operator, leftHandOperand);
+						
+						checkOperand(qualifiedName, binaryOperatorFilter, operator, rightHandOperand);
 					}
+					
 				}
+			}
+		}
+	}
+
+	private void checkOperand(String qualifiedName, TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter,
+			CtBinaryOperator<?> operator, CtExpression<?> handOperand) {
+		
+		for (CtElement elements : handOperand.getElements(binaryOperatorFilter)) {
+			if(hasArithmeticOperators((CtBinaryOperator<?>) elements)) {
+				int lineNumber = operator.getPosition().getEndLine();
+				String snippet = operator.getParent().prettyprint();
+				
+				Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
+				
+				break;
 			}
 		}
 	}

@@ -252,6 +252,26 @@ public class CompiledAtomsSample {
 		}
 	}
 	
+	public void firstArithmeticAsLogicVariationMethod(){
+		int a = 2;
+		
+		if(0 < (a - 2) * (6 - a)) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
+
+	public void secondArithmeticAsLogicVariationMethod(){
+		int a = 5;
+		
+		if(0 != a + 5) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
+	
 	public void firstLogicAsControlFlowMethod(){
 		int a = 1;
 		int b = 5;

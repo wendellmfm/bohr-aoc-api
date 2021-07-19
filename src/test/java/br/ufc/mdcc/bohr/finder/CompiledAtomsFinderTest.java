@@ -47,8 +47,7 @@ class CompiledAtomsFinderTest {
 
 			assertEquals("CompiledAtomsSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			System.out.println(suite.getAtomsOfConfusion().size());
-			assertTrue(suite.getAtomsOfConfusion().size() == 42, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 44, "There are more or less AoC than expected.");
 			
 			atomsCount = 0;
 			
@@ -68,7 +67,7 @@ class CompiledAtomsFinderTest {
 				typeConversionTests(aocInfo);
 			}
 			
-			assertTrue(atomsCount == 42, "Number of AoC types not mached");
+			assertTrue(atomsCount == 44, "Number of AoC types not mached");
 		}
 	}
 
@@ -89,20 +88,20 @@ class CompiledAtomsFinderTest {
 		checkAoCInfo(aocInfo, AoC.PreDEC, 89);
 		checkAoCInfo(aocInfo, AoC.PreDEC, 110);
 		
-		if(aocInfo.getLineNumber() == 259 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
-			checkAoCInfo(aocInfo, AoC.PreINC, 259);
+		if(aocInfo.getLineNumber() == 279 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
+			checkAoCInfo(aocInfo, AoC.PreINC, 279);
 		}
 
-		if(aocInfo.getLineNumber() == 286 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
-			checkAoCInfo(aocInfo, AoC.PreINC, 286);
+		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
+			checkAoCInfo(aocInfo, AoC.PreINC, 306);
 		}
 		
-		if(aocInfo.getLineNumber() == 309 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
-			checkAoCInfo(aocInfo, AoC.PreINC, 309);
+		if(aocInfo.getLineNumber() == 329 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
+			checkAoCInfo(aocInfo, AoC.PreINC, 329);
 		}
 		
-		checkAoCInfo(aocInfo, AoC.PreINC, 271);
-		checkAoCInfo(aocInfo, AoC.PreINC, 274);
+		checkAoCInfo(aocInfo, AoC.PreINC, 291);
+		checkAoCInfo(aocInfo, AoC.PreINC, 294);
 	}
 	
 	private void conditionalOperatorTests(AoCInfo aocInfo) {
@@ -112,26 +111,26 @@ class CompiledAtomsFinderTest {
 	}
 	
 	private void omittedCurlyBracesTests(AoCInfo aocInfo) {
-		checkAoCInfo(aocInfo, AoC.OCB, 390);
 		checkAoCInfo(aocInfo, AoC.OCB, 410);
 		checkAoCInfo(aocInfo, AoC.OCB, 430);
 		checkAoCInfo(aocInfo, AoC.OCB, 450);
-		checkAoCInfo(aocInfo, AoC.OCB, 456);
-		checkAoCInfo(aocInfo, AoC.OCB, 478);
-		checkAoCInfo(aocInfo, AoC.OCB, 489);
+		checkAoCInfo(aocInfo, AoC.OCB, 470);
+		checkAoCInfo(aocInfo, AoC.OCB, 476);
+		checkAoCInfo(aocInfo, AoC.OCB, 498);
+		checkAoCInfo(aocInfo, AoC.OCB, 509);
 	}
 	
 	private void logicAsControlFlowTests(AoCInfo aocInfo) {
-		if(aocInfo.getLineNumber() == 259 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
-			checkAoCInfo(aocInfo, AoC.LaCTRF, 259);
+		if(aocInfo.getLineNumber() == 279 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
+			checkAoCInfo(aocInfo, AoC.LaCTRF, 279);
 		}
 		
-		if(aocInfo.getLineNumber() == 286 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
-			checkAoCInfo(aocInfo, AoC.LaCTRF, 286);
+		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
+			checkAoCInfo(aocInfo, AoC.LaCTRF, 306);
 		}
 		
-		if(aocInfo.getLineNumber() == 309 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
-			checkAoCInfo(aocInfo, AoC.LaCTRF, 309);
+		if(aocInfo.getLineNumber() == 329 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
+			checkAoCInfo(aocInfo, AoC.LaCTRF, 329);
 		}
 	}
 
@@ -139,22 +138,24 @@ class CompiledAtomsFinderTest {
 		checkAoCInfo(aocInfo, AoC.AaL, 198);
 		checkAoCInfo(aocInfo, AoC.AaL, 218);
 		checkAoCInfo(aocInfo, AoC.AaL, 238);
+		checkAoCInfo(aocInfo, AoC.AaL, 258);
+		checkAoCInfo(aocInfo, AoC.AaL, 268);
 	}
 	
 	private void changeOfLiteralEncodingTests(AoCInfo aocInfo) {
-		checkAoCInfo(aocInfo, AoC.CoLE, 333);
-		checkAoCInfo(aocInfo, AoC.CoLE, 346);
-		checkAoCInfo(aocInfo, AoC.CoLE, 359);
-		checkAoCInfo(aocInfo, AoC.CoLE, 372);
-		checkAoCInfo(aocInfo, AoC.CoLE, 374);
+		checkAoCInfo(aocInfo, AoC.CoLE, 353);
+		checkAoCInfo(aocInfo, AoC.CoLE, 366);
+		checkAoCInfo(aocInfo, AoC.CoLE, 379);
+		checkAoCInfo(aocInfo, AoC.CoLE, 392);
+		checkAoCInfo(aocInfo, AoC.CoLE, 394);
 	}
 	
 	private void typeConversionTests(AoCInfo aocInfo) {
-		checkAoCInfo(aocInfo, AoC.TPC, 520);
-		checkAoCInfo(aocInfo, AoC.TPC, 534);
-		checkAoCInfo(aocInfo, AoC.TPC, 548);
-		checkAoCInfo(aocInfo, AoC.TPC, 562);
-		checkAoCInfo(aocInfo, AoC.TPC, 564);
+		checkAoCInfo(aocInfo, AoC.TPC, 540);
+		checkAoCInfo(aocInfo, AoC.TPC, 554);
+		checkAoCInfo(aocInfo, AoC.TPC, 568);
+		checkAoCInfo(aocInfo, AoC.TPC, 582);
+		checkAoCInfo(aocInfo, AoC.TPC, 584);
 	}
 	
 }
