@@ -41,7 +41,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		
 	}
 	
-	private static boolean hasTypeConversionAtom(CtLocalVariable<?> localVariable) {
+	private boolean hasTypeConversionAtom(CtLocalVariable<?> localVariable) {
 		
 		if(localVariable.getAssignment() != null ) {
 			if(localVariable.getAssignment().getType() != null) {
@@ -64,7 +64,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
-	private static boolean hasTypeConversionAtom(CtAssignment<?, ?> assignment) {
+	private boolean hasTypeConversionAtom(CtAssignment<?, ?> assignment) {
 		
 		if(assignment.getAssignment().getType() == null
 				|| assignment.getAssigned().getType() == null) {
@@ -82,7 +82,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 
-	private static boolean checkTypesConversion(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkTypesConversion(String sourceCode, String assignmentType, String assignedType) {
 		if(assignmentType.equalsIgnoreCase("float")
 				&& assignedType.equalsIgnoreCase("int")) {
 			return hasIntTypeConversionProblem(sourceCode) || hasByteTypeConversionProblem(sourceCode);
@@ -96,7 +96,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
-	private static boolean hasIntTypeConversionProblem(String statement) {
+	private boolean hasIntTypeConversionProblem(String statement) {
 		Pattern pattern = Pattern.compile("\\((\\s*int\\s*)\\)");
 		Matcher matcher = pattern.matcher(statement); 
 		
@@ -108,7 +108,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
-	private static boolean hasByteTypeConversionProblem(String statement) {
+	private boolean hasByteTypeConversionProblem(String statement) {
 		Pattern pattern = Pattern.compile("\\((\\s*byte\\s*)\\)");
 		Matcher matcher = pattern.matcher(statement);
 		boolean hasByteCasting = matcher.find();

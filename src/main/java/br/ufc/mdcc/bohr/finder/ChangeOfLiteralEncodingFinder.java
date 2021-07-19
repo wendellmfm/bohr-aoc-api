@@ -62,7 +62,8 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 		
 		String[] binaryLiterals = {"byte", "short", "int", "long"};
 		
-		if(leftHandOperand.getType() != null) {
+		if(leftHandOperand.getType() != null
+				&& rightHandOperand.getType() != null) {
 			if(Arrays.asList(binaryLiterals).contains(leftHandOperand.getType().toString())
 					&& Arrays.asList(binaryLiterals).contains(operator.getRightHandOperand().getType().toString())) {
 				

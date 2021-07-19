@@ -1,5 +1,9 @@
 package br.ufc.mdcc.bohr.finder;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -8,7 +12,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
@@ -27,29 +30,21 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 					
 					if(leftHandOperand.prettyprint().equalsIgnoreCase("0") 
-							|| rightHandOperand.prettyprint().equalsIgnoreCase("0")) {
+							|| rightHandOperand.prettyprint().equalsIgnoreCase("0")) {					
 						
-						checkOperand(qualifiedName, binaryOperatorFilter, operator, leftHandOperand);
+						List<CtBinaryOperator<?>> leftHandBinaryOperators = leftHandOperand.getElements(binaryOperatorFilter);
+						List<CtBinaryOperator<?>> rightHandBinaryOperators = rightHandOperand.getElements(binaryOperatorFilter);
 						
-						checkOperand(qualifiedName, binaryOperatorFilter, operator, rightHandOperand);
+						if(hasBinaryOperators(leftHandBinaryOperators)
+								|| hasBinaryOperators(rightHandBinaryOperators)) {
+							
+							int lineNumber = operator.getPosition().getEndLine();
+							String snippet = operator.getParent().prettyprint();
+							
+							Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
+						}
 					}
-					
 				}
-			}
-		}
-	}
-
-	private void checkOperand(String qualifiedName, TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter,
-			CtBinaryOperator<?> operator, CtExpression<?> handOperand) {
-		
-		for (CtElement elements : handOperand.getElements(binaryOperatorFilter)) {
-			if(hasArithmeticOperators((CtBinaryOperator<?>) elements)) {
-				int lineNumber = operator.getPosition().getEndLine();
-				String snippet = operator.getParent().prettyprint();
-				
-				Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
-				
-				break;
 			}
 		}
 	}
@@ -79,6 +74,30 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 				break;
 		}
 
+		return false;
+	}
+	
+	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
+		
+		for (CtBinaryOperator<?> operator : operators) {
+			if(operator.getParent() != null && !isOperatorBetweenBrackets(operator.getParent().prettyprint())) {
+				if(hasArithmeticOperators(operator)) {
+					return true;				
+				}
+			}
+		}
+
+		return false;
+	}	
+	
+	private boolean isOperatorBetweenBrackets(String statement) {
+		Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+		Matcher matcher = pattern.matcher(statement); 
+		
+		if(matcher.find()) {
+			return true;
+		}
+		
 		return false;
 	}
 	

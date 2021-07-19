@@ -26,27 +26,77 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
-					
+
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
+					CtExpression<?> rightHandOperand = operator.getRightHandOperand();												
 					
 					List<CtUnaryOperator<?>> leftHandUnaryOperators = leftHandOperand.getElements(unaryOperatorFilter);
 					List<CtUnaryOperator<?>> rightHandUnaryOperators = rightHandOperand.getElements(unaryOperatorFilter);
 					
-					if(!leftHandUnaryOperators.isEmpty() || !rightHandUnaryOperators.isEmpty()) {
+					List<CtBinaryOperator<?>> leftHandBinaryOperators = leftHandOperand.getElements(binaryOperatorFilter);
+					List<CtBinaryOperator<?>> rightHandBinaryOperators = rightHandOperand.getElements(binaryOperatorFilter);
+					
+					if(hasBinaryOperators(leftHandBinaryOperators)
+							|| hasBinaryOperators(rightHandBinaryOperators)) {
 						
-						if(hasUnaryOperators(leftHandUnaryOperators) || hasUnaryOperators(rightHandUnaryOperators)) {
-							int lineNumber = operator.getPosition().getEndLine();
-							String snippet = operator.getParent().prettyprint();
+							if(!leftHandUnaryOperators.isEmpty() || !rightHandUnaryOperators.isEmpty()) {
 							
-							Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
-						}
-						
+								if(hasUnaryOperators(leftHandUnaryOperators) || hasUnaryOperators(rightHandUnaryOperators)) {
+									int lineNumber = operator.getPosition().getEndLine();
+									String snippet = operator.getParent().prettyprint();
+								
+									Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
+								}
+							}
 					}
 				}
 			}
 		}
 	}
+			
+	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
+		for (CtBinaryOperator<?> operator : operators) {
+			CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
+			CtExpression<?> rightHandOperand = operator.getRightHandOperand();
+			
+			if(leftHandOperand.prettyprint().equalsIgnoreCase("0") 
+					|| rightHandOperand.prettyprint().equalsIgnoreCase("0")) {
+				if(hasCompareOperators(operator)) {
+					return true;					
+				}
+			}
+		}
+
+		return false;
+	}		
+	
+	private boolean hasCompareOperators(CtBinaryOperator<?> operator) {
+
+		switch (operator.getKind()) {
+			case EQ:
+				return true;
+				
+			case NE:
+				return true;
+				
+			case GT:
+				return true;
+				
+			case GE:
+				return true;
+				
+			case LT:
+				return true;
+				
+			case LE:
+				return true;
+				
+			default:
+				break;
+			}
+
+		return false;
+	}		
 	
 	private boolean hasUnaryOperators(List<CtUnaryOperator<?>> unaryOperators) {
 		
