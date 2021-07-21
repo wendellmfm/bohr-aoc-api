@@ -10,6 +10,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -22,13 +23,14 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 			
 			TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 			TypeFilter<CtUnaryOperator<?>> unaryOperatorFilter = new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class);
+			TypeFilter<CtInvocation<?>> invocationFilter = new TypeFilter<CtInvocation<?>>(CtInvocation.class);
 
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
 
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-					CtExpression<?> rightHandOperand = operator.getRightHandOperand();												
+					CtExpression<?> rightHandOperand = operator.getRightHandOperand();	
 					
 					List<CtUnaryOperator<?>> leftHandUnaryOperators = leftHandOperand.getElements(unaryOperatorFilter);
 					List<CtUnaryOperator<?>> rightHandUnaryOperators = rightHandOperand.getElements(unaryOperatorFilter);
@@ -39,19 +41,27 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 					if(hasBinaryOperators(leftHandBinaryOperators)
 							|| hasBinaryOperators(rightHandBinaryOperators)) {
 						
-							if(!leftHandUnaryOperators.isEmpty() || !rightHandUnaryOperators.isEmpty()) {
+						if(hasInvocation(leftHandOperand, rightHandOperand, invocationFilter) 
+								||hasUnaryOperators(leftHandUnaryOperators) 
+								|| hasUnaryOperators(rightHandUnaryOperators)) {
+							int lineNumber = operator.getPosition().getEndLine();
+							String snippet = operator.getParent().prettyprint();
 							
-								if(hasUnaryOperators(leftHandUnaryOperators) || hasUnaryOperators(rightHandUnaryOperators)) {
-									int lineNumber = operator.getPosition().getEndLine();
-									String snippet = operator.getParent().prettyprint();
-								
-									Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
-								}
-							}
+							Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
+						}
 					}
 				}
 			}
 		}
+	}
+	
+	private boolean hasInvocation(CtExpression<?> leftHandOperand, CtExpression<?> rightHandOperand, TypeFilter<CtInvocation<?>> invocationFilter) {
+		if(!leftHandOperand.getElements(invocationFilter).isEmpty()
+				|| !rightHandOperand.getElements(invocationFilter).isEmpty()) {
+			return true;
+		}
+
+		return false;
 	}
 			
 	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
@@ -68,7 +78,7 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 		}
 
 		return false;
-	}		
+	}
 	
 	private boolean hasCompareOperators(CtBinaryOperator<?> operator) {
 
@@ -99,6 +109,10 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 	}		
 	
 	private boolean hasUnaryOperators(List<CtUnaryOperator<?>> unaryOperators) {
+		
+		if(unaryOperators.isEmpty()) {
+			return false;
+		}
 		
 		for (CtUnaryOperator<?> operator : unaryOperators) {
 
