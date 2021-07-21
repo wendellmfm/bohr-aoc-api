@@ -21,7 +21,7 @@ public class ConditionalOperatorFinder extends AbstractProcessor<CtClass<?>> {
 			for (CtConditional<?> condOpr : element.getElements(filter)) {
 				if ((condOpr.getParent() != null) && ((condOpr.getParent() instanceof CtAssignment)
 						|| condOpr.getParent() instanceof CtLocalVariable)) {
-					int lineNumber = condOpr.getPosition().getEndLine();
+					int lineNumber = condOpr.getParent().getPosition().getLine();
 					String snippet = condOpr.getParent().prettyprint();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
 				}

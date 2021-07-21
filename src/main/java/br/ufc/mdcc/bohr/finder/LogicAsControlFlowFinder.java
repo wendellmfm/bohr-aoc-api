@@ -33,7 +33,7 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 					
 					if(hasLogicAsControlFlow(rightHandOperand)
 							|| hasLogicAsControlFlow(leftHandOperand)) {
-						int lineNumber = operator.getPosition().getEndLine();
+						int lineNumber = operator.getPosition().getLine();
 						String snippet = operator.getParent().prettyprint();
 						
 						Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));

@@ -1,7 +1,5 @@
 package br.ufc.mdcc.bohr.finder;
 
-import java.util.Arrays;
-
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -60,23 +58,16 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 		CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 		CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 		
-		String[] binaryLiterals = {"byte", "short", "int", "long"};
-		
-		if(leftHandOperand.getType() != null
-				&& rightHandOperand.getType() != null) {
-			if(Arrays.asList(binaryLiterals).contains(leftHandOperand.getType().toString())
-					&& Arrays.asList(binaryLiterals).contains(operator.getRightHandOperand().getType().toString())) {
-				
-				String leftHandOperandString = leftHandOperand.prettyprint();
-				String rightHandOperandString = rightHandOperand.prettyprint();
-				
-				String binaryPattern = "-?0[bB][01][01]+";
-				
-				if(leftHandOperandString.matches(binaryPattern) && rightHandOperandString.matches(binaryPattern)) {
-					return false;
-				} else {
-					return true;
-				}
+		if(leftHandOperand instanceof CtLiteral && rightHandOperand instanceof CtLiteral) {		
+			String leftHandOperandString = leftHandOperand.prettyprint();
+			String rightHandOperandString = rightHandOperand.prettyprint();
+			
+			String binaryPattern = "-?0[bB][01][01]+";
+			
+			if(leftHandOperandString.matches(binaryPattern) && rightHandOperandString.matches(binaryPattern)) {
+				return false;
+			} else {
+				return true;
 			}
 		}
 		
