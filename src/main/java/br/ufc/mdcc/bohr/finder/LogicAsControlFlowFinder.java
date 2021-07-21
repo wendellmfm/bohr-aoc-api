@@ -8,6 +8,7 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -22,93 +23,54 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 			String qualifiedName = element.getQualifiedName();
 			
 			TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-			TypeFilter<CtUnaryOperator<?>> unaryOperatorFilter = new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class);
-			TypeFilter<CtInvocation<?>> invocationFilter = new TypeFilter<CtInvocation<?>>(CtInvocation.class);
 
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
 
-					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-					CtExpression<?> rightHandOperand = operator.getRightHandOperand();	
+					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 					
-					List<CtUnaryOperator<?>> leftHandUnaryOperators = leftHandOperand.getElements(unaryOperatorFilter);
-					List<CtUnaryOperator<?>> rightHandUnaryOperators = rightHandOperand.getElements(unaryOperatorFilter);
-					
-					List<CtBinaryOperator<?>> leftHandBinaryOperators = leftHandOperand.getElements(binaryOperatorFilter);
-					List<CtBinaryOperator<?>> rightHandBinaryOperators = rightHandOperand.getElements(binaryOperatorFilter);
-					
-					if(hasBinaryOperators(leftHandBinaryOperators)
-							|| hasBinaryOperators(rightHandBinaryOperators)) {
+					if(hasUnaryOperator(rightHandOperand)
+							|| hasMethodInvocation(rightHandOperand)
+							|| hasAssignment(rightHandOperand)) {
+						int lineNumber = operator.getPosition().getEndLine();
+						String snippet = operator.getParent().prettyprint();
 						
-						if(hasInvocation(leftHandOperand, rightHandOperand, invocationFilter) 
-								||hasUnaryOperators(leftHandUnaryOperators) 
-								|| hasUnaryOperators(rightHandUnaryOperators)) {
-							int lineNumber = operator.getPosition().getEndLine();
-							String snippet = operator.getParent().prettyprint();
-							
-							Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
-						}
+						Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
 					}
 				}
 			}
 		}
 	}
 	
-	private boolean hasInvocation(CtExpression<?> leftHandOperand, CtExpression<?> rightHandOperand, TypeFilter<CtInvocation<?>> invocationFilter) {
-		if(!leftHandOperand.getElements(invocationFilter).isEmpty()
-				|| !rightHandOperand.getElements(invocationFilter).isEmpty()) {
+	private boolean hasMethodInvocation(CtExpression<?> rightHandOperand) {
+		
+		if(!rightHandOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class)).isEmpty()) {
 			return true;
 		}
-
+		
 		return false;
 	}
-			
-	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
-		for (CtBinaryOperator<?> operator : operators) {
-			CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-			CtExpression<?> rightHandOperand = operator.getRightHandOperand();
-			
-			if(leftHandOperand.prettyprint().equalsIgnoreCase("0") 
-					|| rightHandOperand.prettyprint().equalsIgnoreCase("0")) {
-				if(hasCompareOperators(operator)) {
-					return true;					
-				}
-			}
+	
+	private boolean hasAssignment(CtExpression<?> rightHandOperand) {
+		if(!rightHandOperand.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class)).isEmpty()) {
+			return true;
 		}
-
+		
 		return false;
 	}
-	
-	private boolean hasCompareOperators(CtBinaryOperator<?> operator) {
 
-		switch (operator.getKind()) {
-			case EQ:
-				return true;
-				
-			case NE:
-				return true;
-				
-			case GT:
-				return true;
-				
-			case GE:
-				return true;
-				
-			case LT:
-				return true;
-				
-			case LE:
-				return true;
-				
-			default:
-				break;
-			}
-
+	private boolean hasUnaryOperator(CtExpression<?> rightHandOperand) {
+		
+		List<CtUnaryOperator<?>> unaryOperators = rightHandOperand.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
+		if(!unaryOperators.isEmpty() && hasIncrementDecrementUnaryOperators(unaryOperators)) {
+			return true;
+		}
+		
 		return false;
-	}		
+	}	
 	
-	private boolean hasUnaryOperators(List<CtUnaryOperator<?>> unaryOperators) {
+	private boolean hasIncrementDecrementUnaryOperators(List<CtUnaryOperator<?>> unaryOperators) {
 		
 		if(unaryOperators.isEmpty()) {
 			return false;
