@@ -29,10 +29,10 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
 
 					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
+					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 					
-					if(hasUnaryOperator(rightHandOperand)
-							|| hasMethodInvocation(rightHandOperand)
-							|| hasAssignment(rightHandOperand)) {
+					if(hasLogicAsControlFlow(rightHandOperand)
+							|| hasLogicAsControlFlow(leftHandOperand)) {
 						int lineNumber = operator.getPosition().getEndLine();
 						String snippet = operator.getParent().prettyprint();
 						
@@ -43,26 +43,37 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 	
-	private boolean hasMethodInvocation(CtExpression<?> rightHandOperand) {
-		
-		if(!rightHandOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class)).isEmpty()) {
+	private boolean hasLogicAsControlFlow(CtExpression<?> handOperand) {
+		if(hasUnaryOperator(handOperand)
+				|| hasMethodInvocation(handOperand)
+				|| hasAssignment(handOperand)) {
+			
 			return true;
 		}
 		
 		return false;
 	}
 	
-	private boolean hasAssignment(CtExpression<?> rightHandOperand) {
-		if(!rightHandOperand.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class)).isEmpty()) {
+	private boolean hasMethodInvocation(CtExpression<?> handOperand) {
+		
+		if(!handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class)).isEmpty()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasAssignment(CtExpression<?> handOperand) {
+		if(!handOperand.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class)).isEmpty()) {
 			return true;
 		}
 		
 		return false;
 	}
 
-	private boolean hasUnaryOperator(CtExpression<?> rightHandOperand) {
+	private boolean hasUnaryOperator(CtExpression<?> handOperand) {
 		
-		List<CtUnaryOperator<?>> unaryOperators = rightHandOperand.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
+		List<CtUnaryOperator<?>> unaryOperators = handOperand.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
 		if(!unaryOperators.isEmpty() && hasIncrementDecrementUnaryOperators(unaryOperators)) {
 			return true;
 		}
