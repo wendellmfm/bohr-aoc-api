@@ -56,8 +56,15 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 	
 	private boolean hasMethodInvocation(CtExpression<?> handOperand) {
 		
-		if(!handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class)).isEmpty()) {
-			return true;
+		List<CtInvocation<?>> methods = handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		
+		if(!methods.isEmpty()) {
+			for (CtInvocation<?> method : methods) {
+				if(method.getType() != null
+						&& !method.getType().toString().equalsIgnoreCase("boolean")) {
+					return true;
+				}
+			}
 		}
 		
 		return false;
