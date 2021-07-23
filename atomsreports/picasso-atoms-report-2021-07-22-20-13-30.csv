@@ -1,0 +1,38 @@
+Class,Atom,Snippet,Line
+com.squareup.picasso.Picasso,Conditional Operator,int extraCount = (extraRequestHandlers != null) ? extraRequestHandlers.size() : 0,180
+com.squareup.picasso.Picasso,Logic as Control Flow,if ((target != null) && (targetToAction.get(target) != action)) {    cancelExistingRequest(target);    targetToAction.put(target action);},489
+com.squareup.picasso.RequestHandler,Conditional Operator,sampleSize = (request.centerInside) ? Math.max(heightRatio widthRatio) : Math.min(heightRatio widthRatio),176
+com.squareup.picasso.Action,Conditional Operator,this.target = (target == null) ? null : new RequestWeakReference<>(this target picasso.referenceQueue),53
+com.squareup.picasso.Action,Conditional Operator,this.tag = (tag != null) ? tag : this,61
+com.squareup.picasso.RemoteViewsAction,Omitted Curly Braces,if (this == o)    return true;if ((o == null) || (getClass() != o.getClass()))    return false;,91
+com.squareup.picasso.RemoteViewsAction,Omitted Curly Braces,if ((o == null) || (getClass() != o.getClass()))    return false;RemoteViewsTarget remoteViewsTarget = ((RemoteViewsTarget) (o)),92
+com.squareup.picasso.RemoteViewsAction,Logic as Control Flow,if ((o == null) || (getClass() != o.getClass()))    return false;,92
+com.squareup.picasso.BitmapHunter,Conditional Operator,networkPolicy = (retryCount == 0) ? NetworkPolicy.OFFLINE.index : networkPolicy,218
+com.squareup.picasso.BitmapHunter,Conditional Operator,float widthRatio = (targetWidth != 0) ? targetWidth / ((float) (inWidth)) : targetHeight / ((float) (inHeight)),582
+com.squareup.picasso.BitmapHunter,Conditional Operator,float heightRatio = (targetHeight != 0) ? targetHeight / ((float) (inHeight)) : targetWidth / ((float) (inWidth)),584
+com.squareup.picasso.BitmapHunter,Conditional Operator,float widthRatio = (targetWidth != 0) ? targetWidth / ((float) (inWidth)) : targetHeight / ((float) (inHeight)),621
+com.squareup.picasso.BitmapHunter,Conditional Operator,float heightRatio = (targetHeight != 0) ? targetHeight / ((float) (inHeight)) : targetWidth / ((float) (inWidth)),623
+com.squareup.picasso.BitmapHunter,Conditional Operator,float scale = (widthRatio < heightRatio) ? widthRatio : heightRatio,625
+com.squareup.picasso.BitmapHunter,Conditional Operator,float sx = (targetWidth != 0) ? targetWidth / ((float) (inWidth)) : targetHeight / ((float) (inHeight)),634
+com.squareup.picasso.BitmapHunter,Conditional Operator,float sy = (targetHeight != 0) ? targetHeight / ((float) (inHeight)) : targetWidth / ((float) (inWidth)),636
+com.squareup.picasso.BitmapHunter,Logic as Control Flow,if (detached && (action.getPriority() == priority)) {    priority = computeNewPriority();},312
+com.squareup.picasso.Utils,Conditional Operator,int result = (SDK_INT >= KITKAT) ? bitmap.getAllocationByteCount() : bitmap.getByteCount(),105
+com.squareup.picasso.Utils,Conditional Operator,long blockCount = (SDK_INT < JELLY_BEAN_MR2) ? ((long) (statFs.getBlockCount())) : statFs.getBlockCountLong(),227
+com.squareup.picasso.Utils,Conditional Operator,long blockSize = (SDK_INT < JELLY_BEAN_MR2) ? ((long) (statFs.getBlockSize())) : statFs.getBlockSizeLong(),230
+com.squareup.picasso.Utils,Conditional Operator,int memoryClass = (largeHeap) ? am.getLargeMemoryClass() : am.getMemoryClass(),245
+com.squareup.picasso.Utils,Omitted Curly Braces,if ((i > 0) || (action != null))    builder.append(" ");builder.append(actions.get(i).request.logId()),148
+com.squareup.picasso.Utils,Omitted Curly Braces,if (pkg == null)    throw new FileNotFoundException("No package provided: " + data.uri);int id,288
+com.squareup.picasso.Utils,Omitted Curly Braces,if (pkg == null)    throw new FileNotFoundException("No package provided: " + data.uri);try {    PackageManager pm = context.getPackageManager();    return pm.getResourcesForApplication(pkg);} catch (PackageManager.NameNotFoundException e) {    throw new FileNotFoundException("Unable to obtain resources for package: " + data.uri);},317
+com.squareup.picasso.MediaStoreRequestHandler,Conditional Operator,int kind = (picassoKind == FULL) ? Thumbnails.MINI_KIND : picassoKind.androidKind,83
+com.squareup.picasso.NetworkRequestHandler,Conditional Operator,Picasso.LoadedFrom loadedFrom = (response.cacheResponse() == null) ? NETWORK : DISK,56
+com.squareup.picasso.LruCache,Logic as Control Flow,if ((key.startsWith(uri) && (key.length() > uri.length())) && (key.charAt(uri.length()) == KEY_SEPARATOR)) {    cache.remove(key);},81
+com.squareup.picasso.LruCache,Logic as Control Flow,(key.startsWith(uri) && (key.length() > uri.length())) && (key.charAt(uri.length()) == KEY_SEPARATOR),81
+com.squareup.picasso.PicassoDrawable,Type Conversion,int partialAlpha = ((int) (alpha * normalized)),107
+com.squareup.picasso.Dispatcher,Omitted Curly Braces,if (hunter.isCancelled())    return;if (service.isShutdown()) {    performError(hunter false);    return;},323
+com.squareup.picasso.Dispatcher,Omitted Curly Braces,if ((copy == null) || copy.isEmpty())    return;BitmapHunter hunter = copy.get(0),446
+com.squareup.picasso.Dispatcher,Omitted Curly Braces,if (builder.length() > 0)    builder.append(" ");builder.append(Utils.getLogIdsForHunter(bitmapHunter)),452
+com.squareup.picasso.Dispatcher,Logic as Control Flow,if ((remove != null) && remove.getPicasso().loggingEnabled) {    log(OWNER_DISPATCHER VERB_CANCELED remove.getRequest().logId() "from replaying");},236
+com.squareup.picasso.Dispatcher,Logic as Control Flow,if ((single != null) && single.getTag().equals(tag)) {    hunter.detach(single);    pausedActions.put(single.getTarget() single);    if (loggingEnabled) {        log(OWNER_DISPATCHER VERB_PAUSED single.request.logId() ("because tag '" + tag) + "' was paused");    }},262
+com.squareup.picasso.RemoteViewsAction$RemoteViewsTarget,Omitted Curly Braces,if (this == o)    return true;if ((o == null) || (getClass() != o.getClass()))    return false;,91
+com.squareup.picasso.RemoteViewsAction$RemoteViewsTarget,Omitted Curly Braces,if ((o == null) || (getClass() != o.getClass()))    return false;RemoteViewsTarget remoteViewsTarget = ((RemoteViewsTarget) (o)),92
+com.squareup.picasso.RemoteViewsAction$RemoteViewsTarget,Logic as Control Flow,if ((o == null) || (getClass() != o.getClass()))    return false;,92

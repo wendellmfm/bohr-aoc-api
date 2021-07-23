@@ -31,6 +31,11 @@ public class Util {
 				snippet = snippet.replaceAll("\r\n", "");
 				snippet = snippet.replaceAll("\t", " ");
 				
+				if(snippet.contains(",")) {
+					snippet = snippet.replaceAll(",", "");
+					aocInfo.setSnippet(snippet);
+				}
+				
 				rows.add(Arrays.asList(suite.getClassQualifiedName(),
 						aocInfo.getAtomOfConfusion().getFullName(),
 						snippet,

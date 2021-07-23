@@ -30,7 +30,7 @@ class TypeConversionFinderTest {
 	void testProcess() {
 		String path = "./src/test/resources/TypeConversion/";
 		String[] finders = new String[] { "br.ufc.mdcc.bohr.finder.TypeConversionFinder" };
-		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders);
+		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders, false);
 
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());
 

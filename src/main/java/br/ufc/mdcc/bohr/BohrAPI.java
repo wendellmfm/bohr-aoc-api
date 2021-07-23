@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import br.ufc.mdcc.bohr.model.AoCSuite;
 import br.ufc.mdcc.bohr.model.Dataset;
+import br.ufc.mdcc.bohr.util.Util;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 
@@ -11,18 +12,27 @@ public class BohrAPI {
 
 	private static SpoonAPI spoon;
 
-	public static Collection<AoCSuite> findAoC(String sourceCodePath) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath, boolean generateReport) {
 		build(sourceCodePath);
 		configure();
 		process();
+		
+		if(generateReport) {
+			Util.generateCSVFile(Dataset.list());
+		}
+		
 		return Dataset.list();
 	}
-
 	
-	public static Collection<AoCSuite> findAoC(String sourceCodePath, String[] finders) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath, String[] finders, boolean generateReport) {
 		build(sourceCodePath);
 		configure(finders);
 		process();
+		
+		if(generateReport) {
+			Util.generateCSVFile(Dataset.list());
+		}
+		
 		return Dataset.list();
 	}
 
