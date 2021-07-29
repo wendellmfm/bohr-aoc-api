@@ -1,4 +1,4 @@
-package br.ufc.mdcc.bohr.model;
+package br.aoc.bohr.model;
 
 public enum AoC {
 

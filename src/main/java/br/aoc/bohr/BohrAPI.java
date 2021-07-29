@@ -1,10 +1,10 @@
-package br.ufc.mdcc.bohr;
+package br.aoc.bohr;
 
 import java.util.Collection;
 
-import br.ufc.mdcc.bohr.model.AoCSuite;
-import br.ufc.mdcc.bohr.model.Dataset;
-import br.ufc.mdcc.bohr.util.Util;
+import br.aoc.bohr.model.AoCSuite;
+import br.aoc.bohr.model.Dataset;
+import br.aoc.bohr.util.Util;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 

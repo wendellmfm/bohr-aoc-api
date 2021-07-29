@@ -1,4 +1,4 @@
-package br.ufc.mdcc.bohr.finder;
+package br.aoc.bohr.finder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import br.ufc.mdcc.bohr.model.AoC;
-import br.ufc.mdcc.bohr.model.AoCInfo;
-import br.ufc.mdcc.bohr.model.Dataset;
-import br.ufc.mdcc.bohr.util.Util;
+import br.aoc.bohr.model.AoC;
+import br.aoc.bohr.model.AoCInfo;
+import br.aoc.bohr.model.Dataset;
+import br.aoc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;

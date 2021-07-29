@@ -1,14 +1,14 @@
-package br.ufc.mdcc.bohr.finder;
+package br.aoc.bohr.finder;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import br.ufc.mdcc.bohr.model.AoC;
-import br.ufc.mdcc.bohr.model.AoCInfo;
-import br.ufc.mdcc.bohr.model.Dataset;
-import br.ufc.mdcc.bohr.util.Util;
+import br.aoc.bohr.model.AoC;
+import br.aoc.bohr.model.AoCInfo;
+import br.aoc.bohr.model.Dataset;
+import br.aoc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;

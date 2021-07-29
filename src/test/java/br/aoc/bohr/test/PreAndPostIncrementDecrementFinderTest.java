@@ -1,4 +1,4 @@
-package br.ufc.mdcc.bohr.finder;
+package br.aoc.bohr.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,10 +9,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import br.ufc.mdcc.bohr.BohrAPI;
-import br.ufc.mdcc.bohr.model.AoC;
-import br.ufc.mdcc.bohr.model.AoCInfo;
-import br.ufc.mdcc.bohr.model.AoCSuite;
+import br.aoc.bohr.BohrAPI;
+import br.aoc.bohr.model.AoC;
+import br.aoc.bohr.model.AoCInfo;
+import br.aoc.bohr.model.AoCSuite;
 
 class PreAndPostIncrementDecrementFinderTest {
 
@@ -29,7 +29,7 @@ class PreAndPostIncrementDecrementFinderTest {
 	@Test
 	void testProcess() {
 		String path = "./src/test/resources/PreAndPostIncrementDecrement/";
-		String[] finders = new String[] { "br.ufc.mdcc.bohr.finder.PreAndPostIncrementDecrementFinder" };
+		String[] finders = new String[] { "br.aoc.bohr.finder.PreAndPostIncrementDecrementFinder" };
 		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders, false);
 		
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());

@@ -1,4 +1,4 @@
-package br.ufc.mdcc.bohr.model;
+package br.aoc.bohr.model;
 
 import java.util.Collection;
 import java.util.Vector;
