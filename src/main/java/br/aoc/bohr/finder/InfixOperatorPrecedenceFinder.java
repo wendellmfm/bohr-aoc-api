@@ -31,7 +31,7 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 
 			for (CtExpression<?> expression : element.getElements(expressionFilter)) {
 				if (isCandidate(expression)) {
-					int lineNumber = expression.getPosition().getEndLine();
+					int lineNumber = expression.getPosition().getLine();
 					String snippet = expression.getOriginalSourceFragment().getSourceCode();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
 				}

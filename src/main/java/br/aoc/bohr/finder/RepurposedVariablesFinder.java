@@ -41,7 +41,7 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
 					CtUnaryOperatorImpl<?> forLoopUpdateVariable = (CtUnaryOperatorImpl<?>) forLoopUpdate;
 					
 					if(forParentInitVariableString.equals(forLoopUpdateVariable.getOperand().prettyprint())) {
-						int lineNumber = forParent.getPosition().getEndLine();
+						int lineNumber = forParent.getPosition().getLine();
 						String snippet = forParent.prettyprint();
 						Dataset.store(qualifiedName, new AoCInfo(AoC.RVar, lineNumber, snippet));
 					}
