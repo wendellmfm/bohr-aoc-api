@@ -647,7 +647,7 @@ public class CompiledAtomsSample {
 		
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 2; j++) {
-				a = 4 * i + j;
+				a = 5 * i + j;
 				i = j;
 			}
 		}

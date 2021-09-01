@@ -2,8 +2,10 @@ package br.aoc.bohr.finder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import br.aoc.bohr.model.AoC;
 import br.aoc.bohr.model.AoCInfo;
@@ -14,10 +16,11 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>> {
-	private List<Integer> atomLines = new ArrayList<Integer>();
+	private Set<CtElement> fullExpressions = new HashSet<CtElement>();
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
@@ -26,39 +29,30 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 			TypeFilter<CtExpression<?>> expressionFilter = new TypeFilter<CtExpression<?>>(CtExpression.class);
 
 			for (CtExpression<?> expression : element.getElements(expressionFilter)) {
-				
-				CtExpression<?> fullExpression = getHighLevelParent(expression);
-				
-				try {
-					int lineNumber = fullExpression.getPosition().getLine();
-					if(!atomLines.contains(Integer.valueOf(lineNumber))) {
-						atomLines.add(lineNumber);
-						
-						if (isCandidate(fullExpression)) {
-							String snippet = fullExpression.getOriginalSourceFragment().getSourceCode();
-							Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
-						}
-					}
-					
-				} catch (Exception e) {
-					// TODO: handle exception
-					//System.out.println("Exception: " + fullExpression.prettyprint());
+				if (isCandidate(expression)) {
+					int lineNumber = expression.getPosition().getLine();
+					String snippet = expression.getOriginalSourceFragment().getSourceCode();
+					Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
 				}
 			}
 		}
 	}
 
 	private boolean isCandidate(CtExpression<?> expression) {
-
-		if (hasCombinationOfArithmeticalOperators(expression)) {
-			if(isMissingParenthesesInArithmeticalOperations(expression)) {
-				return true;
-			}
-		}
 		
-		if (hasCombinationLogicalOperators(expression)) {
-			if(isMissingParenthesesInLogicalOperations(expression)) {
-				return true;
+		if (!fullExpressions.contains(getHighLevelParent(expression))) {
+			fullExpressions.add(expression);
+			
+			if (hasCombinationOfArithmeticalOperators(expression)) {
+				if(isMissingParenthesesInArithmeticalOperations(expression)) {
+					return true;
+				}
+			}
+			
+			if (hasCombinationLogicalOperators(expression)) {
+				if(isMissingParenthesesInLogicalOperations(expression)) {
+					return true;
+				}
 			}
 		}
 

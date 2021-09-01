@@ -8,7 +8,7 @@ public class InfixOperatorPrecedenceSample {
 	public void firstMethod() {
 		int a;
 		
-		a = 2 - 4 / 2; //a = soma(2 - 4 / 2) + soma(2 - 4 / 2);
+		a = 2 - 4 / 2;
 		
 		System.out.println(a);
 	}
@@ -25,10 +25,6 @@ public class InfixOperatorPrecedenceSample {
 		} else {
 			System.out.println("false");
 		}
-	}
-	
-	private int soma(int n) {
-		return n;
 	}
 	
 }
