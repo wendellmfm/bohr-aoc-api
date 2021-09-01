@@ -49,7 +49,6 @@ class CompiledAtomsFinderTest {
 
 			assertEquals("CompiledAtomsSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			System.out.println(suite.getAtomsOfConfusion().size());
 			assertTrue(suite.getAtomsOfConfusion().size() == 50, "There are more or less AoC than expected.");
 			
 			atomsCount = 0;
