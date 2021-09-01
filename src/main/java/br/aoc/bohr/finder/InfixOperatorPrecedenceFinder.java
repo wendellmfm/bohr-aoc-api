@@ -17,7 +17,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>> {
-	private List<Integer> lines = new ArrayList<Integer>();
+	private List<Integer> atomLines = new ArrayList<Integer>();
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
@@ -29,14 +29,20 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 				
 				CtExpression<?> fullExpression = getHighLevelParent(expression);
 				
-				if (isCandidate(fullExpression)) {
+				try {
 					int lineNumber = fullExpression.getPosition().getLine();
-					String snippet = fullExpression.getOriginalSourceFragment().getSourceCode();
-					
-					if(!lines.contains(Integer.valueOf(lineNumber))) {
-						Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
-						lines.add(lineNumber);
+					if(!atomLines.contains(Integer.valueOf(lineNumber))) {
+						atomLines.add(lineNumber);
+						
+						if (isCandidate(fullExpression)) {
+							String snippet = fullExpression.getOriginalSourceFragment().getSourceCode();
+							Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
+						}
 					}
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+					//System.out.println("Exception: " + fullExpression.prettyprint());
 				}
 			}
 		}
