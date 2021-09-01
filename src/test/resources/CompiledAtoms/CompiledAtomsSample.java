@@ -586,4 +586,73 @@ public class CompiledAtomsSample {
 		return c;
 	}
 	
+	public void firstInfixOperatorPrecedenceMethod() {
+		int a;
+		
+		a = 2 - 4 / 2;
+		
+		System.out.println(a);
+	}
+	
+	public void secondInfixOperatorPrecedenceMethod() {
+		String line = "The cat is black";
+		
+		boolean a = line.contains("dog");
+		boolean b = line.contains("cat");
+		boolean c = line.contains("black");
+		
+		if(a && b || c) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
+	
+	public void firstInfixOperatorPrecedenceTransformedMethod() {
+		int a;
+		
+		a = 2 - (4 / 2);
+		
+		System.out.println(a);
+	}
+	
+	public void secondInfixOperatorPrecedenceTransformedMethod() {
+		String line = "The cat is black";
+		
+		boolean a = line.contains("dog");
+		boolean b = line.contains("cat");
+		boolean c = line.contains("black");
+		
+		if((a && b) || c) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
+	
+	public void firstRepurposedVariablesMethod() {
+		int a = 3;
+		
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; i < 2; i++) {
+				a = 4 * i + j;
+			}
+		}
+		
+		System.out.println(a);
+	}
+	
+	public void firstRepurposedVariablesTransformedMethod() {
+		int a = 3;
+		
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 2; j++) {
+				a = 4 * i + j;
+				i = j;
+			}
+		}
+		
+		System.out.println(a);
+	}
+	
 }

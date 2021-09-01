@@ -37,7 +37,9 @@ class CompiledAtomsFinderTest {
 				"br.aoc.bohr.finder.LogicAsControlFlowFinder",
 				"br.aoc.bohr.finder.ArithmeticAsLogicFinder",
 				"br.aoc.bohr.finder.ChangeOfLiteralEncodingFinder",
-				"br.aoc.bohr.finder.TypeConversionFinder"};
+				"br.aoc.bohr.finder.TypeConversionFinder",
+				"br.aoc.bohr.finder.InfixOperatorPrecedenceFinder",
+				"br.aoc.bohr.finder.RepurposedVariablesFinder"};
 		
 		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders, false);
 		
@@ -47,7 +49,8 @@ class CompiledAtomsFinderTest {
 
 			assertEquals("CompiledAtomsSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 44, "There are more or less AoC than expected.");
+			System.out.println(suite.getAtomsOfConfusion().size());
+			assertTrue(suite.getAtomsOfConfusion().size() == 50, "There are more or less AoC than expected.");
 			
 			atomsCount = 0;
 			
@@ -65,9 +68,14 @@ class CompiledAtomsFinderTest {
 				changeOfLiteralEncodingTests(aocInfo);
 				
 				typeConversionTests(aocInfo);
+				
+				infixOperatorPrecedenceTests(aocInfo);
+				
+				repurposedVariablesTests(aocInfo);
+				
 			}
 			
-			assertTrue(atomsCount == 44, "Number of AoC types not mached");
+			assertTrue(atomsCount == 50, "Number of AoC types not mached");
 		}
 	}
 
@@ -92,7 +100,8 @@ class CompiledAtomsFinderTest {
 			checkAoCInfo(aocInfo, AoC.PreINC, 279);
 		}
 
-		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
+		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.LaCTRF
+				&& aocInfo.getAtomOfConfusion() != AoC.IOP) {
 			checkAoCInfo(aocInfo, AoC.PreINC, 306);
 		}
 		
@@ -125,7 +134,8 @@ class CompiledAtomsFinderTest {
 			checkAoCInfo(aocInfo, AoC.LaCTRF, 279);
 		}
 		
-		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.PreINC) {
+		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.PreINC
+				&& aocInfo.getAtomOfConfusion() != AoC.IOP) {
 			checkAoCInfo(aocInfo, AoC.LaCTRF, 306);
 		}
 		
@@ -156,6 +166,22 @@ class CompiledAtomsFinderTest {
 		checkAoCInfo(aocInfo, AoC.TPC, 568);
 		checkAoCInfo(aocInfo, AoC.TPC, 582);
 		checkAoCInfo(aocInfo, AoC.TPC, 584);
+	}
+	
+	private void infixOperatorPrecedenceTests(AoCInfo aocInfo) {
+		if(aocInfo.getLineNumber() == 306 && aocInfo.getAtomOfConfusion() != AoC.PreINC
+				&& aocInfo.getAtomOfConfusion() != AoC.LaCTRF) {
+			checkAoCInfo(aocInfo, AoC.IOP, 306);
+		}
+		
+		checkAoCInfo(aocInfo, AoC.IOP, 592);
+		checkAoCInfo(aocInfo, AoC.IOP, 604);
+		checkAoCInfo(aocInfo, AoC.IOP, 638);
+		checkAoCInfo(aocInfo, AoC.IOP, 650);
+	}
+	
+	private void repurposedVariablesTests(AoCInfo aocInfo) {
+		checkAoCInfo(aocInfo, AoC.RVar, 636);
 	}
 	
 }

@@ -2,10 +2,8 @@ package br.aoc.bohr.finder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import br.aoc.bohr.model.AoC;
 import br.aoc.bohr.model.AoCInfo;
@@ -16,12 +14,10 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>> {
-
-	private Set<CtElement> fullExpressions = new HashSet<CtElement>();
+	private List<Integer> lines = new ArrayList<Integer>();
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
@@ -30,29 +26,33 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 			TypeFilter<CtExpression<?>> expressionFilter = new TypeFilter<CtExpression<?>>(CtExpression.class);
 
 			for (CtExpression<?> expression : element.getElements(expressionFilter)) {
-				if (isCandidate(expression)) {
-					int lineNumber = expression.getPosition().getLine();
-					String snippet = expression.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
+				
+				CtExpression<?> fullExpression = getHighLevelParent(expression);
+				
+				if (isCandidate(fullExpression)) {
+					int lineNumber = fullExpression.getPosition().getLine();
+					String snippet = fullExpression.getOriginalSourceFragment().getSourceCode();
+					
+					if(!lines.contains(Integer.valueOf(lineNumber))) {
+						Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
+						lines.add(lineNumber);
+					}
 				}
 			}
 		}
 	}
 
 	private boolean isCandidate(CtExpression<?> expression) {
-		if (!fullExpressions.contains(getHighLevelParent(expression))) {
-			fullExpressions.add(expression);
-			
-			if (hasCombinationOfArithmeticalOperators(expression)) {
-				if(isMissingParenthesesInArithmeticalOperations(expression)) {
-					return true;
-				}
+
+		if (hasCombinationOfArithmeticalOperators(expression)) {
+			if(isMissingParenthesesInArithmeticalOperations(expression)) {
+				return true;
 			}
-			
-			if (hasCombinationLogicalOperators(expression)) {
-				if(isMissingParenthesesInLogicalOperations(expression)) {
-					return true;
-				}
+		}
+		
+		if (hasCombinationLogicalOperators(expression)) {
+			if(isMissingParenthesesInLogicalOperations(expression)) {
+				return true;
 			}
 		}
 
