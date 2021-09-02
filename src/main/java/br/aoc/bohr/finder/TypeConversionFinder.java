@@ -15,6 +15,12 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
+	private static final String BYTE = "byte";
+	private static final String SHORT = "short";
+	private static final String INT = "int";
+	private static final String LONG = "long";
+	private static final String FLOAT = "float";
+	private static final String DOUBLE = "double";
 
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
@@ -57,7 +63,25 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 					System.out.println(e.getMessage());
 				}
 				
-				return checkTypesConversion(sourceCode, assignmentType, assignedType);				
+				if(checkByteConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}
+				
+				if(checkShortConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}
+				
+				if(checkIntConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}
+				
+				if(checkLongConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}
+				
+				if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}				
 			}
 		}
 		
@@ -75,53 +99,145 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		String assignmentType = assignment.getAssignment().getType().toString();
 		String assignedType = assignment.getAssigned().getType().toString();
 		
-		if(checkTypesConversion(sourceCode, assignmentType, assignedType)) {
+		if(checkByteConversions(sourceCode, assignmentType, assignedType)) {
 			return true;
+		}
+		
+		if(checkShortConversions(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		if(checkIntConversions(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		if(checkLongConversions(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean checkByteConversions(String sourceCode, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(SHORT)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(sourceCode, BYTE);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(INT)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(sourceCode, BYTE);
+		}
+
+		if(assignmentType.equalsIgnoreCase(LONG)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(sourceCode, BYTE);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(FLOAT)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(sourceCode, BYTE);
+		}
+
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(sourceCode, BYTE);
+		}
+
+		return false;
+	}
+	
+	private boolean checkShortConversions(String sourceCode, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(INT)
+				&& assignedType.equalsIgnoreCase(SHORT)) {
+			return hasTypeConversionProblem(sourceCode, SHORT);
+		}
+
+		if(assignmentType.equalsIgnoreCase(LONG)
+				&& assignedType.equalsIgnoreCase(SHORT)) {
+			return hasTypeConversionProblem(sourceCode, SHORT);
+		}
+
+		if(assignmentType.equalsIgnoreCase(FLOAT)
+				&& assignedType.equalsIgnoreCase(SHORT)) {
+			return hasTypeConversionProblem(sourceCode, SHORT);
+		}
+
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(SHORT)) {
+			return hasTypeConversionProblem(sourceCode, SHORT);
+		}
+		
+		return false;
+	}
+	
+	private boolean checkIntConversions(String sourceCode, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(LONG)
+				&& assignedType.equalsIgnoreCase(INT)) {
+			return hasTypeConversionProblem(sourceCode, INT);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(FLOAT)
+				&& assignedType.equalsIgnoreCase(INT)) {
+			return hasTypeConversionProblem(sourceCode, INT);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(INT)) {
+			return hasTypeConversionProblem(sourceCode, INT);
+		}
+		
+		return false;
+	}
+	
+	private boolean checkLongConversions(String sourceCode, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(FLOAT)
+				&& assignedType.equalsIgnoreCase(LONG)) {
+			return hasTypeConversionProblem(sourceCode, LONG);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(LONG)) {
+			return hasTypeConversionProblem(sourceCode, LONG);
 		}
 		
 		return false;
 	}
 
-	private boolean checkTypesConversion(String sourceCode, String assignmentType, String assignedType) {
-		if(assignmentType.equalsIgnoreCase("float")
-				&& assignedType.equalsIgnoreCase("int")) {
-			return hasIntTypeConversionProblem(sourceCode) || hasByteTypeConversionProblem(sourceCode);
-		}
+	private boolean checkFloatConversions(String sourceCode, String assignmentType, String assignedType) {
 		
-		if(assignmentType.equalsIgnoreCase("int")
-				&& assignedType.equalsIgnoreCase("byte")) {
-			return hasIntTypeConversionProblem(sourceCode) || hasByteTypeConversionProblem(sourceCode);
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(FLOAT)) {
+			return hasTypeConversionProblem(sourceCode, FLOAT);
 		}
 		
 		return false;
 	}
 	
-	private boolean hasIntTypeConversionProblem(String statement) {
-		Pattern pattern = Pattern.compile("\\((\\s*int\\s*)\\)");
-		Matcher matcher = pattern.matcher(statement); 
-		
-		String javaAPIUsageString = "Math.floor";
-		if(matcher.find() && !statement.contains(javaAPIUsageString)) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean hasByteTypeConversionProblem(String statement) {
-		Pattern pattern = Pattern.compile("\\((\\s*byte\\s*)\\)");
+	private boolean hasTypeConversionProblem(String statement, String type) {
+		Pattern pattern = Pattern.compile("\\((\\s*" + type +"\\s*)\\)");
 		Matcher matcher = pattern.matcher(statement);
-		boolean hasByteCasting = matcher.find();
-				
+		boolean hasTypeConversion = matcher.find();
+
 		pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
 		matcher = pattern.matcher(statement);
 		boolean hasModulusOperation = matcher.find();
 		
-		if(hasByteCasting && !hasModulusOperation) {
+		String javaAPIUsageString = "Math.";
+		if(hasTypeConversion && !hasModulusOperation 
+				&& !statement.contains(javaAPIUsageString)) {
 			return true;
 		}
 		
 		return false;
 	}
-
+	
 }

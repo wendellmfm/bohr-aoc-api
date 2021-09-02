@@ -37,11 +37,15 @@ class TypeConversionFinderTest {
 		for (AoCSuite suite : aocSuiteList) {
 			assertEquals("TypeConversionSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 2, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 14, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.TPC, aocInfo.getAtomOfConfusion(), "AoC type not mached");
-				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 24,
+				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 24 || aocInfo.getLineNumber() == 38
+						|| aocInfo.getLineNumber() == 52 || aocInfo.getLineNumber() == 66 || aocInfo.getLineNumber() == 80
+						|| aocInfo.getLineNumber() == 94 || aocInfo.getLineNumber() == 108 || aocInfo.getLineNumber() == 122
+						|| aocInfo.getLineNumber() == 136 || aocInfo.getLineNumber() == 150 || aocInfo.getLineNumber() == 164
+								|| aocInfo.getLineNumber() == 178 || aocInfo.getLineNumber() == 192,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 
