@@ -15,6 +15,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
+	private static final String CHAR = "char";
 	private static final String BYTE = "byte";
 	private static final String SHORT = "short";
 	private static final String INT = "int";
@@ -81,7 +82,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 				
 				if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
 					return true;
-				}				
+				}
+				
+				if(checkCharConversions(sourceCode, assignmentType, assignedType)) {
+					return true;
+				}
 			}
 		}
 		
@@ -116,6 +121,10 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		}
 		
 		if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
+			return true;
+		}
+		
+		if(checkCharConversions(sourceCode, assignmentType, assignedType)) {
 			return true;
 		}
 		
@@ -222,6 +231,36 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
+	private boolean checkCharConversions(String sourceCode, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(SHORT)
+				&& assignedType.equalsIgnoreCase(CHAR)) {
+			return hasCharConversionProblem(sourceCode, CHAR);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(INT)
+				&& assignedType.equalsIgnoreCase(CHAR)) {
+			return hasCharConversionProblem(sourceCode, CHAR);
+		}
+
+		if(assignmentType.equalsIgnoreCase(LONG)
+				&& assignedType.equalsIgnoreCase(CHAR)) {
+			return hasCharConversionProblem(sourceCode, CHAR);
+		}
+		
+		if(assignmentType.equalsIgnoreCase(FLOAT)
+				&& assignedType.equalsIgnoreCase(CHAR)) {
+			return hasCharConversionProblem(sourceCode, CHAR);
+		}
+
+		if(assignmentType.equalsIgnoreCase(DOUBLE)
+				&& assignedType.equalsIgnoreCase(CHAR)) {
+			return hasCharConversionProblem(sourceCode, CHAR);
+		}
+		
+		return false;
+	}
+	
 	private boolean hasTypeConversionProblem(String statement, String type) {
 		Pattern pattern = Pattern.compile("\\((\\s*" + type +"\\s*)\\)");
 		Matcher matcher = pattern.matcher(statement);
@@ -234,6 +273,16 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		String javaAPIUsageString = "Math.";
 		if(hasTypeConversion && !hasModulusOperation 
 				&& !statement.contains(javaAPIUsageString)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasCharConversionProblem(String statement, String type) {
+		String javaAPIUsageString = "Character.forDigit";
+		
+		if(!statement.contains(javaAPIUsageString)) {
 			return true;
 		}
 		

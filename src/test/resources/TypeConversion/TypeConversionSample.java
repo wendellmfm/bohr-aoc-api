@@ -132,74 +132,142 @@ public class TypeConversionSample {
 	}
 	
 	public void floatToIntMethod() {
-		float a = 1.99f;
+		float a = 1.99;
 		int b = (int) a;
 		
 		System.out.println(b);
 	}
 	
 	public void floatToIntTransformedMethod() {
-		float a = 1.99f;
+		float a = 1.99;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
 	public void longToIntMethod() {
-		long a = 1.99f;
+		long a = 1.99;
 		int b = (int) a;
 		
 		System.out.println(b);
 	}
 	
 	public void longToIntTransformedMethod() {
-		long a = 1.99f;
+		long a = 1.99;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
-	public void doubleToIntMethod() {
-		double a = 1.99f;
+	public int doubleToIntMethod(double a) {
+		a = 1.99;
 		int b = (int) a;
 		
-		System.out.println(b);
+		return b;
 	}
 	
 	public void doubleToIntTransformedMethod() {
-		double a = 1.99f;
+		double a = 1.99;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
 	public void floatToLongMethod() {
-		double a = 1.99f;
-		int b = (int) a;
+		float a = 1.99;
+		long b = (long) a;
 		
 		System.out.println(b);
 	}
 	
 	public void floatToLongTransformedMethod() {
-		double a = 1.99f;
-		int b = (int) Math.floor(a);
+		float a = 1.99;
+		long b = (long) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
 	public void doubleToLongMethod() {
-		double a = 1.99f;
-		int b = (int) a;
+		double a = 1.99;
+		long b = (long) a;
 		
 		System.out.println(b);
 	}
 	
 	public void doubleToLongTransformedMethod() {
-		double a = 1.99f;
+		double a = 1.99;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
+	public void shortToCharMethod() {
+		short a = 4;
+		char b = (char) a;
+		
+		System.out.println(b);
+	}
 	
+	public void shortToCharTransformedMethod() {
+		short a = 4;
+		char b = Character.forDigit(a, 10);
+		
+		System.out.println(b);
+	}
+	
+	public void intToCharMethod() {
+		int a = 4;
+		char b = (char) a;
+		
+		System.out.println(b);
+	}
+	
+	public void intToCharTransformedMethod() {
+		int a = 4;
+		char b = Character.forDigit(a, 10);
+		
+		System.out.println(b);
+	}
+	
+	public void longToCharMethod() {
+		long a = 4;
+		char b = (char) a;
+		
+		System.out.println(b);
+	}
+	
+	public void longToCharTransformedMethod() {
+		long a = 4;
+		char b = Character.forDigit((int) a, 10);
+		
+		System.out.println(b);
+	}
+	
+	public char floatToCharMethod(float a) {
+		a = 4;
+		char b = (char) a;
+		
+		return b;
+	}
+	
+	public void floatToCharTransformedMethod() {
+		float a = 4;
+		char b = Character.forDigit((int) a, 10);
+		
+		System.out.println(b);
+	}
+	
+	public void doubleToCharMethod() {
+		double a = 4;
+		char b = (char) a;
+		
+		System.out.println(b);
+	}
+	
+	public void doubleToCharTransformedMethod() {
+		double a = 4;
+		char b = Character.forDigit((int) a, 10);
+		
+		System.out.println(b);
+	}
 }
