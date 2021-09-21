@@ -27,4 +27,17 @@ public class InfixOperatorPrecedenceSample {
 		}
 	}
 	
+	public void thirdMethod() {
+		String line = "The cat is black";
+		
+		boolean a = line.contains("dog");
+		boolean b = line.contains("cat");
+		boolean c = line.contains("black");
+		
+		if(a && (b || c)) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+	}
 }
