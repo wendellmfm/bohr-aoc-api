@@ -12,8 +12,8 @@ import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>> {
@@ -22,14 +22,15 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 	public void process(CtClass<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
-
-			TypeFilter<CtExpression<?>> expressionFilter = new TypeFilter<CtExpression<?>>(CtExpression.class);
-
-			for (CtExpression<?> expression : element.getElements(expressionFilter)) {
-				
-				CtExpression<?> fullExpression = getHighLevelParent(expression);
-				
+			
+			TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
+			binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
+			List<CtBinaryOperator<?>> elements = element.getElements(binaryOprFilter);
+			
+			for (CtBinaryOperator<?> binaryOpr : elements) {
 				try {
+					CtElement fullExpression = getHighLevelParent(binaryOpr);
+					
 					if (isCandidate(fullExpression)) {
 						int lineNumber = fullExpression.getPosition().getLine();
 						if(!atomLines.contains(Integer.valueOf(lineNumber))) {
@@ -45,8 +46,16 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 			}
 		}
 	}
+	
+	private CtElement getHighLevelParent(CtElement element) {
+		if ((element.getParent() != null) && (element.getParent() instanceof CtBinaryOperator)) {
+			return this.getHighLevelParent(element.getParent());
+		} else {
+			return element;
+		}
+	}
 
-	private boolean isCandidate(CtExpression<?> expression) {
+	private boolean isCandidate(CtElement expression) {
 
 		if (hasCombinationOfArithmeticalOperators(expression)) {
 			if(isMissingParenthesesInArithmeticalOperations(expression)) {
@@ -63,7 +72,7 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 		return false;
 	}
 
-	private boolean hasCombinationOfArithmeticalOperators(CtExpression<?> expression) {
+	private boolean hasCombinationOfArithmeticalOperators(CtElement expression) {
 		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
 		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 		
@@ -128,36 +137,39 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 		return (firstSetOfOperators > 0) && (secondSetOfOperators > 0);
 	}
 	
-	private boolean isMissingParenthesesInArithmeticalOperations(CtExpression<?> expression) {
+	private boolean isMissingParenthesesInArithmeticalOperations(CtElement expression) {
 		ArrayList<Boolean> results = new ArrayList<>();
 
 		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
 		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
 		
-		String leftHandOperand = "";
-		String rightHandOperand = "";
 		for (CtBinaryOperator<?> binaryOpr : elements) {
-			leftHandOperand = binaryOpr.getLeftHandOperand().getOriginalSourceFragment().getSourceCode();
-			rightHandOperand = binaryOpr.getRightHandOperand().getOriginalSourceFragment().getSourceCode();
-			
-			if(binaryOpr.getKind() == BinaryOperatorKind.MUL || (binaryOpr.getKind() == BinaryOperatorKind.DIV)) {
-				String binaryExpression = binaryOpr.getOriginalSourceFragment().getSourceCode();
-				if(binaryExpression.startsWith("(") && binaryExpression.endsWith(")")) {
-					results.add(Boolean.FALSE);
-				} else if((leftHandOperand.startsWith("(") && leftHandOperand.endsWith(")")) 
-						|| (rightHandOperand.startsWith("(") && rightHandOperand.endsWith(")"))) {
-					results.add(Boolean.FALSE);
-				} else {
-					results.add(Boolean.TRUE);
+			if(binaryOpr.getKind() == BinaryOperatorKind.MUL || binaryOpr.getKind() == BinaryOperatorKind.DIV) {
+				
+				boolean binaryOprCondition = false;
+				
+				if(binaryOpr.getParent() instanceof CtBinaryOperator){
+					
+					boolean condition = (((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.PLUS)
+							|| (((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.MINUS);
+					
+					if(condition){
+						String binaryExpression = binaryOpr.getOriginalSourceFragment().getSourceCode();
+						binaryOprCondition = !(binaryExpression.startsWith("(") && binaryExpression.endsWith(")"));
+					}
 				}
+				
+				if(binaryOprCondition) {
+					return true;
+				}		
 			}
 		}
 		
 		return results.contains(Boolean.TRUE);
 	}
 	
-	private boolean hasCombinationLogicalOperators(CtExpression<?> expression) {
+	private boolean hasCombinationLogicalOperators(CtElement expression) {
 		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
 		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 		
@@ -195,28 +207,31 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 		return (andOperators > 0) && (orOperators > 0);
 	}
 	
-	private boolean isMissingParenthesesInLogicalOperations(CtExpression<?> expression) {
+	private boolean isMissingParenthesesInLogicalOperations(CtElement expression) {
 		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
 		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
 		
 		for (CtBinaryOperator<?> binaryOpr : elements) {
-			if(binaryOpr.getKind() == BinaryOperatorKind.AND) {
+			if(binaryOpr.getKind() == BinaryOperatorKind.AND || binaryOpr.getKind() == BinaryOperatorKind.OR) {
 				
-				String binaryExpression = binaryOpr.getOriginalSourceFragment().getSourceCode();
+				boolean binaryOprCondition = false;
 				
-				boolean binaryOprCondition = binaryExpression.startsWith("(") && binaryExpression.endsWith(")");
-				if(binaryOprCondition) {
-					return false;
+				if(binaryOpr.getParent() instanceof CtBinaryOperator){
+					
+					boolean andCondition = binaryOpr.getKind() == BinaryOperatorKind.AND
+							&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.OR;
+					
+					boolean orCondition = binaryOpr.getKind() == BinaryOperatorKind.OR
+							&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.AND;
+					
+					if(andCondition || orCondition){
+						String binaryExpression = binaryOpr.getOriginalSourceFragment().getSourceCode();
+						binaryOprCondition = !(binaryExpression.startsWith("(") && binaryExpression.endsWith(")"));
+					}
 				}
-
-				String leftHandOperand = binaryOpr.getLeftHandOperand().getOriginalSourceFragment().getSourceCode();
-				String rightHandOperand = binaryOpr.getRightHandOperand().getOriginalSourceFragment().getSourceCode();
 				
-				boolean leftCondition = !(leftHandOperand.startsWith("(") && leftHandOperand.endsWith(")"));
-				boolean rightCondition = !(rightHandOperand.startsWith("(") && rightHandOperand.endsWith(")"));
-				
-				if(leftCondition && rightCondition) {
+				if(binaryOprCondition) {
 					return true;
 				}
 				
@@ -224,14 +239,6 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 		}
 		
 		return false;
-	}
-
-	private CtExpression<?> getHighLevelParent(CtExpression<?> expression) {
-		if ((expression.getParent() != null) && (expression.getParent() instanceof CtExpression<?>)) {
-			return this.getHighLevelParent((CtExpression<?>) expression.getParent());
-		} else {
-			return expression;
-		}
 	}
 
 }
