@@ -6,6 +6,7 @@ import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -28,15 +29,19 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 				
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
 
-					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
-					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
-					
-					if(hasLogicAsControlFlow(rightHandOperand)
-							|| hasLogicAsControlFlow(leftHandOperand)) {
-						int lineNumber = operator.getPosition().getLine();
-						String snippet = operator.getParent().prettyprint();
+					try {
+						CtExpression<?> rightHandOperand = operator.getRightHandOperand();
+						CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 						
-						Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
+						if(hasLogicAsControlFlow(rightHandOperand)
+								|| hasLogicAsControlFlow(leftHandOperand)) {
+							int lineNumber = operator.getPosition().getLine();
+							String snippet = operator.getParent().prettyprint();
+							
+							Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
+						}
+					} catch (SpoonException e) {
+						// TODO: handle exception
 					}
 				}
 			}

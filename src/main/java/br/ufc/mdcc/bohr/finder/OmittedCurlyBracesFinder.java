@@ -11,6 +11,7 @@ import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
@@ -32,11 +33,16 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 				List<CtStatement> statements = ctBlock.getStatements();
 				for (int i = 0; i < statements.size() - 1; i++) {
 					
-					getIfElseOmitted(confirmed, statements.get(i), statements.get(i + 1));
+					try {
+						getIfElseOmitted(confirmed, statements.get(i), statements.get(i + 1));
 						
-					getWhileOmitted(confirmed, statements.get(i), statements.get(i + 1));
+						getWhileOmitted(confirmed, statements.get(i), statements.get(i + 1));
 						
-					getForOmitted(confirmed, statements.get(i), statements.get(i + 1));
+						getForOmitted(confirmed, statements.get(i), statements.get(i + 1));
+						
+					} catch (SpoonException e) {
+						// TODO: handle exception
+					}
 				}
 			}
 
@@ -50,20 +56,15 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
 			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
-				try {
-					if ((!ifStmt.prettyprint().contains("{")
-							&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
-							|| (!ifStmt.prettyprint().contains("{") 
-									&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
-						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-						atom.setBlockStmt(ifStmt);
-						atom.setNextLineStmt(nextStmt);
-						confirmed.add(atom);
-					}					
-				} catch (Exception e) {
-					// TODO: handle exception
-					System.out.println(e.getMessage());
-				}
+				if ((!ifStmt.prettyprint().contains("{")
+						&& hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine()))
+						|| (!ifStmt.prettyprint().contains("{") 
+								&& stmt.getPosition().getLine() == nextStmt.getPosition().getLine())) {
+					OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+					atom.setBlockStmt(ifStmt);
+					atom.setNextLineStmt(nextStmt);
+					confirmed.add(atom);
+				}					
 			}
 			
 			if (ifStmt.getElseStatement() != null) {

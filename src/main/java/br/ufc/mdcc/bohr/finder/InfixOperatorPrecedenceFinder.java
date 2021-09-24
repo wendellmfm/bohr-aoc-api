@@ -9,6 +9,7 @@ import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -40,7 +41,7 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 						}
 					}
 					
-				} catch (Exception e) {
+				} catch (SpoonException e) {
 					// TODO: handle exception
 				}
 			}
