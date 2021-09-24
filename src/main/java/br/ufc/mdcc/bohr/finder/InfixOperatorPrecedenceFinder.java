@@ -145,7 +145,9 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
 		
 		for (CtBinaryOperator<?> binaryOpr : elements) {
-			if(binaryOpr.getKind() == BinaryOperatorKind.MUL || binaryOpr.getKind() == BinaryOperatorKind.DIV) {
+			if(binaryOpr.getKind() == BinaryOperatorKind.MUL 
+					|| binaryOpr.getKind() == BinaryOperatorKind.DIV
+					|| binaryOpr.getKind() == BinaryOperatorKind.MOD) {
 				
 				boolean binaryOprCondition = false;
 				
