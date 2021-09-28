@@ -82,10 +82,16 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 	
 	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
 		for (CtBinaryOperator<?> operator : operators) {
-			if(operator.getParent() != null && !isOperatorBetweenBrackets(operator.getParent().prettyprint())) {
-				if(hasArithmeticOperators(operator)) {
-					return true;				
+			if(operator.getParent() != null 
+					&& operator.getParent() instanceof CtBinaryOperator
+					&& !isOperatorBetweenBrackets(operator.getParent().prettyprint())) {
+				
+				if(hasCompareOperators((CtBinaryOperator<?>) operator.getParent())) {
+					if(hasArithmeticOperators(operator)) {
+						return true;				
+					}
 				}
+				
 			}
 		}
 
