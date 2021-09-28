@@ -31,10 +31,8 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 
 					try {
 						CtExpression<?> rightHandOperand = operator.getRightHandOperand();
-						CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 						
-						if(hasLogicAsControlFlow(rightHandOperand)
-								|| hasLogicAsControlFlow(leftHandOperand)) {
+						if(hasLogicAsControlFlow(rightHandOperand)) {
 							int lineNumber = operator.getPosition().getLine();
 							String snippet = operator.getParent().prettyprint();
 							
