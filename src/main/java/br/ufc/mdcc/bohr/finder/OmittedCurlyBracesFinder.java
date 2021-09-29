@@ -55,14 +55,25 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 	private void getIfElseOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
-			if (((CtBlock<?>) ifStmt.getThenStatement()).getStatements().size() == 1) {
+			CtBlock<?> ifBlock = (CtBlock<?>) ifStmt.getThenStatement();
+			
+			boolean ifInline = false;
+			if (ifBlock.getStatements().size() == 1) {
 				if (!ifStmt.prettyprint().contains("{")) {
-					if(hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine())
-							|| stmt.getPosition().getLine() == nextStmt.getPosition().getLine()) {
-						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-						atom.setBlockStmt(ifStmt);
-						atom.setNextLineStmt(nextStmt);
-						confirmed.add(atom);
+		
+					ifInline = ifBlock.getStatement(0).getPosition().getLine() == ifStmt.getPosition().getLine()
+							&& ifStmt.getPosition().getLine() != nextStmt.getPosition().getLine();
+					
+					if(!ifInline) {
+						boolean hasIndentationProblem = hasIndentationProblem(ifStmt.getPosition().getFile().getAbsolutePath(), ifStmt.getPosition().getLine());
+						boolean nextStatementSameLine = ifStmt.getPosition().getLine() == nextStmt.getPosition().getLine();
+						
+						if(hasIndentationProblem || nextStatementSameLine) {
+							OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+							atom.setBlockStmt(ifStmt);
+							atom.setNextLineStmt(nextStmt);
+							confirmed.add(atom);
+						}
 					}
 				}					
 			}
@@ -70,13 +81,19 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 			if (ifStmt.getElseStatement() != null) {
 				if (((CtBlock<?>) ifStmt.getElseStatement()).getStatements().size() == 1) {
 					CtStatement elseStmt = ifStmt.getElseStatement();
-					if (!elseStmt.prettyprint().contains("{")) {
-						if(hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1)
-								|| elseStmt.getPosition().getLine() == nextStmt.getPosition().getLine()) {
-							OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-							atom.setBlockStmt(ifStmt);
-							atom.setNextLineStmt(nextStmt);
-							confirmed.add(atom);
+					
+					boolean elseInline = (ifBlock.getStatements().size() == 1
+							&& ifStmt.getPosition().getLine() == elseStmt.getPosition().getLine() - 2)
+							|| (ifInline && ifStmt.getPosition().getLine() == elseStmt.getPosition().getLine() - 1);
+						
+					if(!elseInline) {
+						if (!elseStmt.prettyprint().contains("{")) {
+							if(hasIndentationProblem(ifStmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1)) {
+								OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
+								atom.setBlockStmt(ifStmt);
+								atom.setNextLineStmt(nextStmt);
+								confirmed.add(atom);
+							}
 						}
 					}
 				}
@@ -98,8 +115,10 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 
 	private void addConfirmedOCB(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if(!stmt.prettyprint().contains("{")) {
-			if(hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine())
-					|| stmt.getPosition().getLine() == nextStmt.getPosition().getLine()) {
+			boolean hasIndentationProblem = hasIndentationProblem(stmt.getPosition().getFile().getAbsolutePath(), stmt.getPosition().getLine());
+			boolean nextStatementSameLine = stmt.getPosition().getLine() == nextStmt.getPosition().getLine();
+			
+			if(hasIndentationProblem || nextStatementSameLine) {
 				OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
 				atom.setBlockStmt(stmt);
 				atom.setNextLineStmt(nextStmt);
@@ -131,18 +150,27 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 		    }
 		    
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: handle exception
 		}
 		
 		return false;
 	}
 
-	private int countLineTabs(String ommitedCurlyBraceLine) {
+	private int countLineTabs(String line) {
 		int tabCount = 0;
-		for(char c : ommitedCurlyBraceLine.toCharArray()) {
-		    if("\t".equals("" + c)) {
-		    	tabCount++;
-		    } 
+		boolean containsTab = line.contains("\t");
+		for(char c : line.toCharArray()) {
+			if(containsTab) {
+				if("\t".equals("" + c)) {
+					tabCount++;
+				} 
+			}else {
+				if(' ' == c) {
+					tabCount++;
+				} else {
+					break;
+				}
+			}
 		}
 		return tabCount;
 	}
