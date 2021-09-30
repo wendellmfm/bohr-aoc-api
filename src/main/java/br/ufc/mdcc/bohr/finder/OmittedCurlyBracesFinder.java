@@ -103,13 +103,31 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 
 	private void getForOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtFor) {
-			addConfirmedOCB(confirmed, stmt, nextStmt);
+			CtFor ctFor = (CtFor) stmt;
+			CtStatement body = ctFor.getBody();
+			
+			boolean forInline = body.getPosition().getLine() == body.getPosition().getEndLine()
+					&& ctFor.getPosition().getLine() == body.getPosition().getLine()
+					&& ctFor.getPosition().getLine() != nextStmt.getPosition().getLine();
+			
+			if(!forInline) {
+				addConfirmedOCB(confirmed, stmt, nextStmt);
+			}
 		}
 	}
 
 	private void getWhileOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
 		if (stmt instanceof CtWhile) {
-			addConfirmedOCB(confirmed, stmt, nextStmt);
+			CtWhile ctWhile = (CtWhile) stmt;
+			CtStatement body = ctWhile.getBody();
+			
+			boolean whileInline = body.getPosition().getLine() == body.getPosition().getEndLine()
+					&& ctWhile.getPosition().getLine() == body.getPosition().getLine()
+					&& ctWhile.getPosition().getLine() != nextStmt.getPosition().getLine();
+			
+			if(!whileInline) {
+				addConfirmedOCB(confirmed, stmt, nextStmt);
+			}
 		}
 	}
 
