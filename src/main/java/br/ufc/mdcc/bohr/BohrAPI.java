@@ -52,6 +52,7 @@ public class BohrAPI {
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.ArithmeticAsLogicFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.ChangeOfLiteralEncodingFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.TypeConversionFinder");
+		spoon.addProcessor("br.ufc.mdcc.bohr.finder.RepurposedVariablesFinder");
 	}
 
 	private static void configure(String[] finders) {

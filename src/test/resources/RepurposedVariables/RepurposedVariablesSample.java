@@ -17,4 +17,15 @@ public class RepurposedVariablesSample {
 		System.out.println(a);
 	}
 	
+	public void firstMethodTransformed() {
+		int a = 3;
+		
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 2; j++) {
+				a = 4 * i + j;
+			}
+		}
+		
+		System.out.println(a);
+	}
 }
