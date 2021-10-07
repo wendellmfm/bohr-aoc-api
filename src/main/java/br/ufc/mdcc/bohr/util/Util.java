@@ -12,14 +12,17 @@ import java.util.List;
 
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.AoCSuite;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 public class Util {
 	private final static String REPORT_PATH = "./atomsreports";
 
 	public static boolean isValid(CtType<?> element) {
-		return element != null && element.getQualifiedName() != null && (element.isClass() || element.isInterface())
-				&& !element.isShadow(); // && !element.isAnonymous() && !element.isLocalType()
+		return element != null && element.getQualifiedName() != null
+				&& (element.isClass() || element.isInterface())
+				&& !element.isShadow() // && !element.isAnonymous() && !element.isLocalType()
+				&& !(element.getParent() instanceof CtClass<?>);
 	}
 	
 	public static void generateCSVFile(Collection<AoCSuite> aocSuiteList) {
