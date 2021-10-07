@@ -19,6 +19,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
@@ -87,8 +88,11 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 							|| (ifInline && ifStmt.getPosition().getLine() == elseStmt.getPosition().getLine() - 1);
 						
 					if(!elseInline) {
+						boolean hasIndentationProblem = hasIndentationProblem(ifStmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1);
+						boolean hasElseIf = hasElseIf(elseStmt);
+						
 						if (!elseStmt.prettyprint().contains("{")) {
-							if(hasIndentationProblem(ifStmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1)) {
+							if(!hasElseIf && hasIndentationProblem) {
 								OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
 								atom.setBlockStmt(ifStmt);
 								atom.setNextLineStmt(nextStmt);
@@ -99,6 +103,17 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 				}
 			}
 		} 
+	}
+	
+	private boolean hasElseIf(CtStatement elseStmt) {
+		List<CtElement> directChildren = elseStmt.getDirectChildren();
+		if (!directChildren.isEmpty()) {
+			if(directChildren.get(0) instanceof CtIf) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private void getForOmitted(List<OmittedCurlyBracesAtom> confirmed, CtStatement stmt, CtStatement nextStmt) {
