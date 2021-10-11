@@ -21,14 +21,15 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 			String qualifiedName = element.getQualifiedName();
 
 			for (CtLiteral<?> literal : element.getElements(new TypeFilter<CtLiteral<?>>(CtLiteral.class))) {
-				if ((literal.getParent() != null) && !(literal.getParent() instanceof CtLiteral<?>)
-						&& (literal.getParent() instanceof CtAssignment)
-						|| (literal.getParent() instanceof CtLocalVariable)) {
-
-					if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
-						int lineNumber = literal.getPosition().getEndLine();
-						String snippet = literal.getParent().prettyprint();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.CoLE, lineNumber, snippet));
+				if (literal.getParent() != null) {
+					if((literal.getParent() instanceof CtAssignment)
+							|| literal.getParent() instanceof CtLocalVariable) {
+						
+						if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
+							int lineNumber = literal.getPosition().getEndLine();
+							String snippet = literal.getParent().prettyprint();
+							Dataset.store(qualifiedName, new AoCInfo(AoC.CoLE, lineNumber, snippet));
+						}
 					}
 				}
 			}
@@ -47,7 +48,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 	
 	private boolean hasChangeOfLiteralEncoding(String literal) {
 		
-		if(literal.length() > 1 && literal.startsWith("0") && literal.matches("[0-9]+")) {
+		if(literal.length() > 1 && literal.matches("0[0-9]+")) {
 			return true;
 		}
 		

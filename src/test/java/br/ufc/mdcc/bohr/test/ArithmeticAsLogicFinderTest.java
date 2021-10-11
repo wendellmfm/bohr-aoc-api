@@ -37,12 +37,13 @@ class ArithmeticAsLogicFinderTest {
 		for (AoCSuite suite : aocSuiteList) {
 			assertEquals("ArithmeticAsLogicSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 3, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.AaL, aocInfo.getAtomOfConfusion(), "AoC type not mached");
-				assertTrue(aocInfo.getLineNumber() == 13 || aocInfo.getLineNumber() == 23
-						|| aocInfo.getLineNumber() == 33,
+				assertTrue(aocInfo.getLineNumber() == 13 || aocInfo.getLineNumber() == 33
+						|| aocInfo.getLineNumber() == 53 || aocInfo.getLineNumber() == 73
+						|| aocInfo.getLineNumber() == 83,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

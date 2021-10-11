@@ -41,8 +41,8 @@ class LogicAsControlFlowFinderTest {
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.LaCTRF, aocInfo.getAtomOfConfusion(), "AoC type not mached");
-				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 22
-						|| aocInfo.getLineNumber() == 32,
+				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 37
+						|| aocInfo.getLineNumber() == 60,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

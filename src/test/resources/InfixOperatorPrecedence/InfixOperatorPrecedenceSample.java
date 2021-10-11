@@ -13,6 +13,14 @@ public class InfixOperatorPrecedenceSample {
 		System.out.println(a);
 	}
 	
+	public void firstTransformedMethod() {
+		int a;
+		
+		a = 2 - (4 / 2);
+		
+		System.out.println(a);
+	}
+	
 	public void secondMethod() {
 		String line = "The cat is black";
 		
@@ -27,7 +35,7 @@ public class InfixOperatorPrecedenceSample {
 		}
 	}
 	
-	public void thirdMethod() {
+	public void secondTransformedMethod() {
 		String line = "The cat is black";
 		
 		boolean a = line.contains("dog");

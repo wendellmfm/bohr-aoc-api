@@ -38,7 +38,7 @@ class PreAndPostIncrementDecrementFinderTest {
 
 			assertEquals("PreAndPostIncrementDecrementSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 6, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 8, "There are more or less AoC than expected.");
 			
 			int count = 0;
 			
@@ -48,33 +48,43 @@ class PreAndPostIncrementDecrementFinderTest {
 					count++;
 				}
 				
-				if(aocInfo.getLineNumber() == 17) {
+				if(aocInfo.getLineNumber() == 26) {
 					assertEquals(AoC.PostINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
-				if(aocInfo.getLineNumber() == 27) {
+				if(aocInfo.getLineNumber() == 47) {
 					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}	
 				
-				if(aocInfo.getLineNumber() == 37) {
+				if(aocInfo.getLineNumber() == 70) {
+					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					count++;
+				}
+				
+				if(aocInfo.getLineNumber() == 71) {
+					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					count++;
+				}
+				
+				if(aocInfo.getLineNumber() == 77) {
 					assertEquals(AoC.PreINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
-				if(aocInfo.getLineNumber() == 44) {
+				if(aocInfo.getLineNumber() == 93) {
 					assertEquals(AoC.PreDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
-				if(aocInfo.getLineNumber() == 54) {
+				if(aocInfo.getLineNumber() == 114) {
 					assertEquals(AoC.PreDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 			}
 			
-			assertTrue(count == 6, "Number of AoC types not mached");
+			assertTrue(count == 8, "Number of AoC types not mached");
 		}
 	}
 }

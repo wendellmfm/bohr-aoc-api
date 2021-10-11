@@ -41,7 +41,7 @@ public class InfixOperatorPrecedenceFinderTest {
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.IOP, aocInfo.getAtomOfConfusion(), "AoC type not mached");
-				assertTrue(aocInfo.getLineNumber() == 11 || aocInfo.getLineNumber() == 23,
+				assertTrue(aocInfo.getLineNumber() == 11 || aocInfo.getLineNumber() == 31,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

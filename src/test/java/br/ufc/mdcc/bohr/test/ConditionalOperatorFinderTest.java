@@ -41,8 +41,8 @@ class ConditionalOperatorFinderTest {
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.CoO, aocInfo.getAtomOfConfusion(), "AoC type not mached");
-				assertTrue(aocInfo.getLineNumber() == 11 || aocInfo.getLineNumber() == 21
-						|| aocInfo.getLineNumber() == 31,
+				assertTrue(aocInfo.getLineNumber() == 11 || aocInfo.getLineNumber() == 35
+						|| aocInfo.getLineNumber() == 60,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

@@ -11,6 +11,12 @@ public class ChangeOfLiteralEncodingSample {
 		System.out.println(a);
 	}
 	
+	public void firstTransformedMethod() {
+		int a = Integer.parseInt("13", 8);
+		
+		System.out.println(a);
+	}
+	
 	public void secondMethod() {
 		int a;
 		a = 013;
@@ -18,30 +24,40 @@ public class ChangeOfLiteralEncodingSample {
 		System.out.println(a);
 	}
 	
-	public void thirdMethod() {
-		int a = Integer.parseInt("13", 8);
+	public void secondTransformedMethod() {
+		int a;
+		a = Integer.parseInt("13", 8);
 		
 		System.out.println(a);
 	}
 	
-	public void fourthMethod() {
+	public int thirdMethod() {
 		int a = 11 & 32;
 		
-		System.out.println(a);
+		return a;
 	}
 	
-	public void fifthMethod() {
+	public void thirdTransformedMethod() {
 		int a = 0b1100 & 0b0011;
 		
 		System.out.println(a);
 	}
 	
-	public void sixthMethod() {
+	public void firstVariationMethod() {
+		int a;
+		a = 018;
+		
+		int b = 019;
+		
+		System.out.println(a + b);
+	}
+	
+	public int secondVariationMethod() {
 		float b = 11;
 		float c = 32;
 		int a = b & c;
 		
-		System.out.println(a);
+		return a;
 	}
 	
 }
