@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -86,6 +88,7 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 					boolean elseInline = (ifBlock.getStatements().size() == 1
 							&& ifStmt.getPosition().getLine() == elseStmt.getPosition().getLine() - 2)
 							|| (ifInline && ifStmt.getPosition().getLine() == elseStmt.getPosition().getLine() - 1);
+					
 						
 					if(!elseInline) {
 						boolean hasIndentationProblem = hasIndentationProblem(ifStmt.getPosition().getFile().getAbsolutePath(), elseStmt.getPosition().getLine() - 1);
@@ -172,6 +175,10 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 			
 			try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
 				nextLine = lines.skip(ommitedCurlyBraceLineNumber + 1).findFirst().get();
+				
+				if(StringUtils.isAllBlank(nextLine)) {
+					return false;
+				}
 			}
 		    
 		    int count = countLineTabs(ommitedCurlyBraceLine);
