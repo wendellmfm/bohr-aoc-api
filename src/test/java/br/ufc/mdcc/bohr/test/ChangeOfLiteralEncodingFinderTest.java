@@ -40,7 +40,6 @@ class ChangeOfLiteralEncodingFinderTest {
 			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				System.out.println(aocInfo.getLineNumber());
 				assertEquals(AoC.CoLE, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 9 || aocInfo.getLineNumber() == 22
 						|| aocInfo.getLineNumber() == 35 || aocInfo.getLineNumber() == 48 

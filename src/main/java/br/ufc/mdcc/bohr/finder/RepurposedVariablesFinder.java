@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtLocalVariableImpl;
+import spoon.support.reflect.code.CtOperatorAssignmentImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 
 public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
@@ -26,27 +27,44 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
 					
 					CtFor forParent = (CtFor) forLoop.getParent().getParent();
 					
-					CtStatement forParentInit = forParent.getForInit().get(0);
-					CtStatement forLoopUpdate = forLoop.getForUpdate().get(0);
-					
-					String forParentInitVariableString = "";
-					if(forParentInit instanceof CtLocalVariableImpl) {
-						CtLocalVariableImpl<?> forParentInitVariable = (CtLocalVariableImpl<?>) forParentInit;
-						forParentInitVariableString = forParentInitVariable.getSimpleName();
-					} else if(forParentInit instanceof CtAssignmentImpl){
-						CtAssignmentImpl<?, ?> forParentInitAssignment = (CtAssignmentImpl<?, ?>) forParentInit;
-						forParentInitVariableString = forParentInitAssignment.getAssigned().prettyprint();
-					}
-					
-					CtUnaryOperatorImpl<?> forLoopUpdateVariable = (CtUnaryOperatorImpl<?>) forLoopUpdate;
-					
-					if(forParentInitVariableString.equals(forLoopUpdateVariable.getOperand().prettyprint())) {
-						int lineNumber = forParent.getPosition().getLine();
-						String snippet = forParent.prettyprint();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.RVar, lineNumber, snippet));
+					if(!forParent.getForInit().isEmpty() && !forLoop.getForUpdate().isEmpty()) {
+						
+						CtStatement forParentInit = forParent.getForInit().get(0);
+						CtStatement forLoopUpdate = forLoop.getForUpdate().get(0);
+						
+						String forParentInitVariableString = "";
+						if(forParentInit instanceof CtLocalVariableImpl) {
+							CtLocalVariableImpl<?> forParentInitVariable = (CtLocalVariableImpl<?>) forParentInit;
+							forParentInitVariableString = forParentInitVariable.getSimpleName();
+						} else if(forParentInit instanceof CtAssignmentImpl){
+							CtAssignmentImpl<?, ?> forParentInitAssignment = (CtAssignmentImpl<?, ?>) forParentInit;
+							forParentInitVariableString = forParentInitAssignment.getAssigned().prettyprint();
+						}
+						
+						if(forLoopUpdate instanceof CtUnaryOperatorImpl) {
+							CtUnaryOperatorImpl<?> forLoopUpdateVariable = (CtUnaryOperatorImpl<?>) forLoopUpdate;
+							
+							if(forParentInitVariableString.equals(forLoopUpdateVariable.getOperand().prettyprint())) {
+								store(qualifiedName, forParent);
+							}
+							
+						} else if(forLoopUpdate instanceof CtOperatorAssignmentImpl<?, ?>) {
+							CtOperatorAssignmentImpl<?, ?> forLoopUpdateVariable = (CtOperatorAssignmentImpl<?, ?>) forLoopUpdate;
+							
+							if(forParentInitVariableString.equals(forLoopUpdateVariable.getAssigned().prettyprint())) {
+								store(qualifiedName, forParent);
+							}
+						}
+						
 					}
 				}
 			}
 		}
+	}
+
+	private void store(String qualifiedName, CtFor forParent) {
+		int lineNumber = forParent.getPosition().getLine();
+		String snippet = forParent.prettyprint();
+		Dataset.store(qualifiedName, new AoCInfo(AoC.RVar, lineNumber, snippet));
 	}
 }
