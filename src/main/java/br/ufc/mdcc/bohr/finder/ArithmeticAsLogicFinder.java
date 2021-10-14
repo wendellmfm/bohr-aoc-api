@@ -11,7 +11,6 @@ import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -25,7 +24,7 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
-				if(hasCompareOperators(operator)) {
+				if(hasCompareOperator(operator)) {
 					
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
@@ -37,14 +36,14 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 						List<CtBinaryOperator<?>> rightHandBinaryOperators = rightHandOperand.getElements(binaryOperatorFilter);
 						
 						if(hasBinaryOperators(leftHandBinaryOperators)
-								|| hasBinaryOperators(rightHandBinaryOperators)) {
+								|| hasBinaryOperators(rightHandBinaryOperators)
+								|| hasAALExpression(leftHandOperand)
+								|| hasAALExpression(rightHandOperand)) {
 							
-							if(!hasArithmeticOperatorsAsMethodParameter(operator, binaryOperatorFilter)) {
-								int lineNumber = operator.getPosition().getEndLine();
-								String snippet = operator.getParent().prettyprint();
-								
-								Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
-							}
+							int lineNumber = operator.getPosition().getEndLine();
+							String snippet = operator.getParent().prettyprint();
+							
+							Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
 						}
 					}
 				}
@@ -52,12 +51,9 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 	
-	private boolean hasCompareOperators(CtBinaryOperator<?> operator) {
+	private boolean hasCompareOperator(CtBinaryOperator<?> operator) {
 
 		switch (operator.getKind()) {
-			case EQ:
-				return true;
-			
 			case NE:
 				return true;
 
@@ -82,25 +78,23 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 	
 	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
 		for (CtBinaryOperator<?> operator : operators) {
-			if(operator.getParent() != null 
-					&& operator.getParent() instanceof CtBinaryOperator
-					&& !isOperatorBetweenBrackets(operator.getParent().prettyprint())) {
-				
-				if(hasCompareOperators((CtBinaryOperator<?>) operator.getParent())) {
-					if(hasArithmeticOperators(operator)) {
-						return true;				
+			if(hasPlusOrMinusOperators(operator)) {
+				if(operator.getParent() instanceof CtBinaryOperator) {
+					if(hasCompareOperator((CtBinaryOperator<?>) operator.getParent())) {
+						return true;			
 					}
 				}
-				
 			}
 		}
 
 		return false;
 	}
 	
-	private boolean isOperatorBetweenBrackets(String statement) {
-		Pattern pattern = Pattern.compile("\\[(.*?)\\]");
-		Matcher matcher = pattern.matcher(statement); 
+	private boolean hasAALExpression(CtExpression<?> handOperand) {
+		String expression = handOperand.prettyprint();
+		
+		Pattern pattern = Pattern.compile("(\\(?(.+)[+-](.+)\\)?\\s*[*/]\\s*\\(?(.+)[+-](\\s*[^\\s]+)\\)?)");
+		Matcher matcher = pattern.matcher(expression); 
 		
 		if(matcher.find()) {
 			return true;
@@ -109,7 +103,8 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
-	private boolean hasArithmeticOperators(CtBinaryOperator<?> operator) {
+	
+	private boolean hasPlusOrMinusOperators(CtBinaryOperator<?> operator) {
 
 		switch (operator.getKind()) {
 			case PLUS:
@@ -118,28 +113,8 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 			case MINUS:
 				return true;
 
-			case MUL:
-				return true;
-
-			case DIV:
-				return true;
-
 			default:
 				break;
-		}
-
-		return false;
-	}
-	
-	private boolean hasArithmeticOperatorsAsMethodParameter(CtBinaryOperator<?> operator, TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter) {
-		List<CtInvocation<?>> methodsInvocation = operator.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		for (CtInvocation<?> method : methodsInvocation) {
-			List<CtBinaryOperator<?>> operators = method.getElements(binaryOperatorFilter);
-			for (CtBinaryOperator<?> op : operators) {
-				if(hasArithmeticOperators(op)) {
-					return true;
-				}
-			}
 		}
 
 		return false;
