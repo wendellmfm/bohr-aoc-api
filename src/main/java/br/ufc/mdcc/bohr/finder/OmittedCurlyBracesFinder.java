@@ -124,6 +124,10 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 			CtFor ctFor = (CtFor) stmt;
 			CtStatement body = ctFor.getBody();
 			
+			if(body == null) {
+				return;
+			}
+			
 			boolean forInline = body.getPosition().getLine() == body.getPosition().getEndLine()
 					&& ctFor.getPosition().getLine() == body.getPosition().getLine()
 					&& ctFor.getPosition().getLine() != nextStmt.getPosition().getLine();
@@ -138,6 +142,10 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 		if (stmt instanceof CtWhile) {
 			CtWhile ctWhile = (CtWhile) stmt;
 			CtStatement body = ctWhile.getBody();
+			
+			if(body == null) {
+				return;
+			}
 			
 			boolean whileInline = body.getPosition().getLine() == body.getPosition().getEndLine()
 					&& ctWhile.getPosition().getLine() == body.getPosition().getLine()
@@ -197,22 +205,17 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 	}
 
 	private int countLineTabs(String line) {
-		int tabCount = 0;
-		boolean containsTab = line.contains("\t");
+		int count = 0;
 		for(char c : line.toCharArray()) {
-			if(containsTab) {
-				if("\t".equals("" + c)) {
-					tabCount++;
-				} 
-			}else {
-				if(' ' == c) {
-					tabCount++;
-				} else {
-					break;
-				}
+			if("\t".equals("" + c)) {
+				count = count + 4;
+			} else if(' ' == c) {
+				count++;
+			} else {
+				break;
 			}
 		}
-		return tabCount;
+		return count;
 	}
 	
 	private class OmittedCurlyBracesAtom {
