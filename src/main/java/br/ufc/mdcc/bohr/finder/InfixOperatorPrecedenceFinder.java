@@ -13,6 +13,7 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -139,8 +140,6 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 	}
 	
 	private boolean isMissingParenthesesInArithmeticalOperations(CtElement expression) {
-		ArrayList<Boolean> results = new ArrayList<>();
-
 		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
 		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
@@ -153,11 +152,12 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 				boolean binaryOprCondition = false;
 				
 				if(binaryOpr.getParent() instanceof CtBinaryOperator){
+					CtBinaryOperator<?> binaryParent = (CtBinaryOperator<?>) binaryOpr.getParent();
 					
-					boolean condition = (((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.PLUS)
-							|| (((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.MINUS);
+					boolean condition = binaryParent.getKind() == BinaryOperatorKind.PLUS
+							|| binaryParent.getKind() == BinaryOperatorKind.MINUS;
 					
-					if(condition){
+					if(condition && !hasStringConcatenation(binaryParent)){
 						String binaryExpression = binaryOpr.getOriginalSourceFragment().getSourceCode();
 						binaryOprCondition = !(binaryExpression.startsWith("(") && binaryExpression.endsWith(")"));
 					}
@@ -169,7 +169,24 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 			}
 		}
 		
-		return results.contains(Boolean.TRUE);
+		return false;
+	}
+	
+	private boolean hasStringConcatenation(CtBinaryOperator<?> binaryParent) {
+		if(binaryParent.getKind() == BinaryOperatorKind.PLUS) {
+			String stringType = "java.lang.String";
+
+			CtExpression<?> leftHandOperand = binaryParent.getLeftHandOperand();
+			CtExpression<?> rightHandOperand = binaryParent.getRightHandOperand();
+			if((leftHandOperand.getType() != null 
+					&& leftHandOperand.getType().toString().equalsIgnoreCase(stringType))
+					|| 
+					(rightHandOperand.getType() != null 
+						&& rightHandOperand.getType().toString().equalsIgnoreCase(stringType))) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean hasCombinationLogicalOperators(CtElement expression) {
