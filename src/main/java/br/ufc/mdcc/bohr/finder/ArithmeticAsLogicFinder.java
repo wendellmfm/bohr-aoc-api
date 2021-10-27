@@ -1,8 +1,6 @@
 package br.ufc.mdcc.bohr.finder;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
@@ -24,7 +22,7 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
-				if(hasCompareOperator(operator)) {
+				if(hasEqualsOrNotEqualsOperator(operator)) {
 					
 					CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 					CtExpression<?> rightHandOperand = operator.getRightHandOperand();
@@ -35,10 +33,8 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 						List<CtBinaryOperator<?>> leftHandBinaryOperators = leftHandOperand.getElements(binaryOperatorFilter);
 						List<CtBinaryOperator<?>> rightHandBinaryOperators = rightHandOperand.getElements(binaryOperatorFilter);
 						
-						if(hasBinaryOperators(leftHandBinaryOperators)
-								|| hasBinaryOperators(rightHandBinaryOperators)
-								|| hasAALExpression(leftHandOperand)
-								|| hasAALExpression(rightHandOperand)) {
+						if(hasAALExpression(leftHandBinaryOperators)
+								|| hasAALExpression(rightHandBinaryOperators)) {
 							
 							int lineNumber = operator.getPosition().getEndLine();
 							String snippet = operator.getParent().prettyprint();
@@ -51,24 +47,15 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 	
-	private boolean hasCompareOperator(CtBinaryOperator<?> operator) {
+	private boolean hasEqualsOrNotEqualsOperator(CtBinaryOperator<?> operator) {
 
 		switch (operator.getKind()) {
+			case EQ:
+				return true;
+
 			case NE:
 				return true;
-
-			case GT:
-				return true;
-
-			case GE:
-				return true;
-
-			case LT:
-				return true;
 				
-			case LE:
-				return true;
-
 			default:
 				break;
 		}
@@ -76,35 +63,7 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 		return false;
 	}
 	
-	private boolean hasBinaryOperators(List<CtBinaryOperator<?>> operators) {
-		for (CtBinaryOperator<?> operator : operators) {
-			if(hasPlusOrMinusOperators(operator)) {
-				if(operator.getParent() instanceof CtBinaryOperator) {
-					if(hasCompareOperator((CtBinaryOperator<?>) operator.getParent())) {
-						return true;			
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-	
-	private boolean hasAALExpression(CtExpression<?> handOperand) {
-		String expression = handOperand.prettyprint();
-		
-		Pattern pattern = Pattern.compile("(\\(?(.+)[+-](.+)\\)?\\s*[*/]\\s*\\(?(.+)[+-](\\s*[^\\s]+)\\)?)");
-		Matcher matcher = pattern.matcher(expression); 
-		
-		if(matcher.find()) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	
-	private boolean hasPlusOrMinusOperators(CtBinaryOperator<?> operator) {
+	private boolean hasPlusMinusOrMultOperators(CtBinaryOperator<?> operator) {
 
 		switch (operator.getKind()) {
 			case PLUS:
@@ -112,9 +71,26 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 
 			case MINUS:
 				return true;
+				
+			case MUL:
+				return true;
 
 			default:
 				break;
+		}
+
+		return false;
+	}
+	
+	private boolean hasAALExpression(List<CtBinaryOperator<?>> operators) {
+		for (CtBinaryOperator<?> operator : operators) {
+			if(operator.getParent() instanceof CtBinaryOperator) {
+				if(hasEqualsOrNotEqualsOperator((CtBinaryOperator<?>) operator.getParent())) {
+					if(hasPlusMinusOrMultOperators(operator)){
+						return true;			
+					}
+				}
+			}
 		}
 
 		return false;

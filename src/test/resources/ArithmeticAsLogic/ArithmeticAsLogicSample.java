@@ -7,37 +7,37 @@ public class ArithmeticAsLogicSample {
 
 	}
 	
-	public void firstMethod(){
+	public void methodOne(){
 		int a = 8;
 		
-		if((a - 3) * (7 - a) <= 0) {
+		if((a - 3) * (7 - a) == 0) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
 		}
 	}
 	
-	public void firstTransformedMethod(){
+	public void methodOneTransformed(){
 		int a = 8;
 		
-		if(3 <= a || a >= 7) {
+		if(3 == a || a == 7) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
 		}
 	}
 	
-	public void secondMethod(){
+	public void methodTwo(){
 		int a = 2;
 		
-		if((a - 2) * (6 - a) > 0) {
+		if((a - 2) * (6 - a) != 0) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
 		}
 	}
 	
-	public void secondTransformedMethod(){
+	public void methodTwoTransformed(){
 		int a = 2;
 		
 		if(a < 2 || 6 < a) {
@@ -47,7 +47,7 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 	
-	public void thirdMethod(){
+	public void methodThree(){
 		int a = 5;
 		
 		if(a + 5 != 0) {
@@ -57,7 +57,7 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 	
-	public void thirdTransformedMethod(){
+	public void methodThreeTransform(){
 		int a = 5;
 		
 		if(a != -5) {
@@ -67,17 +67,17 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 	
-	public void firstVariationMethod(){
+	public void methodFive(){
 		int a = 2;
 		
-		if(0 < (a - 2) * (6 - a)) {
+		if(0 == (a - 2) * (6 - a)) {
 			System.out.println("true");
 		} else {
 			System.out.println("false");
 		}
 	}
 
-	public void secondVariationMethod(){
+	public void methodSix(){
 		int a = 5;
 		
 		if(0 != a + 5) {
