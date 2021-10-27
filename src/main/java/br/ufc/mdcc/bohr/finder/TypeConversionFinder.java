@@ -7,10 +7,10 @@ import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
-import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -28,81 +28,44 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			String qualifiedName = element.getQualifiedName();
 
 			String snippet = "";
-			for (CtLocalVariable<?> localVariable : element.getElements(new TypeFilter<CtLocalVariable<?>>(CtLocalVariable.class))) {
-				if(hasTypeConversionAtom(localVariable)) {
-					snippet = localVariable.prettyprint();
-					int lineNumber = localVariable.getPosition().getEndLine();
+			
+			for (CtStatement statement : element.getElements(new TypeFilter<CtStatement>(CtStatement.class))) {
+				if(hasTypeConversionAtom(statement)) {
+					snippet = statement.prettyprint();
+					int lineNumber = statement.getPosition().getEndLine();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
 				}
-			}
-			
-			for (CtAssignment<?, ?> assignment : element.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class))) {
-				if(hasTypeConversionAtom(assignment)) {
-					snippet = assignment.prettyprint();
-					int lineNumber = assignment.getPosition().getEndLine();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
-				}
-			}
-			
-		}
-		
+			}		
+		}	
 	}
 	
-	private boolean hasTypeConversionAtom(CtLocalVariable<?> localVariable) {
-		
-		if(localVariable.getAssignment() != null ) {
-			if(localVariable.getAssignment().getType() != null) {
-				String sourceCode = "";
-				String assignmentType = "";
-				String assignedType = "";
-				try {
+	private boolean hasTypeConversionAtom(CtStatement statement) {
+		String sourceCode = "";
+		String assignmentType = "";
+		String assignedType = "";
+
+		if(statement instanceof CtLocalVariable) {
+			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) statement;
+			
+			if(localVariable.getAssignment() != null ) {
+				if(localVariable.getAssignment().getType() != null) {
+					
 					sourceCode = localVariable.prettyprint();
 					assignmentType = localVariable.getAssignment().getType().toString();
 					assignedType = localVariable.getType().toString();
-				} catch (SpoonException e) {
-					// TODO: handle exception
-					System.out.println(e.getMessage());
-				}
-				
-				if(checkByteConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
-				}
-				
-				if(checkShortConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
-				}
-				
-				if(checkIntConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
-				}
-				
-				if(checkLongConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
-				}
-				
-				if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
-				}
-				
-				if(checkCharConversions(sourceCode, assignmentType, assignedType)) {
-					return true;
 				}
 			}
+		} else if (statement instanceof CtAssignment) {
+			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) statement;
+			
+			if(assignment.getAssignment().getType() != null
+					&& assignment.getAssigned().getType() != null) {
+				
+				sourceCode = assignment.prettyprint();
+				assignmentType = assignment.getAssignment().getType().toString();
+				assignedType = assignment.getAssigned().getType().toString();
+			}
 		}
-		
-		return false;
-	}
-	
-	private boolean hasTypeConversionAtom(CtAssignment<?, ?> assignment) {
-		
-		if(assignment.getAssignment().getType() == null
-				|| assignment.getAssigned().getType() == null) {
-			return false;
-		}
-		
-		String sourceCode = assignment.prettyprint();
-		String assignmentType = assignment.getAssignment().getType().toString();
-		String assignedType = assignment.getAssigned().getType().toString();
 		
 		if(checkByteConversions(sourceCode, assignmentType, assignedType)) {
 			return true;
@@ -127,6 +90,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 		if(checkCharConversions(sourceCode, assignmentType, assignedType)) {
 			return true;
 		}
+		
 		
 		return false;
 	}
