@@ -5,45 +5,45 @@ public class ChangeOfLiteralEncodingSample {
 
 	}
 
-	public void firstMethod() {
+	public void methodOne() {
 		int a = 013;
 		
 		System.out.println(a);
 	}
 	
-	public void firstTransformedMethod() {
+	public void methodOneTransformed() {
 		int a = Integer.parseInt("13", 8);
 		
 		System.out.println(a);
 	}
 	
-	public void secondMethod() {
+	public void methodTwo() {
 		int a;
 		a = 013;
 		
 		System.out.println(a);
 	}
 	
-	public void secondTransformedMethod() {
+	public void methodTwoTransformed() {
 		int a;
 		a = Integer.parseInt("13", 8);
 		
 		System.out.println(a);
 	}
 	
-	public int thirdMethod() {
+	public int methodThree() {
 		int a = 11 & 32;
 		
 		return a;
 	}
 	
-	public void thirdTransformedMethod() {
+	public void methodThreeTransformed() {
 		int a = 0b1100 & 0b0011;
 		
 		System.out.println(a);
 	}
 	
-	public void firstVariationMethod() {
+	public void methodFour() {
 		int a;
 		a = 018;
 		
@@ -52,7 +52,7 @@ public class ChangeOfLiteralEncodingSample {
 		System.out.println(a + b);
 	}
 	
-	public int secondVariationMethod() {
+	public int methodFive() {
 		float b = 11;
 		float c = 32;
 		int a = b & c;

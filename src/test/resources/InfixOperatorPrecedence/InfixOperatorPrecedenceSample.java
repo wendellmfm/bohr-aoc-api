@@ -5,7 +5,7 @@ public class InfixOperatorPrecedenceSample {
 
 	}
 
-	public void firstMethod() {
+	public void methodOne() {
 		int a;
 		
 		a = 2 - 4 / 2;
@@ -13,7 +13,7 @@ public class InfixOperatorPrecedenceSample {
 		System.out.println(a);
 	}
 	
-	public void firstTransformedMethod() {
+	public void methodOneTransformed() {
 		int a;
 		
 		a = 2 - (4 / 2);
@@ -21,19 +21,19 @@ public class InfixOperatorPrecedenceSample {
 		System.out.println(a);
 	}
 	
-	public void secondMethod() {
+	public void methodTwo() {
 		int a = 2 * 4 + 2;
 		
 		System.out.println(a);
 	}
 	
-	public void secondTransformedMethod() {
+	public void methodTwoTransformed() {
 		int a = (2 * 4) + 2;
 		
 		System.out.println(a);
 	}
 	
-	public void thirdMethod() {
+	public void methodThree() {
 		String line = "The cat is black";
 		
 		boolean a = line.contains("dog");
@@ -47,7 +47,7 @@ public class InfixOperatorPrecedenceSample {
 		}
 	}
 	
-	public void thirdransformedMethod() {
+	public void methodThreeTransformed() {
 		String line = "The cat is black";
 		
 		boolean a = line.contains("dog");

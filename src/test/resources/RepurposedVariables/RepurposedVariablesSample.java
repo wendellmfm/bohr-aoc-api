@@ -4,7 +4,7 @@ public class RepurposedVariablesSample {
 
 	}
 
-	public void firstMethod() {
+	public void methodOne() {
 		int a = 3;
 		
 		for(int i = 0; i < 2; i++) {
@@ -16,7 +16,7 @@ public class RepurposedVariablesSample {
 		System.out.println(a);
 	}
 	
-	public void firstMethodTransformed() {
+	public void methodOneTransformed() {
 		int a = 3;
 		
 		for(int i = 0; i < 2; i++) {
@@ -28,7 +28,7 @@ public class RepurposedVariablesSample {
 		System.out.println(a);
 	}
 	
-	public void secondMethod() {
+	public void methodTwo() {
 		int a = 3;
 		
 		for(int i = 0; i < 2; i++) {
@@ -40,7 +40,7 @@ public class RepurposedVariablesSample {
 		System.out.println(a);
 	}
 	
-	public void secondMethodTransformed() {
+	public void methodTwoTransformed() {
 		int a = 3;
 		
 		for(int i = 0; i < 2; i++) {
@@ -52,7 +52,7 @@ public class RepurposedVariablesSample {
 		System.out.println(a);
 	}
 	
-	private void thirdMethod() {
+	private void methodThree() {
 		int v1[] = new int[5];
 		v1[4] = 3;
 		
@@ -63,7 +63,7 @@ public class RepurposedVariablesSample {
 		System.out.println(v1[1] + " " + v1[4]);
 	}
 	
-	private void thirdMethodTransformed() {
+	private void methodThreeTransformed() {
 		int v1[] = new int[5];
 		int a = 5;
 		
@@ -74,7 +74,7 @@ public class RepurposedVariablesSample {
 		System.out.println(v1[1] + " " + v1[4]);
 	}
 	
-	private void firstVariationMethod() {
+	private void methodFour() {
 		int v1[] = new int[5];
 		int v2[] = new int[5];
 		v1[4] = 3;
@@ -86,7 +86,7 @@ public class RepurposedVariablesSample {
 		System.out.println(v1[1] + " " + v1[4]);
 	}
 	
-	private void secondVariationMethod() {
+	private void methodFive() {
 		int v1[] = new int[5];
 		int v2[] = new int[5];
 		int a = 5;
@@ -100,7 +100,7 @@ public class RepurposedVariablesSample {
 		System.out.println(v1[1] + " " + v1[4]);
 	}
 	
-	private void thirdVariationMethod() {
+	private void methodSix() {
 		int v1[] = new int[5];
 		v1[4] = 3;
 		for (int i = 0; v1[i] > 0; i++) {
@@ -110,7 +110,7 @@ public class RepurposedVariablesSample {
 		System.out.println(v1[1] + " " + v1[4]);
 	}
 	
-	private void fourthMethod() {
+	private void methodSeven() {
 		int v1[] = new int[5];
 
 		for (int i = 0; i > 0; i++) {

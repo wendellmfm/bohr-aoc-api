@@ -57,7 +57,7 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 	
-	public void methodThreeTransform(){
+	public void methodThreeTransformed(){
 		int a = 5;
 		
 		if(a != -5) {
@@ -67,7 +67,7 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 	
-	public void methodFive(){
+	public void methodFour(){
 		int a = 2;
 		
 		if(0 == (a - 2) * (6 - a)) {
@@ -77,7 +77,7 @@ public class ArithmeticAsLogicSample {
 		}
 	}
 
-	public void methodSix(){
+	public void methodFive(){
 		int a = 5;
 		
 		if(0 != a + 5) {

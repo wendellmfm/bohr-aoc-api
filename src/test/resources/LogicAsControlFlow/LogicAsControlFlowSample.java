@@ -3,7 +3,7 @@ import java.util.Iterator;
 
 public class LogicAsControlFlowSample {
 	
-	public void firstMethod(){
+	public void methodOne(){
 		int a = 1;
 		int b = 5;
 		
@@ -15,7 +15,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void firstTransformedMethod() {
+	public void methodOneTransformed() {
 		int a = 1;
 		int b = 5;
 		
@@ -30,7 +30,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void secondMethod(){
+	public void methodTwo(){
 		int a = 1;
 		int b = 5;
 		
@@ -39,7 +39,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void secondTransformedMethod(){
+	public void methodTwoTransformed(){
 		int a = 1;
 		int b = 5;
 		
@@ -52,7 +52,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void thirdMethod(){
+	public void methodThree(){
 		int a = 1;
 		int b = 5;
 		int c = 0;
@@ -64,7 +64,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b + " " + c);
 	}
 	
-	public void thirdTransformedMethod(){
+	public void methodThreeTransformed(){
 		int a = 1;
 		int b = 5;
 		int c = 0;
