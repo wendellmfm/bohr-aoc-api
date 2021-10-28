@@ -1,5 +1,7 @@
 package br.ufc.mdcc.bohr.finder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +11,7 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
@@ -40,7 +43,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private boolean hasTypeConversionAtom(CtStatement statement) {
-		String sourceCode = "";
 		String assignmentType = "";
 		String assignedType = "";
 
@@ -50,7 +52,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			if(localVariable.getAssignment() != null ) {
 				if(localVariable.getAssignment().getType() != null) {
 					
-					sourceCode = localVariable.prettyprint();
 					assignmentType = localVariable.getAssignment().getType().toString();
 					assignedType = localVariable.getType().toString();
 				}
@@ -61,193 +62,224 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			if(assignment.getAssignment().getType() != null
 					&& assignment.getAssigned().getType() != null) {
 				
-				sourceCode = assignment.prettyprint();
 				assignmentType = assignment.getAssignment().getType().toString();
 				assignedType = assignment.getAssigned().getType().toString();
 			}
 		}
 		
-		if(checkByteConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
+		boolean result = false;
+		switch (assignedType) {
+			case BYTE:
+				result = checkByteConversions(statement, assignmentType, assignedType);
+				break;
+			case SHORT:
+				result = checkShortConversions(statement, assignmentType, assignedType);
+				break;
+			case INT:
+				result = checkIntConversions(statement, assignmentType, assignedType);
+				break;
+			case LONG:
+				result = checkLongConversions(statement, assignmentType, assignedType);
+				break;
+			case FLOAT:
+				result = checkFloatConversions(statement, assignmentType, assignedType);
+				break;
+			case CHAR:
+				result = checkCharConversions(statement, assignmentType, assignedType);
+				break;
+	
+			default:
+				break;
 		}
 		
-		if(checkShortConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
-		}
-		
-		if(checkIntConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
-		}
-		
-		if(checkLongConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
-		}
-		
-		if(checkFloatConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
-		}
-		
-		if(checkCharConversions(sourceCode, assignmentType, assignedType)) {
-			return true;
-		}
-		
-		
-		return false;
+		return result;
 	}
 	
-	private boolean checkByteConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkByteConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(SHORT)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
-			return hasTypeConversionProblem(sourceCode, BYTE);
+			return hasTypeConversionProblem(statement, BYTE);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(INT)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
-			return hasTypeConversionProblem(sourceCode, BYTE);
+			return hasTypeConversionProblem(statement, BYTE);
 		}
 
 		if(assignmentType.equalsIgnoreCase(LONG)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
-			return hasTypeConversionProblem(sourceCode, BYTE);
+			return hasTypeConversionProblem(statement, BYTE);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(FLOAT)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
-			return hasTypeConversionProblem(sourceCode, BYTE);
+			return hasTypeConversionProblem(statement, BYTE);
 		}
 
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
-			return hasTypeConversionProblem(sourceCode, BYTE);
+			return hasTypeConversionProblem(statement, BYTE);
 		}
 
 		return false;
 	}
 	
-	private boolean checkShortConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkShortConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(INT)
 				&& assignedType.equalsIgnoreCase(SHORT)) {
-			return hasTypeConversionProblem(sourceCode, SHORT);
+			return hasTypeConversionProblem(statement, SHORT);
 		}
 
 		if(assignmentType.equalsIgnoreCase(LONG)
 				&& assignedType.equalsIgnoreCase(SHORT)) {
-			return hasTypeConversionProblem(sourceCode, SHORT);
+			return hasTypeConversionProblem(statement, SHORT);
 		}
 
 		if(assignmentType.equalsIgnoreCase(FLOAT)
 				&& assignedType.equalsIgnoreCase(SHORT)) {
-			return hasTypeConversionProblem(sourceCode, SHORT);
+			return hasTypeConversionProblem(statement, SHORT);
 		}
 
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(SHORT)) {
-			return hasTypeConversionProblem(sourceCode, SHORT);
+			return hasTypeConversionProblem(statement, SHORT);
 		}
 		
 		return false;
 	}
 	
-	private boolean checkIntConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkIntConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(LONG)
 				&& assignedType.equalsIgnoreCase(INT)) {
-			return hasTypeConversionProblem(sourceCode, INT);
+			return hasTypeConversionProblem(statement, INT);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(FLOAT)
 				&& assignedType.equalsIgnoreCase(INT)) {
-			return hasTypeConversionProblem(sourceCode, INT);
+			return hasTypeConversionProblem(statement, INT);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(INT)) {
-			return hasTypeConversionProblem(sourceCode, INT);
+			return hasTypeConversionProblem(statement, INT);
 		}
 		
 		return false;
 	}
 	
-	private boolean checkLongConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkLongConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(FLOAT)
 				&& assignedType.equalsIgnoreCase(LONG)) {
-			return hasTypeConversionProblem(sourceCode, LONG);
+			return hasTypeConversionProblem(statement, LONG);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(LONG)) {
-			return hasTypeConversionProblem(sourceCode, LONG);
+			return hasTypeConversionProblem(statement, LONG);
 		}
 		
 		return false;
 	}
 
-	private boolean checkFloatConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkFloatConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(FLOAT)) {
-			return hasTypeConversionProblem(sourceCode, FLOAT);
+			return hasTypeConversionProblem(statement, FLOAT);
 		}
 		
 		return false;
 	}
 	
-	private boolean checkCharConversions(String sourceCode, String assignmentType, String assignedType) {
+	private boolean checkCharConversions(CtStatement statement, String assignmentType, String assignedType) {
 		
 		if(assignmentType.equalsIgnoreCase(SHORT)
 				&& assignedType.equalsIgnoreCase(CHAR)) {
-			return hasCharConversionProblem(sourceCode, CHAR);
+			return hasTypeConversionProblem(statement, CHAR);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(INT)
 				&& assignedType.equalsIgnoreCase(CHAR)) {
-			return hasCharConversionProblem(sourceCode, CHAR);
+			return hasTypeConversionProblem(statement, CHAR);
 		}
 
 		if(assignmentType.equalsIgnoreCase(LONG)
 				&& assignedType.equalsIgnoreCase(CHAR)) {
-			return hasCharConversionProblem(sourceCode, CHAR);
+			return hasTypeConversionProblem(statement, CHAR);
 		}
 		
 		if(assignmentType.equalsIgnoreCase(FLOAT)
 				&& assignedType.equalsIgnoreCase(CHAR)) {
-			return hasCharConversionProblem(sourceCode, CHAR);
+			return hasTypeConversionProblem(statement, CHAR);
 		}
 
 		if(assignmentType.equalsIgnoreCase(DOUBLE)
 				&& assignedType.equalsIgnoreCase(CHAR)) {
-			return hasCharConversionProblem(sourceCode, CHAR);
+			return hasTypeConversionProblem(statement, CHAR);
 		}
 		
 		return false;
 	}
 	
-	private boolean hasTypeConversionProblem(String statement, String type) {
+	private boolean hasTypeConversionProblem(CtStatement statement, String type) {
+		if(hasExplicitTypeConversion(statement, type)) {
+			if(!hasMethodInvocation(statement)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean hasExplicitTypeConversion(CtStatement statement, String type) {
+		String source = statement.prettyprint();
+		
 		Pattern pattern = Pattern.compile("\\((\\s*" + type +"\\s*)\\)");
-		Matcher matcher = pattern.matcher(statement);
+		Matcher matcher = pattern.matcher(source);
 		boolean hasTypeConversion = matcher.find();
 
 		pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
-		matcher = pattern.matcher(statement);
+		matcher = pattern.matcher(source);
 		boolean hasModulusOperation = matcher.find();
 		
-		String javaAPIUsageString = "Math.";
-		if(hasTypeConversion && !hasModulusOperation 
-				&& !statement.contains(javaAPIUsageString)) {
+		if(hasTypeConversion && !hasModulusOperation) {
 			return true;
 		}
 		
 		return false;
 	}
 	
-	private boolean hasCharConversionProblem(String statement, String type) {
-		String javaAPIUsageString = "Character.forDigit";
-		
-		if(!statement.contains(javaAPIUsageString)) {
-			return true;
+	private boolean hasMethodInvocation(CtStatement statement) {
+		List<CtInvocation<?>> methods = new ArrayList<>();
+		TypeFilter<CtInvocation<?>> filter = new TypeFilter<CtInvocation<?>>(CtInvocation.class);
+
+		if(statement instanceof CtLocalVariable) {
+			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) statement;
+			
+			if(localVariable.getAssignment() != null ) {
+				if(localVariable.getAssignment().getType() != null) {
+					methods = localVariable.getAssignment().getElements(filter);
+					
+					if(!methods.isEmpty()) {
+						return true;
+					}
+				}
+			}
+		} else if (statement instanceof CtAssignment) {
+			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) statement;
+			
+			if(assignment.getAssignment().getType() != null
+					&& assignment.getAssigned().getType() != null) {
+				methods = assignment.getAssignment().getElements(filter);
+				
+				if(!methods.isEmpty()) {
+					return true;
+				}
+			}
 		}
 		
 		return false;
