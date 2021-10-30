@@ -12,7 +12,7 @@ public enum AoC {
 	CoO("CoO", "Conditional Operator"),
 	AaL("AaL", "Arithmetic as Logic"),
 	LaCTRF("LaCTRF", "Logic as Control Flow"),
-	RVar("RVar", "Repurpused Variables"),
+	RVar("RVar", "Repurposed Variables"),
 	DUR("DUR", "Dead, Unreacheble, and Repeated"),
 	CoLE("CoLE", "Change of Literal Encoding"),
 	OCB("OCB", "Omitted Curly Braces"),
