@@ -102,6 +102,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			return hasTypeConversionProblem(statement, BYTE);
 		}
 		
+		if(assignmentType.equalsIgnoreCase(CHAR)
+				&& assignedType.equalsIgnoreCase(BYTE)) {
+			return hasTypeConversionProblem(statement, BYTE);
+		}
+		
 		if(assignmentType.equalsIgnoreCase(INT)
 				&& assignedType.equalsIgnoreCase(BYTE)) {
 			return hasTypeConversionProblem(statement, BYTE);
@@ -126,6 +131,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private boolean checkShortConversions(CtStatement statement, String assignmentType, String assignedType) {
+		
+		if(assignmentType.equalsIgnoreCase(CHAR)
+				&& assignedType.equalsIgnoreCase(SHORT)) {
+			return hasTypeConversionProblem(statement, SHORT);
+		}
 		
 		if(assignmentType.equalsIgnoreCase(INT)
 				&& assignedType.equalsIgnoreCase(SHORT)) {
@@ -226,27 +236,39 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private boolean hasTypeConversionProblem(CtStatement statement, String type) {
-		if(hasExplicitTypeConversion(statement, type)) {
-			if(!hasMethodInvocation(statement)) {
-				return true;
+		String source = statement.prettyprint();
+		
+		if(hasExplicitTypeConversion(source, type)) {
+			
+			if(!hasModulusOperation(source)) {
+				
+				if(!hasMethodInvocation(statement)) {
+					return true;
+				}
 			}
 		}
 		
 		return false;
 	}
 	
-	private boolean hasExplicitTypeConversion(CtStatement statement, String type) {
-		String source = statement.prettyprint();
-		
+	private boolean hasExplicitTypeConversion(String source, String type) {
 		Pattern pattern = Pattern.compile("\\((\\s*" + type +"\\s*)\\)");
 		Matcher matcher = pattern.matcher(source);
 		boolean hasTypeConversion = matcher.find();
-
-		pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
-		matcher = pattern.matcher(source);
+		
+		if(hasTypeConversion) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasModulusOperation(String source) {
+		Pattern pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
+		Matcher matcher = pattern.matcher(source);
 		boolean hasModulusOperation = matcher.find();
 		
-		if(hasTypeConversion && !hasModulusOperation) {
+		if(hasModulusOperation) {
 			return true;
 		}
 		

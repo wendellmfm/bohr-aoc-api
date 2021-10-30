@@ -19,6 +19,34 @@ public class TypeConversionSample {
 		System.out.println(b);
 	}
 	
+	public void charToByteMethod() {
+		char a = '4';
+		byte b = (byte) a;
+		
+		System.out.println(b);
+	}
+	
+	public void charToByteTransformedMethod() {
+		char a = '4';
+		byte b = (byte) Character.digit(a, 10);
+		
+		System.out.println(b);
+	}
+	
+	public void charToShortMethod() {
+		char a = '4';
+		short b = (short) a;
+		
+		System.out.println(b);
+	}
+	
+	public void charToShortTransformedMethod() {
+		char a = '4';
+		short b = (short) Character.digit(a, 10);
+		
+		System.out.println(b);
+	}
+	
 	public void intToByteMethod() {
 		int a = 288;
 		byte b = (byte) a;
@@ -132,56 +160,56 @@ public class TypeConversionSample {
 	}
 	
 	public void floatToIntMethod() {
-		float a = 1.99;
+		float a = 1.99f;
 		int b = (int) a;
 		
 		System.out.println(b);
 	}
 	
 	public void floatToIntTransformedMethod() {
-		float a = 1.99;
+		float a = 1.99f;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
 	public void longToIntMethod() {
-		long a = 1.99;
+		long a = 2147483648L;
 		int b = (int) a;
 		
 		System.out.println(b);
 	}
 	
 	public void longToIntTransformedMethod() {
-		long a = 1.99;
+		long a = 2147483648L;
 		int b = (int) Math.floor(a);
 		
 		System.out.println(a);
 	}
 	
-	public int doubleToIntMethod(double a) {
-		a = 1.99;
+	public void doubleToIntMethod() {
+		double a = 1.99;
 		int b = (int) a;
 		
-		return b;
+		System.out.println(b);
 	}
 	
 	public void doubleToIntTransformedMethod() {
 		double a = 1.99;
 		int b = (int) Math.floor(a);
 		
-		System.out.println(a);
+		System.out.println(b);
 	}
 	
 	public void floatToLongMethod() {
-		float a = 1.99;
+		float a = 1.99f;
 		long b = (long) a;
 		
 		System.out.println(b);
 	}
 	
 	public void floatToLongTransformedMethod() {
-		float a = 1.99;
+		float a = 1.99f;
 		long b = (long) Math.floor(a);
 		
 		System.out.println(a);
@@ -270,4 +298,5 @@ public class TypeConversionSample {
 		
 		System.out.println(b);
 	}
+
 }
