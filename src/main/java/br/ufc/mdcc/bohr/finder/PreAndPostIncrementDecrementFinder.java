@@ -6,7 +6,6 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
@@ -22,9 +21,7 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClas
 
 			for (CtUnaryOperator<?> unaryOpr : element.getElements(unaryOprFilter)) {
 				if ((unaryOpr.getParent() != null) 
-						&& !(unaryOpr.getParent() instanceof CtUnaryOperator<?>)
-						&& ((unaryOpr.getParent() instanceof CtAssignment)
-								|| (unaryOpr.getParent() instanceof CtBinaryOperator))) {
+						&& (unaryOpr.getParent() instanceof CtBinaryOperator)) {
 
 					try {
 						int lineNumber = unaryOpr.getParent().getPosition().getEndLine();
