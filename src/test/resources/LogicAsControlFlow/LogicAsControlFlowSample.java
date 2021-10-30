@@ -80,4 +80,13 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b + " " + c);
 	}
 	
+	public void methodFour(){
+		int a = 1;
+		
+		if(a > 0 && methodThree()) {
+			a = a * 2;
+		}
+		
+		System.out.println(a + " " + b);
+	}
 }
