@@ -252,5 +252,27 @@ public class OmittedCurlyBracesSample {
 			for(int i = 0; i < 10; i++)
 				for(int i = 0; i < 10; i++) {System.out.println(i);} b = a;
 	}
+	
+	public void methodTen() {
+		int a = 0;
+		List<String> arrayList = new ArrayList<>();
+		arrayList.add("String 1");
+		arrayList.add("String 2");
+		
+		for (String string : arrayList)
+			System.out.println(string); a = a + 2;
+	}
+	
+	public void methodEleven() {
+		int a = 0;
+		List<String> arrayList = new ArrayList<>();
+		arrayList.add("String 1");
+		arrayList.add("String 2");
+		
+		for (String string : arrayList)
+			for (String string : arrayList)
+				for (String string : arrayList)
+					System.out.println(string); a = a + 2;
+	}
 
 }

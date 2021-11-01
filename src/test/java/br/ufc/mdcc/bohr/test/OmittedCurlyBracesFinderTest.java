@@ -37,7 +37,7 @@ class OmittedCurlyBracesFinderTest {
 		for (AoCSuite suite : aocSuiteList) {
 			assertEquals("OmittedCurlyBracesSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 15, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 17, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.OCB, aocInfo.getAtomOfConfusion(), "AoC type not mached");
@@ -48,7 +48,8 @@ class OmittedCurlyBracesFinderTest {
 						|| aocInfo.getLineNumber() == 136 || aocInfo.getLineNumber() == 161
 						|| aocInfo.getLineNumber() == 165 || aocInfo.getLineNumber() == 190
 						|| aocInfo.getLineNumber() == 194 || aocInfo.getLineNumber() == 223
-						|| aocInfo.getLineNumber() == 243,
+						|| aocInfo.getLineNumber() == 243 || aocInfo.getLineNumber() == 262
+						|| aocInfo.getLineNumber() == 274,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

@@ -11,6 +11,7 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
@@ -119,13 +120,17 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 	
 	private void getLoopOmittedBraces(CtStatement stmt, CtStatement nextStmt) {
 		
-		if (stmt instanceof CtFor || stmt instanceof CtWhile) {
+		if (stmt instanceof CtFor 
+				|| stmt instanceof CtWhile
+				|| stmt instanceof CtForEach) {
 			CtStatement body = null;
 			
 			if(stmt instanceof CtFor) {
 				body = ((CtFor) stmt).getBody();
-			}else if(stmt instanceof CtWhile) {
+			} else if(stmt instanceof CtWhile) {
 				body = ((CtWhile) stmt).getBody();
+			} else if(stmt instanceof CtForEach) {
+				body = ((CtForEach) stmt).getBody();
 			}
 			
 			if(body != null) {
@@ -133,7 +138,9 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
 				if(body.getDirectChildren().size() == 1) {
 					
 					CtElement childElement = body.getDirectChildren().get(0);
-					if(!(childElement instanceof CtFor) && !(childElement instanceof CtWhile)) {
+					if(!(childElement instanceof CtFor) 
+							&& !(childElement instanceof CtWhile)
+							&& !(childElement instanceof CtForEach)) {
 						
 						if(!stmt.prettyprint().contains("{")) {
 							
