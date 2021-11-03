@@ -42,12 +42,12 @@ class TypeConversionFinderTest {
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.TPC, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 24 || aocInfo.getLineNumber() == 38
-						|| aocInfo.getLineNumber() == 52 || aocInfo.getLineNumber() == 66 || aocInfo.getLineNumber() == 80 
-						|| aocInfo.getLineNumber() == 94 || aocInfo.getLineNumber() == 108 || aocInfo.getLineNumber() == 122 
-						|| aocInfo.getLineNumber() == 136 || aocInfo.getLineNumber() == 150 || aocInfo.getLineNumber() == 164 
-						|| aocInfo.getLineNumber() == 178 || aocInfo.getLineNumber() == 192 || aocInfo.getLineNumber() == 206 
-						|| aocInfo.getLineNumber() == 220 || aocInfo.getLineNumber() == 234 || aocInfo.getLineNumber() == 248 
-						|| aocInfo.getLineNumber() == 262 || aocInfo.getLineNumber() == 276 || aocInfo.getLineNumber() == 290,
+						|| aocInfo.getLineNumber() == 54 || aocInfo.getLineNumber() == 70 || aocInfo.getLineNumber() == 84
+						|| aocInfo.getLineNumber() == 98 || aocInfo.getLineNumber() == 112 || aocInfo.getLineNumber() == 126
+						|| aocInfo.getLineNumber() == 140 || aocInfo.getLineNumber() == 154 || aocInfo.getLineNumber() == 170
+						|| aocInfo.getLineNumber() == 186 || aocInfo.getLineNumber() == 200 || aocInfo.getLineNumber() == 214
+						|| aocInfo.getLineNumber() == 230 || aocInfo.getLineNumber() == 246 || aocInfo.getLineNumber() == 262 
+						|| aocInfo.getLineNumber() == 278 || aocInfo.getLineNumber() == 292 || aocInfo.getLineNumber() == 306,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 
