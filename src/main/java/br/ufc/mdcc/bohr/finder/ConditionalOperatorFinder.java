@@ -17,8 +17,8 @@ public class ConditionalOperatorFinder extends AbstractProcessor<CtClass<?>> {
 
 			TypeFilter<CtConditional<?>> filter = new TypeFilter<CtConditional<?>>(CtConditional.class);
 			for (CtConditional<?> condOpr : element.getElements(filter)) {
-				int lineNumber = condOpr.getParent().getPosition().getLine();
-				String snippet = condOpr.getParent().prettyprint();
+				int lineNumber = condOpr.getPosition().getLine();
+				String snippet = condOpr.prettyprint();
 				Dataset.store(qualifiedName, new AoCInfo(AoC.CoO, lineNumber, snippet));
 			}
 		}

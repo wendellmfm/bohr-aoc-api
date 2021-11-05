@@ -61,6 +61,16 @@ public class InfixOperatorPrecedenceSample {
 		}
 	}
 	
+	public void methodFour() {
+		int a = 2;
+		int b = 3;
+		int c = 4;
+		
+		float d = 2 + a * (float) Math.cos(b * c);
+		
+		System.out.println(d);
+	}
+	
 	public void stringConcatenationMethod() {
 		int a = 1;
 		int b = 2;

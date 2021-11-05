@@ -63,6 +63,38 @@ public class PreAndPostIncrementDecrementSample {
 		System.out.println(a);
 	}
 	
+	public void fourthPostIncrementDecrementMethod() {
+		int a = 2;
+		int b = a++;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fourthPostIncrementDecrementTransformedMethod() {
+		int a = 2;
+		int b = a;
+		a = a + 1;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fifthPostIncrementDecrementMethod() {
+		int a = 2;
+		int b = 0; 
+		b = a--;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fifthPostIncrementDecrementTransformedMethod() {
+		int a = 2;
+		int b = 0; 
+		b = a;
+		a = a - 1;
+		
+		System.out.println(a + " " + b);
+	}
+	
 	public void postIncrementDecrementVariationMethod() {
 		int a = 5;
 		int b = 8;
@@ -120,6 +152,37 @@ public class PreAndPostIncrementDecrementSample {
 		int a = 6;
 		int b = 9 - a;
 		--a;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fourthPreIncrementDecrementMethod() {
+		int a = 2;
+		int b = ++a;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fourthPreIncrementDecrementTransformedMethod() {
+		int a = 2;
+		a = a + 1;
+		int b = a;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fifthPreIncrementDecrementMethod() {
+		int a = 2;
+		int b = 0; 
+		b = --a;
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void fifthPreIncrementDecrementTransformedMethod() {
+		int a = 2;
+		a = a - 1;
+		int b = a; 
 		
 		System.out.println(a + " " + b);
 	}

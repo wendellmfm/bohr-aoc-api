@@ -47,6 +47,20 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 	
+	private boolean hasAALExpression(List<CtBinaryOperator<?>> operators) {
+		for (CtBinaryOperator<?> operator : operators) {
+			if(operator.getParent() instanceof CtBinaryOperator) {
+				if(hasEqualsOrNotEqualsOperator((CtBinaryOperator<?>) operator.getParent())) {
+					if(hasPlusMinusOrMultOperators(operator)){
+						return true;			
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+	
 	private boolean hasEqualsOrNotEqualsOperator(CtBinaryOperator<?> operator) {
 
 		switch (operator.getKind()) {
@@ -77,20 +91,6 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 
 			default:
 				break;
-		}
-
-		return false;
-	}
-	
-	private boolean hasAALExpression(List<CtBinaryOperator<?>> operators) {
-		for (CtBinaryOperator<?> operator : operators) {
-			if(operator.getParent() instanceof CtBinaryOperator) {
-				if(hasEqualsOrNotEqualsOperator((CtBinaryOperator<?>) operator.getParent())) {
-					if(hasPlusMinusOrMultOperators(operator)){
-						return true;			
-					}
-				}
-			}
 		}
 
 		return false;

@@ -6,9 +6,12 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClass<?>> {
@@ -20,18 +23,25 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClas
 			TypeFilter<CtUnaryOperator<?>> unaryOprFilter = new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class);
 
 			for (CtUnaryOperator<?> unaryOpr : element.getElements(unaryOprFilter)) {
-				if ((unaryOpr.getParent() != null) 
-						&& (unaryOpr.getParent() instanceof CtBinaryOperator)) {
-
-					try {
-						int lineNumber = unaryOpr.getParent().getPosition().getEndLine();
-						String snippet = unaryOpr.getParent().prettyprint();
+				
+				CtElement parent = unaryOpr.getParent();
+				if ((parent != null)) {
+					
+					if (parent instanceof CtBinaryOperator
+							|| parent instanceof CtAssignment
+							|| parent instanceof CtLocalVariable) {
 						
-						save(qualifiedName, unaryOpr, lineNumber, snippet);
-						
-					} catch (SpoonException e) {
-						// TODO: handle exception
+						try {
+							int lineNumber = parent.getPosition().getEndLine();
+							String snippet = parent.prettyprint();
+							
+							save(qualifiedName, unaryOpr, lineNumber, snippet);
+							
+						} catch (SpoonException e) {
+							// TODO: handle exception
+						}
 					}
+
 				}
 			}
 		}
