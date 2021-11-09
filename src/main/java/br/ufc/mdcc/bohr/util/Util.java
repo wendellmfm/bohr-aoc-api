@@ -12,6 +12,7 @@ import java.util.List;
 
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.AoCSuite;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
@@ -22,7 +23,8 @@ public class Util {
 		return element != null && element.getQualifiedName() != null
 				&& (element.isClass() || element.isInterface())
 				&& !element.isShadow() // && !element.isAnonymous() && !element.isLocalType()
-				&& !(element.getParent() instanceof CtClass<?>);
+				&& !(element.getParent() instanceof CtClass<?>)
+				&& !(element.getParent() instanceof CtNewClass<?>);
 	}
 	
 	public static void generateCSVFile(Collection<AoCSuite> aocSuiteList) {
