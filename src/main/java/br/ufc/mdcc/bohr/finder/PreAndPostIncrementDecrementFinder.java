@@ -6,9 +6,12 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -29,7 +32,10 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClas
 					
 					if (parent instanceof CtBinaryOperator
 							|| parent instanceof CtAssignment
-							|| parent instanceof CtLocalVariable) {
+							|| parent instanceof CtLocalVariable
+							|| parent instanceof CtInvocation
+							|| parent instanceof CtArrayRead
+							|| parent instanceof CtReturn) {
 						
 						try {
 							int lineNumber = parent.getPosition().getEndLine();
@@ -51,20 +57,20 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClas
 	private void save(String qualifiedName, CtUnaryOperator<?> unaryOpr, int lineNumber, String snippet) {
 
 		switch (unaryOpr.getKind()) {
-		case POSTDEC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PostDEC, lineNumber, snippet));
-			break;
-			
 		case POSTINC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PostINC, lineNumber, snippet));
+			Dataset.store(qualifiedName, new AoCInfo(AoC.PostIncDec, lineNumber, snippet));
 			break;
-		
-		case PREDEC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PreDEC, lineNumber, snippet));
-			break;
+
+		case POSTDEC:
+			Dataset.store(qualifiedName, new AoCInfo(AoC.PostIncDec, lineNumber, snippet));
+			break;	
 		
 		case PREINC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PreINC, lineNumber, snippet));
+			Dataset.store(qualifiedName, new AoCInfo(AoC.PreIncDec, lineNumber, snippet));
+			break;
+
+		case PREDEC:
+			Dataset.store(qualifiedName, new AoCInfo(AoC.PreIncDec, lineNumber, snippet));
 			break;
 
 		default:

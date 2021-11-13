@@ -3,10 +3,8 @@ package br.ufc.mdcc.bohr.model;
 public enum AoC {
 
 	IOP("IOP", "Infix Operator Precedence"),
-	PostINC("PostINC", "Post-Increment"), 
-	PostDEC("PostDEC", "Post-Decrement"),
-	PreINC("PreINC", "Pre-Increment"),
-	PreDEC("PreDEC", "Pre-Decrement"),
+	PostIncDec("PostINCDEC", "Post Increment Decrement"), 
+	PreIncDec("PreINCDEC", "Pre Increment Decrement"),
 	CVar("CVar", "Constant Variables"),
 	RInd("RInd", "Remove Identation Atom"),
 	CoO("CoO", "Conditional Operator"),

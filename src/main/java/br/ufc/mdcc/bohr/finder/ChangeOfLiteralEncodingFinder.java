@@ -35,7 +35,10 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 			}
 			
 			for (CtBinaryOperator<?> operator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
-				if(operator.getKind() == BinaryOperatorKind.BITAND) {
+				BinaryOperatorKind operatorKind = operator.getKind();
+				if(operatorKind == BinaryOperatorKind.BITAND
+						|| operatorKind == BinaryOperatorKind.BITOR
+						|| operatorKind == BinaryOperatorKind.BITXOR) {
 					if(hasChangeOfLiteralEncoding(operator)) {
 						int lineNumber = operator.getPosition().getEndLine();
 						String snippet = operator.getParent().prettyprint();

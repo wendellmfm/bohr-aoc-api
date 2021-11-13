@@ -44,62 +44,62 @@ class PreAndPostIncrementDecrementFinderTest {
 			
 			for(AoCInfo aocInfo: suite.getAtomsOfConfusion()) {
 				if(aocInfo.getLineNumber() == 10) {
-					assertEquals(AoC.PostINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 26) {
-					assertEquals(AoC.PostINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 47) {
-					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 68) {
-					assertEquals(AoC.PostINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 84) {
-					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 102) {
-					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 103) {
-					assertEquals(AoC.PostDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PostIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 109) {
-					assertEquals(AoC.PreINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PreIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 125) {
-					assertEquals(AoC.PreDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PreIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 146) {
-					assertEquals(AoC.PreDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PreIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 161) {
-					assertEquals(AoC.PreINC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PreIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 				
 				if(aocInfo.getLineNumber() == 177) {
-					assertEquals(AoC.PreDEC, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
+					assertEquals(AoC.PreIncDec, aocInfo.getAtomOfConfusion(), "AoC type not mached. Line: " + aocInfo.getLineNumber() + " Snippet: " + aocInfo.getSnippet());
 					count++;
 				}
 			}
