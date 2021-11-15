@@ -43,7 +43,31 @@ public class ChangeOfLiteralEncodingSample {
 		System.out.println(a);
 	}
 	
-	public void methodFour() {
+	public int methodFour() {
+		int a = 11 | 32;
+		
+		return a;
+	}
+	
+	public void methodFourTransformed() {
+		int a = 0b1100 | 0b0011;
+		
+		System.out.println(a);
+	}
+	
+	public int methodFive() {
+		int a = 11 ^ 32;
+		
+		return a;
+	}
+	
+	public void methodFiveTransformed() {
+		int a = 0b1100 ^ 0b0011;
+		
+		System.out.println(a);
+	}
+	
+	public void methodSix() {
 		int a;
 		a = 018;
 		
@@ -52,7 +76,7 @@ public class ChangeOfLiteralEncodingSample {
 		System.out.println(a + b);
 	}
 	
-	public int methodFive() {
+	public int methodSeven() {
 		float b = 11;
 		float c = 32;
 		int a = b & c;
