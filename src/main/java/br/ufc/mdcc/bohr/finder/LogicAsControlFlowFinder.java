@@ -35,7 +35,7 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 							int lineNumber = operator.getPosition().getLine();
 							String snippet = operator.getParent().prettyprint();
 							
-							Dataset.store(qualifiedName, new AoCInfo(AoC.LaCTRF, lineNumber, snippet));
+							Dataset.store(qualifiedName, new AoCInfo(AoC.LCF, lineNumber, snippet));
 						}
 					} catch (SpoonException e) {
 						// TODO: handle exception

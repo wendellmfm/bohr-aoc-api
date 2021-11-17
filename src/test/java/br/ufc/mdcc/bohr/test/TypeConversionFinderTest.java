@@ -40,7 +40,7 @@ class TypeConversionFinderTest {
 			assertTrue(suite.getAtomsOfConfusion().size() == 21, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				assertEquals(AoC.TPC, aocInfo.getAtomOfConfusion(), "AoC type not mached");
+				assertEquals(AoC.TP, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 24 || aocInfo.getLineNumber() == 38
 						|| aocInfo.getLineNumber() == 54 || aocInfo.getLineNumber() == 70 || aocInfo.getLineNumber() == 84
 						|| aocInfo.getLineNumber() == 98 || aocInfo.getLineNumber() == 112 || aocInfo.getLineNumber() == 126

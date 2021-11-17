@@ -36,7 +36,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 				if(hasTypeConversionAtom(statement)) {
 					snippet = statement.prettyprint();
 					int lineNumber = statement.getPosition().getLine();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TPC, lineNumber, snippet));
+					Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
 				}
 			}		
 		}	

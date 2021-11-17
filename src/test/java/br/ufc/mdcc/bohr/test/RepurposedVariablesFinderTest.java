@@ -40,7 +40,7 @@ public class RepurposedVariablesFinderTest {
 			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				assertEquals(AoC.RVar, aocInfo.getAtomOfConfusion(), "AoC type not mached");
+				assertEquals(AoC.RV, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 34
 						|| aocInfo.getLineNumber() == 59 || aocInfo.getLineNumber() == 82
 								|| aocInfo.getLineNumber() == 106,

@@ -39,7 +39,7 @@ public class ArithmeticAsLogicFinder extends AbstractProcessor<CtClass<?>> {
 							int lineNumber = operator.getPosition().getEndLine();
 							String snippet = operator.getParent().prettyprint();
 							
-							Dataset.store(qualifiedName, new AoCInfo(AoC.AaL, lineNumber, snippet));
+							Dataset.store(qualifiedName, new AoCInfo(AoC.AL, lineNumber, snippet));
 						}
 					}
 				}

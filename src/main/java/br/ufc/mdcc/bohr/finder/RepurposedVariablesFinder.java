@@ -116,7 +116,7 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
 	private void store(String qualifiedName, CtLoop loop) {
 		int lineNumber = loop.getPosition().getLine();
 		String snippet = loop.prettyprint();
-		Dataset.store(qualifiedName, new AoCInfo(AoC.RVar, lineNumber, snippet));
+		Dataset.store(qualifiedName, new AoCInfo(AoC.RV, lineNumber, snippet));
 	}
 	
 }

@@ -3,19 +3,15 @@ package br.ufc.mdcc.bohr.model;
 public enum AoC {
 
 	IOP("IOP", "Infix Operator Precedence"),
-	PostIncDec("PostINCDEC", "Post Increment Decrement"), 
-	PreIncDec("PreINCDEC", "Pre Increment Decrement"),
-	CVar("CVar", "Constant Variables"),
-	RInd("RInd", "Remove Identation Atom"),
-	CoO("CoO", "Conditional Operator"),
-	AaL("AaL", "Arithmetic as Logic"),
-	LaCTRF("LaCTRF", "Logic as Control Flow"),
-	RVar("RVar", "Repurposed Variables"),
-	DUR("DUR", "Dead, Unreacheble, and Repeated"),
-	CoLE("CoLE", "Change of Literal Encoding"),
+	POSTINCDEC("PostIncDec", "Post Increment Decrement"), 
+	PREINCDEC("PreIncDec", "Pre Increment Decrement"),
+	CO("CO", "Conditional Operator"),
+	AL("AaL", "Arithmetic as Logic"),
+	LCF("LaCF", "Logic as Control Flow"),
+	RV("RV", "Repurposed Variables"),
+	CLE("CoLE", "Change of Literal Encoding"),
 	OCB("OCB", "Omitted Curly Braces"),
-	TPC("TPC", "Type Conversion"),
-	Ind("Ind", "Identation");
+	TP("TP", "Type Conversion");
 
 	private final String shortName;
 

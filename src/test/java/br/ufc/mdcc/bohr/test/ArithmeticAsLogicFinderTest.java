@@ -40,7 +40,7 @@ class ArithmeticAsLogicFinderTest {
 			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				assertEquals(AoC.AaL, aocInfo.getAtomOfConfusion(), "AoC type not mached");
+				assertEquals(AoC.AL, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 13 || aocInfo.getLineNumber() == 33
 						|| aocInfo.getLineNumber() == 53 || aocInfo.getLineNumber() == 73
 						|| aocInfo.getLineNumber() == 83,

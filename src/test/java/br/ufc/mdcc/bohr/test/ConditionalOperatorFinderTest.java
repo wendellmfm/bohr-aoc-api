@@ -40,7 +40,7 @@ class ConditionalOperatorFinderTest {
 			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				assertEquals(AoC.CoO, aocInfo.getAtomOfConfusion(), "AoC type not mached");
+				assertEquals(AoC.CO, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 11 || aocInfo.getLineNumber() == 35
 						|| aocInfo.getLineNumber() == 60 || aocInfo.getLineNumber() == 85
 								|| aocInfo.getLineNumber() == 93,
