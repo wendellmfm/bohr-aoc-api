@@ -56,26 +56,22 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 	}
 	
 	private boolean hasMethodInvocation(CtExpression<?> handOperand) {
-		
 		List<CtInvocation<?>> methods = handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
 		
 		if(!methods.isEmpty()) {
-			for (CtInvocation<?> method : methods) {
-				if(method.getType() != null
-						&& !method.getType().toString().equalsIgnoreCase("boolean")) {
-					return true;
-				}
-			}
+			return true;
 		}
 		
 		return false;
 	}
 
 	private boolean hasUnaryOperator(CtExpression<?> handOperand) {
-		
 		List<CtUnaryOperator<?>> unaryOperators = handOperand.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
-		if(!unaryOperators.isEmpty() && hasIncrementDecrementUnaryOperators(unaryOperators)) {
-			return true;
+		
+		if(!unaryOperators.isEmpty()){		
+			if(hasIncrementDecrementUnaryOperators(unaryOperators)) {
+				return true;
+			}
 		}
 		
 		return false;
@@ -94,9 +90,6 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
 					return true;
 					
 				case PREDEC:
-					return true;
-					
-				case POS:
 					return true;
 					
 				case POSTINC:
