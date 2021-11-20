@@ -13,8 +13,10 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
@@ -38,7 +40,26 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 					int lineNumber = statement.getPosition().getLine();
 					Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
 				}
-			}		
+			}
+			
+			for (CtMethod<?> method : element.getElements(new TypeFilter<CtMethod<?>>(CtMethod.class))) {
+				
+				for (CtReturn<?> rtrn : method.getElements(new TypeFilter<CtReturn<?>>(CtReturn.class))) {
+					
+					if(rtrn.getReturnedExpression() != null
+							&& rtrn.getReturnedExpression().getType() != null) {
+						String rtrnExpressionType = rtrn.getReturnedExpression().getType().toString();
+						String methodType = method.getType().toString();
+						
+						boolean hasTypeConversionAtom = checkConversions(rtrn, rtrnExpressionType, methodType);
+						if(hasTypeConversionAtom) {
+							snippet = rtrn.prettyprint();
+							int lineNumber = rtrn.getPosition().getLine();
+							Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
+						}
+					}
+				}
+			}
 		}	
 	}
 	
@@ -67,6 +88,12 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			}
 		}
 		
+		boolean result = checkConversions(statement, assignmentType, assignedType);
+		
+		return result;
+	}
+
+	private boolean checkConversions(CtStatement statement, String assignmentType, String assignedType) {
 		boolean result = false;
 		switch (assignedType) {
 			case BYTE:
@@ -91,7 +118,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 			default:
 				break;
 		}
-		
 		return result;
 	}
 	
@@ -278,30 +304,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 	private boolean hasMethodInvocation(CtStatement statement) {
 		List<CtInvocation<?>> methods = new ArrayList<>();
 		TypeFilter<CtInvocation<?>> filter = new TypeFilter<CtInvocation<?>>(CtInvocation.class);
-
-		if(statement instanceof CtLocalVariable) {
-			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) statement;
-			
-			if(localVariable.getAssignment() != null ) {
-				if(localVariable.getAssignment().getType() != null) {
-					methods = localVariable.getAssignment().getElements(filter);
-					
-					if(!methods.isEmpty()) {
-						return true;
-					}
-				}
-			}
-		} else if (statement instanceof CtAssignment) {
-			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) statement;
-			
-			if(assignment.getAssignment().getType() != null
-					&& assignment.getAssigned().getType() != null) {
-				methods = assignment.getAssignment().getElements(filter);
-				
-				if(!methods.isEmpty()) {
-					return true;
-				}
-			}
+		
+		methods = statement.getElements(filter);
+		
+		if(!methods.isEmpty()) {
+			return true;
 		}
 		
 		return false;

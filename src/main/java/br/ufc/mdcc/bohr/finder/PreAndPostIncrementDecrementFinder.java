@@ -7,6 +7,7 @@ import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
@@ -35,10 +36,11 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtClas
 							|| parent instanceof CtLocalVariable
 							|| parent instanceof CtInvocation
 							|| parent instanceof CtArrayRead
+							|| parent instanceof CtArrayWrite
 							|| parent instanceof CtReturn) {
 						
 						try {
-							int lineNumber = parent.getPosition().getEndLine();
+							int lineNumber = parent.getPosition().getLine();
 							String snippet = parent.prettyprint();
 							
 							save(qualifiedName, unaryOpr, lineNumber, snippet);
