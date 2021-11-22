@@ -14,16 +14,16 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.code.CtOperatorAssignmentImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 
-public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
+public class RepurposedVariablesFinder extends AbstractProcessor<CtType<?>> {
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 
@@ -33,7 +33,7 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 
-	private void getForUpdateCase(CtClass<?> element, String qualifiedName) {
+	private void getForUpdateCase(CtType<?> element, String qualifiedName) {
 		TypeFilter<CtFor> filter = new TypeFilter<CtFor>(CtFor.class);
 		for (CtFor forLoop : element.getElements(filter)) {
 			
@@ -75,7 +75,7 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtClass<?>> {
 		}
 	}
 	
-	private void getLoopCase(CtClass<?> element, String qualifiedName) {
+	private void getLoopCase(CtType<?> element, String qualifiedName) {
 		TypeFilter<CtLoop> whileFilter = new TypeFilter<CtLoop>(CtLoop.class);
 		TypeFilter<CtArrayRead<?>> arrayReadFilter = new TypeFilter<CtArrayRead<?>>(CtArrayRead.class);
 		TypeFilter<CtArrayWrite<?>> arrayWriteFilter = new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class);

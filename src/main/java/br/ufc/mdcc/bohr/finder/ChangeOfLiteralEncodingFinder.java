@@ -12,12 +12,12 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>> {
+public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> {
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 

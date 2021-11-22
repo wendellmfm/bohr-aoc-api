@@ -13,12 +13,12 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class LogicAsControlFlowFinder extends AbstractProcessor<CtClass<?>> {
+public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 			

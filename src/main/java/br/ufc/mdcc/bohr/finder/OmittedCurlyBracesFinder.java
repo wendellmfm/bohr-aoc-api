@@ -15,15 +15,15 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class OmittedCurlyBracesFinder extends AbstractProcessor<CtClass<?>> {
+public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 	
 	private List<OmittedCurlyBracesAtom> confirmed = new ArrayList<OmittedCurlyBracesAtom>();
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();

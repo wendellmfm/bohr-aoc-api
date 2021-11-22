@@ -6,12 +6,12 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtConditional;
-import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class ConditionalOperatorFinder extends AbstractProcessor<CtClass<?>> {
+public class ConditionalOperatorFinder extends AbstractProcessor<CtType<?>> {
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 

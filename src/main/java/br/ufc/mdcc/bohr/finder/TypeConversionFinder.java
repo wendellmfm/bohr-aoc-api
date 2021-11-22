@@ -15,11 +15,11 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
+public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 	private static final String CHAR = "char";
 	private static final String BYTE = "byte";
 	private static final String SHORT = "short";
@@ -28,7 +28,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtClass<?>> {
 	private static final String FLOAT = "float";
 	private static final String DOUBLE = "double";
 
-	public void process(CtClass<?> element) {
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 
