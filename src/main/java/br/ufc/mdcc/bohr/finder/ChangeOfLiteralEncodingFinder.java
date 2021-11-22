@@ -1,5 +1,6 @@
 package br.ufc.mdcc.bohr.finder;
 
+
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -25,7 +26,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 					if((literal.getParent() instanceof CtAssignment)
 							|| literal.getParent() instanceof CtLocalVariable) {
 						
-						if(hasChangeOfLiteralEncoding(literal.prettyprint())) {
+						if(hasOctalChangeOfLiteralEncoding(literal.prettyprint())) {
 							int lineNumber = literal.getPosition().getEndLine();
 							String snippet = literal.getParent().prettyprint();
 							Dataset.store(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
@@ -39,7 +40,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 				if(operatorKind == BinaryOperatorKind.BITAND
 						|| operatorKind == BinaryOperatorKind.BITOR
 						|| operatorKind == BinaryOperatorKind.BITXOR) {
-					if(hasChangeOfLiteralEncoding(operator)) {
+					if(hasLiteralBitwiseOperation(operator)) {
 						int lineNumber = operator.getPosition().getEndLine();
 						String snippet = operator.getParent().prettyprint();
 						Dataset.store(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
@@ -49,7 +50,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 		}
 	}
 	
-	private boolean hasChangeOfLiteralEncoding(String literal) {
+	private boolean hasOctalChangeOfLiteralEncoding(String literal) {
 		
 		if(literal.length() > 1 && literal.matches("0[0-9]+")) {
 			return true;
@@ -58,7 +59,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 		return false;
 	}
 	
-	private boolean hasChangeOfLiteralEncoding(CtBinaryOperator<?> operator) {
+	private boolean hasLiteralBitwiseOperation(CtBinaryOperator<?> operator) {
 		CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 		CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 		
@@ -66,9 +67,17 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 			String leftHandOperandString = leftHandOperand.prettyprint();
 			String rightHandOperandString = rightHandOperand.prettyprint();
 			
-			String binaryPattern = "-?0[bB][01][01]+";
+			String binaryPattern = "0[bB][01]+";
+			String octalPattern = "0[0-9]+";
+			String hexPattern = "0[xX][0-9a-fA-F]+";
 			
-			if(leftHandOperandString.matches(binaryPattern) && rightHandOperandString.matches(binaryPattern)) {
+			boolean binaryCondition = leftHandOperandString.matches(binaryPattern) || rightHandOperandString.matches(binaryPattern);
+			boolean octalCondition = leftHandOperandString.matches(octalPattern) || rightHandOperandString.matches(octalPattern);
+			boolean hexCondition = leftHandOperandString.matches(hexPattern) || rightHandOperandString.matches(hexPattern);
+			
+			if(binaryCondition 
+					|| hexCondition 
+					|| octalCondition) {
 				return false;
 			} else {
 				return true;
@@ -77,4 +86,5 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtClass<?>>
 		
 		return false;
 	}
+	
 }

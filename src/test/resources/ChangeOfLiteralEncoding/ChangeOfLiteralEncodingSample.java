@@ -44,13 +44,13 @@ public class ChangeOfLiteralEncodingSample {
 	}
 	
 	public int methodFour() {
-		int a = 11 | 32;
+		int a = 110 | 220;
 		
 		return a;
 	}
 	
 	public void methodFourTransformed() {
-		int a = 0b1100 | 0b0011;
+		int a = 0x6E | 0xDC;
 		
 		System.out.println(a);
 	}
@@ -62,7 +62,7 @@ public class ChangeOfLiteralEncodingSample {
 	}
 	
 	public void methodFiveTransformed() {
-		int a = 0b1100 ^ 0b0011;
+		int a = 013 ^ 040;
 		
 		System.out.println(a);
 	}
