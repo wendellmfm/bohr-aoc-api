@@ -17,13 +17,15 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>> {
+public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> {
 
-	public void process(CtClass<?> element) {
+	private static final String EXPLICIT_CAST_PATTERN = "\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)";
+
+	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 			
@@ -176,16 +178,41 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtClass<?>>
 	
 	private boolean hasParentheses(CtBinaryOperator<?> binaryOperator) {
 		String expression = binaryOperator.getOriginalSourceFragment().getSourceCode();
-		List<String> matches = new ArrayList<String>();
-		
-		Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
+		String rightHand = binaryOperator.getRightHandOperand().getOriginalSourceFragment().getSourceCode();
+		String leftHand = binaryOperator.getLeftHandOperand().getOriginalSourceFragment().getSourceCode();
+	
+		Pattern pattern = Pattern.compile(EXPLICIT_CAST_PATTERN);
 		Matcher matcher = pattern.matcher(expression);
+		boolean hasTypeConversion = matcher.find();
 		
-		while (matcher.find()) {
-			matches.add(matcher.group());
+		if(hasTypeConversion) {
+			expression = removeExplicitCast(expression);
+			rightHand = removeExplicitCast(rightHand);
+			leftHand = removeExplicitCast(leftHand);
 		}
 		
-		if(matches.size() == 1) {
+		if(isBetweenParentheses(expression)
+				|| isBetweenParentheses(leftHand)
+				|| isBetweenParentheses(rightHand)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private String removeExplicitCast(String expression) {
+		expression = expression.replaceAll(EXPLICIT_CAST_PATTERN, "");
+		
+		return expression;
+	}
+	
+	private boolean isBetweenParentheses(String expression) {
+		int size = expression.length();
+		
+		char firstChar = expression.charAt(0);
+		char lastChar = expression.charAt(size - 1);
+		
+		if(firstChar == '(' && lastChar == ')') {
 			return true;
 		}
 		
