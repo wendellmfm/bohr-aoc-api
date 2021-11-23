@@ -89,4 +89,30 @@ public class LogicAsControlFlowSample {
 		
 		System.out.println(a + " " + b);
 	}
+	
+	public void methodFive(){
+		int a = 0;
+		int b = 4;
+		
+		for(int i = 0; b == 4 && (a = i) < 2; i++) {
+			System.out.println(a);
+		}
+		
+		System.out.println(a + " " + b);
+	}
+	
+	public void methodFiveTransformed(){
+		int a = 0;
+		int b = 4;
+		
+		for(int i = 0; b == 4; i++) {
+			a = i;
+			if(a >= 2) {
+				break;
+			}
+			System.out.println(a);
+		}
+		
+		System.out.println(a + " " + b);
+	}
 }

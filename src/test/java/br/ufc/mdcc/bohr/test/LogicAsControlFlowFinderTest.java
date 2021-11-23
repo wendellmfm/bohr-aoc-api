@@ -37,12 +37,13 @@ class LogicAsControlFlowFinderTest {
 		for (AoCSuite suite : aocSuiteList) {
 			assertEquals("LogicAsControlFlowSample", suite.getClassQualifiedName(), "Qualified name not matched.");
 
-			assertTrue(suite.getAtomsOfConfusion().size() == 5, "There are more or less AoC than expected.");
+			assertTrue(suite.getAtomsOfConfusion().size() == 6, "There are more or less AoC than expected.");
 
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				assertEquals(AoC.LCF, aocInfo.getAtomOfConfusion(), "AoC type not mached");
 				assertTrue(aocInfo.getLineNumber() == 10 || aocInfo.getLineNumber() == 37
-						|| aocInfo.getLineNumber() == 60 || aocInfo.getLineNumber() == 86,
+						|| aocInfo.getLineNumber() == 60 || aocInfo.getLineNumber() == 86
+						|| aocInfo.getLineNumber() == 97,
 						"AoC found out of the expected line. Line: " + aocInfo.getLineNumber() + " Snippet: "
 								+ aocInfo.getSnippet());
 

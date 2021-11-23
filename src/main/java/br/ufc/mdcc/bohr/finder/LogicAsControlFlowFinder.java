@@ -9,6 +9,7 @@ import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -47,6 +48,7 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 	
 	private boolean hasLogicAsControlFlow(CtExpression<?> handOperand) {
 		if(hasUnaryOperator(handOperand)
+				|| hasAssignment(handOperand)
 				|| hasMethodInvocation(handOperand)) {
 			
 			return true;
@@ -57,7 +59,6 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 	
 	private boolean hasMethodInvocation(CtExpression<?> handOperand) {
 		List<CtInvocation<?>> methods = handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		
 		if(!methods.isEmpty()) {
 			return true;
 		}
@@ -67,7 +68,6 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 
 	private boolean hasUnaryOperator(CtExpression<?> handOperand) {
 		List<CtUnaryOperator<?>> unaryOperators = handOperand.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
-		
 		if(!unaryOperators.isEmpty()){		
 			if(hasIncrementDecrementUnaryOperators(unaryOperators)) {
 				return true;
@@ -75,7 +75,16 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 		}
 		
 		return false;
-	}	
+	}
+	
+	private boolean hasAssignment(CtExpression<?> handOperand) {
+		List<CtAssignment<?, ?>> assignments = handOperand.getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
+		if(!assignments.isEmpty()){		
+			return true;
+		}
+		
+		return false;
+	}
 	
 	private boolean hasIncrementDecrementUnaryOperators(List<CtUnaryOperator<?>> unaryOperators) {
 		
