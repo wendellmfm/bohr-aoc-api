@@ -11,7 +11,7 @@ public enum AoC {
 	RV("RV", "Repurposed Variables"),
 	CLE("CoLE", "Change of Literal Encoding"),
 	OCB("OCB", "Omitted Curly Braces"),
-	TP("TP", "Type Conversion");
+	TC("TC", "Type Conversion");
 
 	private final String shortName;
 

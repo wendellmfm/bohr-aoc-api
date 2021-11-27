@@ -29,7 +29,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				if(hasTypeConversionAtom(variableRead)) {
 					int lineNumber = variableRead.getPosition().getLine();
 					snippet = variableRead.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
+					Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
 				}
 			}
 			
@@ -39,7 +39,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 					if(hasTypeConversionAtom(binaryOperator)) {
 						int lineNumber = binaryOperator.getPosition().getLine();
 						snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
+						Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
 					}
 				}
 			}
@@ -48,7 +48,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				if(hasTypeConversionAtom(unaryOperator)) {
 					int lineNumber = unaryOperator.getPosition().getLine();
 					snippet = unaryOperator.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TP, lineNumber, snippet));
+					Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
 				}
 			}
 		}	

@@ -63,7 +63,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 		CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 		CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 		
-		if(leftHandOperand instanceof CtLiteral && rightHandOperand instanceof CtLiteral) {		
+		if(leftHandOperand instanceof CtLiteral || rightHandOperand instanceof CtLiteral) {		
 			String leftHandOperandString = leftHandOperand.prettyprint();
 			String rightHandOperandString = rightHandOperand.prettyprint();
 			
