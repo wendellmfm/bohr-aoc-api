@@ -6,8 +6,7 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtArrayRead;
-import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
@@ -35,8 +34,7 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtType
 							|| parent instanceof CtAssignment
 							|| parent instanceof CtLocalVariable
 							|| parent instanceof CtInvocation
-							|| parent instanceof CtArrayRead
-							|| parent instanceof CtArrayWrite
+							|| parent instanceof CtArrayAccess
 							|| parent instanceof CtReturn) {
 						
 						try {
