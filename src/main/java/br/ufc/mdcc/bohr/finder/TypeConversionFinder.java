@@ -80,9 +80,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				}
 			} else if(expression instanceof CtUnaryOperator) {
 				CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) expression;
-				String variableType = unaryOperator.getType().toString();
-				if (checkNarrowingConversion(matcher.group(1), variableType)) {
-					return true;
+				if(unaryOperator.getType() != null) {
+					String variableType = unaryOperator.getType().toString();
+					if (checkNarrowingConversion(matcher.group(1), variableType)) {
+						return true;
+					}
 				}
 			} else if(expression instanceof CtBinaryOperator) {
 				return true;
