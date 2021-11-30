@@ -8,6 +8,7 @@ import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
@@ -24,33 +25,40 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 			String qualifiedName = element.getQualifiedName();
 			
 			String snippet = "";
-
-			for (CtVariableRead<?> variableRead : element.getElements(new TypeFilter<CtVariableRead<?>>(CtVariableRead.class))) {
-				if(hasTypeConversionAtom(variableRead)) {
-					int lineNumber = variableRead.getPosition().getLine();
-					snippet = variableRead.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
-				}
-			}
 			
-			for (CtBinaryOperator<?> binaryOperator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
-				CtElement parent = binaryOperator.getParent();
-				if(parent != null && !(parent instanceof CtBinaryOperator)) {
-					if(hasTypeConversionAtom(binaryOperator)) {
-						int lineNumber = binaryOperator.getPosition().getLine();
-						snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
+			try {
+				
+				for (CtVariableRead<?> variableRead : element.getElements(new TypeFilter<CtVariableRead<?>>(CtVariableRead.class))) {
+					if(hasTypeConversionAtom(variableRead)) {
+						int lineNumber = variableRead.getPosition().getLine();
+						snippet = variableRead.getOriginalSourceFragment().getSourceCode();
 						Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
 					}
 				}
-			}
-			
-			for (CtUnaryOperator<?> unaryOperator : element.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class))) {
-				if(hasTypeConversionAtom(unaryOperator)) {
-					int lineNumber = unaryOperator.getPosition().getLine();
-					snippet = unaryOperator.getOriginalSourceFragment().getSourceCode();
-					Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+				
+				for (CtBinaryOperator<?> binaryOperator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
+					CtElement parent = binaryOperator.getParent();
+					if(parent != null && !(parent instanceof CtBinaryOperator)) {
+						if(hasTypeConversionAtom(binaryOperator)) {
+							int lineNumber = binaryOperator.getPosition().getLine();
+							snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
+							Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+						}
+					}
 				}
+				
+				for (CtUnaryOperator<?> unaryOperator : element.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class))) {
+					if(hasTypeConversionAtom(unaryOperator)) {
+						int lineNumber = unaryOperator.getPosition().getLine();
+						snippet = unaryOperator.getOriginalSourceFragment().getSourceCode();
+						Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+					}
+				}
+				
+			} catch (SpoonException e) {
+				// TODO: handle exception
 			}
+
 		}	
 	}
 	
@@ -74,9 +82,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		if(hasTypeConversion) {
 			if(expression instanceof CtVariableRead) {
 				CtVariableRead<?> variableRead = (CtVariableRead<?>) expression;
-				String variableType = variableRead.getType().toString();
-				if (checkNarrowingConversion(matcher.group(1), variableType)) {
-					return true;
+				if(variableRead.getType() != null) {
+					String variableType = variableRead.getType().toString();
+					if (checkNarrowingConversion(matcher.group(1), variableType)) {
+						return true;
+					}
 				}
 			} else if(expression instanceof CtUnaryOperator) {
 				CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) expression;
