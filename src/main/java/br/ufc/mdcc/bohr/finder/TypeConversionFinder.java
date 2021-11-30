@@ -1,6 +1,7 @@
 package br.ufc.mdcc.bohr.finder;
 
 import java.util.Arrays;
+import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +15,6 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -36,17 +36,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 					}
 				}
 				
-				for (CtBinaryOperator<?> binaryOperator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
-					CtElement parent = binaryOperator.getParent();
-					if(parent != null && !(parent instanceof CtBinaryOperator)) {
-						if(hasTypeConversionAtom(binaryOperator)) {
-							int lineNumber = binaryOperator.getPosition().getLine();
-							snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
-							Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
-						}
-					}
-				}
-				
 				for (CtUnaryOperator<?> unaryOperator : element.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class))) {
 					if(hasTypeConversionAtom(unaryOperator)) {
 						int lineNumber = unaryOperator.getPosition().getLine();
@@ -55,11 +44,29 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 					}
 				}
 				
+				for (CtBinaryOperator<?> binaryOperator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
+					if(binaryOperator.getParent() != null 
+							&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
+						if(hasTypeConversionAtom(binaryOperator)) {
+							int lineNumber = binaryOperator.getPosition().getLine();
+							snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
+							Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+						}
+					}
+				}
+				
 			} catch (SpoonException e) {
 				// TODO: handle exception
 			}
 
 		}	
+	}
+	
+	private String removeExplicitCast(String expression) {
+		String EXPLICIT_CAST_PATTERN = "\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)";
+		expression = expression.replaceAll(EXPLICIT_CAST_PATTERN, "");
+		
+		return expression;
 	}
 	
 	private boolean hasTypeConversionAtom(CtExpression<?> expression) {
@@ -75,16 +82,17 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 	}
 	
 	private boolean hasExplicitTypeConversion(CtExpression<?> expression) {
-		Pattern pattern = Pattern.compile("^\\(\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)");
+		Pattern pattern = Pattern.compile("^\\(+(\\s*(byte|short|int|long|float|double|char)\\s*)\\)");
 		Matcher matcher = pattern.matcher(expression.prettyprint());
 		boolean hasTypeConversion = matcher.find();
 		
 		if(hasTypeConversion) {
+			String castType = matcher.group(1);
 			if(expression instanceof CtVariableRead) {
 				CtVariableRead<?> variableRead = (CtVariableRead<?>) expression;
 				if(variableRead.getType() != null) {
 					String variableType = variableRead.getType().toString();
-					if (checkNarrowingConversion(matcher.group(1), variableType)) {
+					if (checkNarrowingConversion(castType, variableType)) {
 						return true;
 					}
 				}
@@ -92,12 +100,29 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) expression;
 				if(unaryOperator.getType() != null) {
 					String variableType = unaryOperator.getType().toString();
-					if (checkNarrowingConversion(matcher.group(1), variableType)) {
+					if (checkNarrowingConversion(castType, variableType)) {
 						return true;
 					}
 				}
 			} else if(expression instanceof CtBinaryOperator) {
-				return true;
+				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
+				String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
+				
+				source = removeExplicitCast(source);
+				
+				pattern = Pattern.compile("\\(([^)]+)\\)");
+				matcher = pattern.matcher(source);
+				boolean hasParentheses = matcher.find();
+				
+				if(hasParentheses) {
+					if(binaryOperator.getType() != null) {
+						String variableType = binaryOperator.getType().toString();
+						if (checkNarrowingConversion(castType, variableType)) {
+							return true;
+						}
+					}
+				}
+				
 			}
 		}
 		
