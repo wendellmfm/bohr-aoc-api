@@ -108,11 +108,12 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
 				String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
 				
-				source = removeExplicitCast(source);
+				source = removeExplicitCast(source).trim();
 				
-				pattern = Pattern.compile("\\(([^)]+)\\)");
-				matcher = pattern.matcher(source);
-				boolean hasParentheses = matcher.find();
+				//pattern = Pattern.compile("\\(([^)]+)\\)");
+				//matcher = pattern.matcher(source);
+				boolean hasParentheses = source.charAt(0) == '(' 
+						&& source.charAt(source.length() - 1) == ')';
 				
 				if(hasParentheses) {
 					if(binaryOperator.getType() != null) {
