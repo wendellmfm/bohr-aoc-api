@@ -110,8 +110,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				
 				source = removeExplicitCast(source).trim();
 				
-				//pattern = Pattern.compile("\\(([^)]+)\\)");
-				//matcher = pattern.matcher(source);
 				boolean hasParentheses = source.charAt(0) == '(' 
 						&& source.charAt(source.length() - 1) == ')';
 				
