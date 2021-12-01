@@ -1,9 +1,5 @@
 package br.ufc.mdcc.bohr.finder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +12,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -28,172 +23,92 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> 
 	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
-			
-			List<Integer> atomLines = new ArrayList<Integer>();
-			
+					
 			TypeFilter<CtBinaryOperator<?>> binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
 			for (CtBinaryOperator<?> binaryOpr : element.getElements(binaryOprFilter)) {
+				
 				try {
-					CtElement fullExpression = getHighLevelParent(binaryOpr);
 					
-					if (isCandidate(fullExpression)) {
-						int lineNumber = fullExpression.getPosition().getLine();
-						if(!atomLines.contains(Integer.valueOf(lineNumber))) {
-							atomLines.add(lineNumber);
-							String snippet = fullExpression.getOriginalSourceFragment().getSourceCode();
-							Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
-						}
-					}
+					getArithmeticalIOP(qualifiedName, binaryOpr);
 					
+					getLogicalIOP(qualifiedName, binaryOpr);
+									
 				} catch (SpoonException e) {
 					// TODO: handle exception
 				}
 			}
 		}
 	}
+
+	private void getArithmeticalIOP(String qualifiedName, CtBinaryOperator<?> binaryOpr) {
+		if(binaryOpr.getKind() == BinaryOperatorKind.MUL 
+				|| binaryOpr.getKind() == BinaryOperatorKind.DIV
+				|| binaryOpr.getKind() == BinaryOperatorKind.MOD) {
+								
+			if(binaryOpr.getParent() instanceof CtBinaryOperator){
+				CtBinaryOperator<?> binaryParent = (CtBinaryOperator<?>) binaryOpr.getParent();
+						
+				if(binaryParent.getKind() == BinaryOperatorKind.PLUS
+						|| binaryParent.getKind() == BinaryOperatorKind.MINUS){
+					
+					if(!hasStringConcatenation(binaryParent) && !hasParentheses(binaryOpr)) {
+						save(qualifiedName, binaryOpr);
+					}
+				}
+			}
+		}
+	}
+
+	private void getLogicalIOP(String qualifiedName, CtBinaryOperator<?> binaryOpr) {
+		if(binaryOpr.getKind() == BinaryOperatorKind.AND || binaryOpr.getKind() == BinaryOperatorKind.OR) {
+			
+			if(binaryOpr.getParent() instanceof CtBinaryOperator) {
+				
+				boolean andCondition = binaryOpr.getKind() == BinaryOperatorKind.AND
+						&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.OR;
+				
+				boolean orCondition = binaryOpr.getKind() == BinaryOperatorKind.OR
+						&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.AND;
+				
+				if(andCondition || orCondition) {
+					
+					if(!hasParentheses(binaryOpr)) {
+						save(qualifiedName, binaryOpr);
+					}
+				}
+			}
+			
+		}
+	}
 	
-	private CtElement getHighLevelParent(CtElement element) {
-		if ((element.getParent() != null) 
-				&& ((element.getParent() instanceof CtBinaryOperator)
-						|| element.getParent() instanceof CtInvocation)) {
-			return this.getHighLevelParent(element.getParent());
+	private void save(String qualifiedName, CtBinaryOperator<?> binaryOpr) {
+		int lineNumber = binaryOpr.getPosition().getLine();
+		String snippet = getFullExpression(binaryOpr).getOriginalSourceFragment().getSourceCode();
+		Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
+	}
+
+	private CtElement getFullExpression(CtElement element) {
+		if (element.getParent() != null 
+				&& element.getParent() instanceof CtBinaryOperator) {
+			return this.getFullExpression(element.getParent());
 		} else {
 			return element;
 		}
 	}
-
-	private boolean isCandidate(CtElement expression) {
-
-		if (hasCombinationOfArithmeticalOperators(expression)) {
-			if(isMissingParenthesesInArithmeticalOperations(expression)) {
-				return true;
-			}
-		}
-		
-		if (hasCombinationLogicalOperators(expression)) {
-			if(isMissingParenthesesInLogicalOperations(expression)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean hasCombinationOfArithmeticalOperators(CtElement expression) {
-		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
-		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-		
-		Map<String, Integer> differentOperatorsMap = new HashMap<String, Integer>();
-		differentOperatorsMap.put("PLUS", 0);
-		differentOperatorsMap.put("MINUS", 0);
-		differentOperatorsMap.put("MOD", 0);
-		differentOperatorsMap.put("MUL", 0);
-		differentOperatorsMap.put("DIV", 0);
-
-		for (CtBinaryOperator<?> binaryOpr : expression.getElements(binaryOprFilter)) {
-			switch (binaryOpr.getKind()) {
-			case PLUS:
-				differentOperatorsMap.put("PLUS", differentOperatorsMap.get("PLUS") + 1);
-				break;
-
-			case MINUS:
-				differentOperatorsMap.put("MINUS", differentOperatorsMap.get("MINUS") + 1);
-				break;
-
-			case MOD:
-				differentOperatorsMap.put("MOD", differentOperatorsMap.get("MOD") + 1);
-				break;
-
-			case MUL:
-				differentOperatorsMap.put("MUL", differentOperatorsMap.get("MUL") + 1);
-				break;
-
-			case DIV:
-				differentOperatorsMap.put("DIV", differentOperatorsMap.get("DIV") + 1);
-				break;
-
-			default:
-				break;
-			}
-		}
-
-		int firstSetOfOperators = 0;
-
-		if (differentOperatorsMap.get("PLUS") > 0) {
-			firstSetOfOperators++;
-		}
-
-		if (differentOperatorsMap.get("MINUS") > 0) {
-			firstSetOfOperators++;
-		}
-
-		int secondSetOfOperators = 0;
-
-		if (differentOperatorsMap.get("MUL") > 0) {
-			secondSetOfOperators++;
-		}
-
-		if (differentOperatorsMap.get("DIV") > 0) {
-			secondSetOfOperators++;
-		}
-
-		if (differentOperatorsMap.get("MOD") > 0) {
-			secondSetOfOperators++;
-		}
-
-		return (firstSetOfOperators > 0) && (secondSetOfOperators > 0);
-	}
-	
-	private boolean isMissingParenthesesInArithmeticalOperations(CtElement expression) {
-		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
-		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
-		
-		for (CtBinaryOperator<?> binaryOpr : elements) {
-			if(binaryOpr.getKind() == BinaryOperatorKind.MUL 
-					|| binaryOpr.getKind() == BinaryOperatorKind.DIV
-					|| binaryOpr.getKind() == BinaryOperatorKind.MOD) {
-				
-				boolean missingParentheses = false;
-				
-				if(binaryOpr.getParent() instanceof CtBinaryOperator){
-					CtBinaryOperator<?> binaryParent = (CtBinaryOperator<?>) binaryOpr.getParent();
-					
-					boolean condition = binaryParent.getKind() == BinaryOperatorKind.PLUS
-							|| binaryParent.getKind() == BinaryOperatorKind.MINUS;
-					
-					if(condition && !hasStringConcatenation(binaryParent)){
-						missingParentheses = !hasParentheses(binaryOpr);
-					}
-				}
-				
-				if(missingParentheses) {
-					return true;
-				}		
-			}
-		}
-		
-		return false;
-	}
 	
 	private boolean hasParentheses(CtBinaryOperator<?> binaryOperator) {
 		String expression = binaryOperator.getOriginalSourceFragment().getSourceCode();
-		String rightHand = binaryOperator.getRightHandOperand().getOriginalSourceFragment().getSourceCode();
-		String leftHand = binaryOperator.getLeftHandOperand().getOriginalSourceFragment().getSourceCode();
-	
+		
 		Pattern pattern = Pattern.compile(EXPLICIT_CAST_PATTERN);
 		Matcher matcher = pattern.matcher(expression);
+		
 		boolean hasTypeConversion = matcher.find();
 		
 		if(hasTypeConversion) {
 			expression = removeExplicitCast(expression);
-			rightHand = removeExplicitCast(rightHand);
-			leftHand = removeExplicitCast(leftHand);
 		}
 		
-		if(isBetweenParentheses(expression)
-				|| isBetweenParentheses(leftHand)
-				|| isBetweenParentheses(rightHand)) {
+		if(isBetweenParentheses(expression)) {
 			return true;
 		}
 		
@@ -225,86 +140,18 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> 
 
 			CtExpression<?> leftHandOperand = binaryParent.getLeftHandOperand();
 			CtExpression<?> rightHandOperand = binaryParent.getRightHandOperand();
-			if((leftHandOperand.getType() != null 
-					&& leftHandOperand.getType().toString().equalsIgnoreCase(stringType))
-					|| 
-					(rightHandOperand.getType() != null 
-						&& rightHandOperand.getType().toString().equalsIgnoreCase(stringType))) {
+			
+			boolean leftHandCondition = leftHandOperand.getType() != null 
+					&& leftHandOperand.getType().toString().equalsIgnoreCase(stringType);
+			
+			boolean rightHandCondition = rightHandOperand.getType() != null 
+				&& rightHandOperand.getType().toString().equalsIgnoreCase(stringType);
+			
+			if(leftHandCondition || rightHandCondition) {
 				return true;
 			}
 		}
-		return false;
-	}
-	
-	private boolean hasCombinationLogicalOperators(CtElement expression) {
-		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
-		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-		
-		Map<String, Integer> differentOperatorsMap = new HashMap<String, Integer>();
-		differentOperatorsMap.put("AND", 0);
-		differentOperatorsMap.put("OR", 0);
-
-		for (CtBinaryOperator<?> binaryOpr : expression.getElements(binaryOprFilter)) {
-			switch (binaryOpr.getKind()) {
-			case AND:
-				differentOperatorsMap.put("AND", differentOperatorsMap.get("AND") + 1);
-				break;
-
-			case OR:
-				differentOperatorsMap.put("OR", differentOperatorsMap.get("OR") + 1);
-				break;
-				
-			default:
-				break;
-			}
-		}
-
-		int andOperators = 0;
-
-		if (differentOperatorsMap.get("AND") > 0) {
-			andOperators++;
-		}
-
-		int orOperators = 0;
-
-		if (differentOperatorsMap.get("OR") > 0) {
-			orOperators++;
-		}
-
-		return (andOperators > 0) && (orOperators > 0);
-	}
-	
-	private boolean isMissingParenthesesInLogicalOperations(CtElement expression) {
-		TypeFilter<CtBinaryOperator<?>> binaryOprFilter = null;
-		binaryOprFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-		List<CtBinaryOperator<?>> elements = expression.getElements(binaryOprFilter);
-		
-		for (CtBinaryOperator<?> binaryOpr : elements) {
-			if(binaryOpr.getKind() == BinaryOperatorKind.AND || binaryOpr.getKind() == BinaryOperatorKind.OR) {
-				
-				boolean missingParentheses = false;
-				
-				if(binaryOpr.getParent() instanceof CtBinaryOperator){
-					
-					boolean andCondition = binaryOpr.getKind() == BinaryOperatorKind.AND
-							&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.OR;
-					
-					boolean orCondition = binaryOpr.getKind() == BinaryOperatorKind.OR
-							&& ((CtBinaryOperator<?>) binaryOpr.getParent()).getKind() == BinaryOperatorKind.AND;
-					
-					if(andCondition || orCondition){
-						missingParentheses = !hasParentheses(binaryOpr);
-					}
-				}
-				
-				if(missingParentheses) {
-					return true;
-				}
-				
-			}
-		}
 		
 		return false;
 	}
-
 }
