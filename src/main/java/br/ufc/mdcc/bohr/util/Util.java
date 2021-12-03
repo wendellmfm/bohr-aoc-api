@@ -1,24 +1,15 @@
 package br.ufc.mdcc.bohr.util;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import br.ufc.mdcc.bohr.model.AoCInfo;
-import br.ufc.mdcc.bohr.model.AoCSuite;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 public class Util {
-	private final static String REPORT_PATH = "./atomsreports";
-
+	public static final String EXPLICIT_CAST_PATTERN = "\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)";
+	
 	public static boolean isValid(CtType<?> element) {
 		return element != null && element.getQualifiedName() != null
 				&& (element.isClass() || element.isInterface())
@@ -27,81 +18,39 @@ public class Util {
 				&& !(element.getParent() instanceof CtNewClass<?>);
 	}
 	
-	public static void generateCSVFile(Collection<AoCSuite> aocSuiteList) {
-		ArrayList<List<String>> rows = new ArrayList<>();
+	public static boolean checkNoDecimalNumberNotation(String expression) {
+		String binaryPattern = "0[bB][01]+";
+		String octalPattern = "0[0-9]+";
+		String hexPattern = "0[xX][0-9a-fA-F]+";
 		
-		for (AoCSuite suite : aocSuiteList) {
-			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
-				String snippet = aocInfo.getSnippet();
-				snippet = snippet.replaceAll("\r\n", "");
-				snippet = snippet.replaceAll("\t", " ");
-				
-				if(snippet.contains(",")) {
-					snippet = snippet.replaceAll(",", "");
-					aocInfo.setSnippet(snippet);
-				}
-				
-				rows.add(Arrays.asList(suite.getClassQualifiedName(),
-						aocInfo.getAtomOfConfusion().getFullName(),
-						snippet,
-						String.valueOf(aocInfo.getLineNumber())));
-			}
-		}
+		boolean binaryNotation = checkNumberNotation(expression, binaryPattern);
+		boolean octalNotation = checkNumberNotation(expression, octalPattern);
+		boolean hexNotation = checkNumberNotation(expression, hexPattern);
 		
-		writeCSV(rows);
-	}
-
-	private static void writeCSV(ArrayList<List<String>> rows) {
-		createReportDirectory();
+		if(binaryNotation 
+				|| octalNotation
+				|| hexNotation) {
+			return true;
+		} 
 		
-		String fullReportName = getReportName().toString();
-		
-		FileWriter csvWriter = null;
-		try {
-			csvWriter = new FileWriter(REPORT_PATH + "/" + fullReportName);
-			csvWriter.append("Class");
-			csvWriter.append(",");
-			csvWriter.append("Atom");
-			csvWriter.append(",");
-			csvWriter.append("Snippet");
-			csvWriter.append(",");
-			csvWriter.append("Line");
-			csvWriter.append("\n");
-			
-			for (List<String> rowData : rows) {
-				csvWriter.append(String.join(",", rowData));
-				csvWriter.append("\n");
-			}
-			
-			csvWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (csvWriter != null) {
-				try {
-					csvWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		return false;
 	}
 	
-	private static void createReportDirectory() {
-		File directory = new File(REPORT_PATH);
-		if (!directory.exists()) {
-			directory.mkdir();
-		}
-	}
-
-	private static StringBuffer getReportName() {
-		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-		dateFormat.setTimeZone(calendar.getTimeZone());
+	private static boolean checkNumberNotation(String expression, String notationPattern) {
+		Pattern pattern = Pattern.compile(notationPattern);
+		Matcher matcher = pattern.matcher(expression);
 		
-		StringBuffer reportName = new StringBuffer("atoms-report-");
-		reportName.append(dateFormat.format(calendar.getTime()));
-		reportName.append(".csv");
-		return reportName;
+		if(matcher.find()) {
+			return true;
+		}
+		
+		return false;
 	}
+	
+	public static String removeExplicitCast(String expression) {
+		expression = expression.replaceAll(EXPLICIT_CAST_PATTERN, "");
+		
+		return expression;
+	}
+	
 }

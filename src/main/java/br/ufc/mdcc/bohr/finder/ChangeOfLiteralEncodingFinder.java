@@ -29,7 +29,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 						if(hasOctalChangeOfLiteralEncoding(literal.prettyprint())) {
 							int lineNumber = literal.getPosition().getEndLine();
 							String snippet = literal.getParent().prettyprint();
-							Dataset.store(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
+							Dataset.save(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
 						}
 					}
 				}
@@ -40,10 +40,10 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 				if(operatorKind == BinaryOperatorKind.BITAND
 						|| operatorKind == BinaryOperatorKind.BITOR
 						|| operatorKind == BinaryOperatorKind.BITXOR) {
-					if(hasLiteralBitwiseOperation(operator)) {
+					if(hasChangeOfLiteralEncoding(operator)) {
 						int lineNumber = operator.getPosition().getEndLine();
 						String snippet = operator.getParent().prettyprint();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
+						Dataset.save(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
 					}
 				}
 			}
@@ -59,25 +59,23 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 		return false;
 	}
 	
-	private boolean hasLiteralBitwiseOperation(CtBinaryOperator<?> operator) {
+	private boolean hasChangeOfLiteralEncoding(CtBinaryOperator<?> operator) {
 		CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 		CtExpression<?> rightHandOperand = operator.getRightHandOperand();
 		
-		if(leftHandOperand instanceof CtLiteral || rightHandOperand instanceof CtLiteral) {		
-			String leftHandOperandString = leftHandOperand.prettyprint();
-			String rightHandOperandString = rightHandOperand.prettyprint();
+		if(hasLiteralBitwiseOperation(leftHandOperand) 
+				|| hasLiteralBitwiseOperation(rightHandOperand)) {		
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasLiteralBitwiseOperation(CtExpression<?> operand) {
+		if(operand instanceof CtLiteral) {
+			String operandString = operand.prettyprint();
 			
-			String binaryPattern = "0[bB][01]+";
-			String octalPattern = "0[0-9]+";
-			String hexPattern = "0[xX][0-9a-fA-F]+";
-			
-			boolean binaryCondition = leftHandOperandString.matches(binaryPattern) || rightHandOperandString.matches(binaryPattern);
-			boolean octalCondition = leftHandOperandString.matches(octalPattern) || rightHandOperandString.matches(octalPattern);
-			boolean hexCondition = leftHandOperandString.matches(hexPattern) || rightHandOperandString.matches(hexPattern);
-			
-			if(binaryCondition 
-					|| hexCondition 
-					|| octalCondition) {
+			if(Util.checkNoDecimalNumberNotation(operandString)) {
 				return false;
 			} else {
 				return true;
@@ -86,5 +84,5 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 		
 		return false;
 	}
-	
+		
 }

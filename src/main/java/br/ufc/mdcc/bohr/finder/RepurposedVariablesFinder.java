@@ -59,14 +59,14 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtType<?>> {
 						CtUnaryOperatorImpl<?> forLoopUpdateVariable = (CtUnaryOperatorImpl<?>) forLoopUpdate;
 						
 						if(forParentInitVariableString.equals(forLoopUpdateVariable.getOperand().prettyprint())) {
-							store(qualifiedName, forParent);
+							save(qualifiedName, forParent);
 						}
 						
 					} else if(forLoopUpdate instanceof CtOperatorAssignmentImpl<?, ?>) {
 						CtOperatorAssignmentImpl<?, ?> forLoopUpdateVariable = (CtOperatorAssignmentImpl<?, ?>) forLoopUpdate;
 						
 						if(forParentInitVariableString.equals(forLoopUpdateVariable.getAssigned().prettyprint())) {
-							store(qualifiedName, forParent);
+							save(qualifiedName, forParent);
 						}
 					}
 					
@@ -101,7 +101,7 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtType<?>> {
 							if(!arraysWrite.isEmpty()) {
 								for (CtArrayWrite<?> write : arraysWrite) {
 									if(write.getTarget().prettyprint().equalsIgnoreCase(read.getTarget().prettyprint())) {
-										store(qualifiedName, ctLoop);
+										save(qualifiedName, ctLoop);
 										break;
 									}
 								}
@@ -113,10 +113,10 @@ public class RepurposedVariablesFinder extends AbstractProcessor<CtType<?>> {
 		}
 	}
 
-	private void store(String qualifiedName, CtLoop loop) {
+	private void save(String qualifiedName, CtLoop loop) {
 		int lineNumber = loop.getPosition().getLine();
 		String snippet = loop.prettyprint();
-		Dataset.store(qualifiedName, new AoCInfo(AoC.RV, lineNumber, snippet));
+		Dataset.save(qualifiedName, new AoCInfo(AoC.RV, lineNumber, snippet));
 	}
 	
 }

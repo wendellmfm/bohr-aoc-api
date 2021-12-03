@@ -18,8 +18,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> {
 
-	private static final String EXPLICIT_CAST_PATTERN = "\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)";
-
 	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
@@ -84,7 +82,7 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> 
 	private void save(String qualifiedName, CtBinaryOperator<?> binaryOpr) {
 		int lineNumber = binaryOpr.getPosition().getLine();
 		String snippet = getFullExpression(binaryOpr).getOriginalSourceFragment().getSourceCode();
-		Dataset.store(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
+		Dataset.save(qualifiedName, new AoCInfo(AoC.IOP, lineNumber, snippet));
 	}
 
 	private CtElement getFullExpression(CtElement element) {
@@ -99,13 +97,13 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> 
 	private boolean hasParentheses(CtBinaryOperator<?> binaryOperator) {
 		String expression = binaryOperator.getOriginalSourceFragment().getSourceCode();
 		
-		Pattern pattern = Pattern.compile(EXPLICIT_CAST_PATTERN);
+		Pattern pattern = Pattern.compile(Util.EXPLICIT_CAST_PATTERN);
 		Matcher matcher = pattern.matcher(expression);
 		
 		boolean hasTypeConversion = matcher.find();
 		
 		if(hasTypeConversion) {
-			expression = removeExplicitCast(expression);
+			expression = Util.removeExplicitCast(expression);
 		}
 		
 		if(isBetweenParentheses(expression)) {
@@ -113,12 +111,6 @@ public class InfixOperatorPrecedenceFinder extends AbstractProcessor<CtType<?>> 
 		}
 		
 		return false;
-	}
-	
-	private String removeExplicitCast(String expression) {
-		expression = expression.replaceAll(EXPLICIT_CAST_PATTERN, "");
-		
-		return expression;
 	}
 	
 	private boolean isBetweenParentheses(String expression) {

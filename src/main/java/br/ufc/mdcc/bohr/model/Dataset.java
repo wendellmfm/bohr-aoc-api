@@ -8,7 +8,7 @@ public class Dataset {
 
 	private static Map<String, AoCSuite> dataset = new HashMap<>();
 
-	public static void store(String classQualifiedName, AoCInfo atomOfConfusionInfo) {
+	public static void save(String classQualifiedName, AoCInfo atomOfConfusionInfo) {
 		AoCSuite suite = null;
 		if (dataset.containsKey(classQualifiedName)) {
 			suite = dataset.get(classQualifiedName);

@@ -58,19 +58,19 @@ public class PreAndPostIncrementDecrementFinder extends AbstractProcessor<CtType
 
 		switch (unaryOpr.getKind()) {
 		case POSTINC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.POSTINCDEC, lineNumber, snippet));
+			Dataset.save(qualifiedName, new AoCInfo(AoC.POSTINCDEC, lineNumber, snippet));
 			break;
 
 		case POSTDEC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.POSTINCDEC, lineNumber, snippet));
+			Dataset.save(qualifiedName, new AoCInfo(AoC.POSTINCDEC, lineNumber, snippet));
 			break;	
 		
 		case PREINC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PREINCDEC, lineNumber, snippet));
+			Dataset.save(qualifiedName, new AoCInfo(AoC.PREINCDEC, lineNumber, snippet));
 			break;
 
 		case PREDEC:
-			Dataset.store(qualifiedName, new AoCInfo(AoC.PREINCDEC, lineNumber, snippet));
+			Dataset.save(qualifiedName, new AoCInfo(AoC.PREINCDEC, lineNumber, snippet));
 			break;
 
 		default:

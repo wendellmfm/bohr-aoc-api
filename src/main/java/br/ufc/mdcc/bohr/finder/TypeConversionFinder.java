@@ -13,6 +13,7 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtType;
@@ -28,30 +29,11 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 			
 			try {
 				
-				for (CtVariableRead<?> variableRead : element.getElements(new TypeFilter<CtVariableRead<?>>(CtVariableRead.class))) {
+				for (CtExpression<?> variableRead : element.getElements(new TypeFilter<CtExpression<?>>(CtExpression.class))) {
 					if(hasTypeConversionAtom(variableRead)) {
 						int lineNumber = variableRead.getPosition().getLine();
 						snippet = variableRead.getOriginalSourceFragment().getSourceCode();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
-					}
-				}
-				
-				for (CtUnaryOperator<?> unaryOperator : element.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class))) {
-					if(hasTypeConversionAtom(unaryOperator)) {
-						int lineNumber = unaryOperator.getPosition().getLine();
-						snippet = unaryOperator.getOriginalSourceFragment().getSourceCode();
-						Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
-					}
-				}
-				
-				for (CtBinaryOperator<?> binaryOperator : element.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))) {
-					if(binaryOperator.getParent() != null 
-							&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
-						if(hasTypeConversionAtom(binaryOperator)) {
-							int lineNumber = binaryOperator.getPosition().getLine();
-							snippet = binaryOperator.getOriginalSourceFragment().getSourceCode();
-							Dataset.store(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
-						}
+						Dataset.save(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
 					}
 				}
 				
@@ -60,13 +42,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 			}
 
 		}	
-	}
-	
-	private String removeExplicitCast(String expression) {
-		String EXPLICIT_CAST_PATTERN = "\\((\\s*(byte|short|int|long|float|double|char)\\s*)\\)";
-		expression = expression.replaceAll(EXPLICIT_CAST_PATTERN, "");
-		
-		return expression;
 	}
 	
 	private boolean hasTypeConversionAtom(CtExpression<?> expression) {
@@ -96,6 +71,16 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 						return true;
 					}
 				}
+			} else if(expression instanceof CtLiteral) {
+				CtLiteral<?> literal = (CtLiteral<?>) expression;
+				if(Util.checkNoDecimalNumberNotation(expression.prettyprint())) {
+					if(literal.getType() != null) {
+						String variableType = literal.getType().toString();
+						if (checkNarrowingConversion(castType, variableType)) {
+							return true;
+						}
+					}
+				}
 			} else if(expression instanceof CtUnaryOperator) {
 				CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) expression;
 				if(unaryOperator.getType() != null) {
@@ -106,22 +91,25 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				}
 			} else if(expression instanceof CtBinaryOperator) {
 				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
-				String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
-				
-				source = removeExplicitCast(source).trim();
-				
-				boolean hasParentheses = source.charAt(0) == '(' 
-						&& source.charAt(source.length() - 1) == ')';
-				
-				if(hasParentheses) {
-					if(binaryOperator.getType() != null) {
-						String variableType = binaryOperator.getType().toString();
-						if (checkNarrowingConversion(castType, variableType)) {
-							return true;
+
+				if(binaryOperator.getParent() != null 
+						&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
+					String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
+					
+					source = Util.removeExplicitCast(source).trim();
+					
+					boolean hasParentheses = source.charAt(0) == '(' 
+							&& source.charAt(source.length() - 1) == ')';
+					
+					if(hasParentheses) {
+						if(binaryOperator.getType() != null) {
+							String variableType = binaryOperator.getType().toString();
+							if (checkNarrowingConversion(castType, variableType)) {
+								return true;
+							}
 						}
 					}
 				}
-				
 			}
 		}
 		

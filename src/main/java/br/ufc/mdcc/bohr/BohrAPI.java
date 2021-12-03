@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import br.ufc.mdcc.bohr.model.AoCSuite;
 import br.ufc.mdcc.bohr.model.Dataset;
-import br.ufc.mdcc.bohr.util.Util;
+import br.ufc.mdcc.bohr.util.ReportGenerator;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 
@@ -18,7 +18,7 @@ public class BohrAPI {
 		process();
 		
 		if(generateReport) {
-			Util.generateCSVFile(Dataset.list());
+			ReportGenerator.generateCSVFile(Dataset.list());
 		}
 		
 		return Dataset.list();
@@ -30,7 +30,7 @@ public class BohrAPI {
 		process();
 		
 		if(generateReport) {
-			Util.generateCSVFile(Dataset.list());
+			ReportGenerator.generateCSVFile(Dataset.list());
 		}
 		
 		return Dataset.list();

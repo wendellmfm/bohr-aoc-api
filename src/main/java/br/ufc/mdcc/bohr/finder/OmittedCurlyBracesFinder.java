@@ -1,6 +1,5 @@
 package br.ufc.mdcc.bohr.finder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.ufc.mdcc.bohr.model.AoC;
@@ -21,13 +20,10 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 	
-	private List<OmittedCurlyBracesAtom> confirmed = new ArrayList<OmittedCurlyBracesAtom>();
-
 	public void process(CtType<?> element) {
 		
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
-			confirmed = new ArrayList<OmittedCurlyBracesAtom>();
 			
 			for (CtBlock<?> ctBlock : element.getElements(new TypeFilter<CtBlock<?>>(CtBlock.class))) {
 				
@@ -35,23 +31,23 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 				for (int i = 0; i < statements.size() - 1; i++) {
 					
 					try {
-						getIfElseOmitted(statements.get(i), statements.get(i + 1));
+						getIfElseOmitted(qualifiedName, statements.get(i), statements.get(i + 1));
 						
-						getLoopOmittedBraces(statements.get(i), statements.get(i + 1));
+						getLoopOmittedBraces(qualifiedName, statements.get(i), statements.get(i + 1));
 						
 					} catch (SpoonException e) {
 						// TODO: handle exception
 					}
 				}
 			}
-
-			for (OmittedCurlyBracesAtom atom : confirmed) {
-				Dataset.store(qualifiedName, new AoCInfo(AoC.OCB, atom.getLine(), atom.getAtomSnippet()));
-			}
 		}
 	}
 	
-	private void getIfElseOmitted(CtStatement stmt, CtStatement nextStmt) {
+	private void save(String qualifiedName, CtStatement stmt, CtStatement nextStmt) {
+		Dataset.save(qualifiedName, new AoCInfo(AoC.OCB, stmt.getPosition().getLine(), stmt.prettyprint() + nextStmt.prettyprint()));
+	}
+	
+	private void getIfElseOmitted(String qualifiedName, CtStatement stmt, CtStatement nextStmt) {
 		
 		if (stmt instanceof CtIf) {
 			CtIf ifStmt = (CtIf) stmt;
@@ -66,40 +62,33 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 					int nextStmtLine = nextStmt.getPosition().getLine();
 					
 					if(stmtEndLine == nextStmtLine) {
-						OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-						atom.setBlockStmt(ifStmt);
-						atom.setNextLineStmt(nextStmt);
-						confirmed.add(atom);
+						save(qualifiedName, ifStmt, nextStmt);
 					}
 				}					
 			}
-			
-			getElseOmittedBraces(ifStmt, nextStmt);
+
+			if (ifStmt.getElseStatement() != null) {
+				getElseOmittedBraces(qualifiedName, ifStmt, nextStmt);
+			}
 		}
 	}
 
-	private void getElseOmittedBraces(CtIf ifStmt, CtStatement nextStmt) {
-		if (ifStmt.getElseStatement() != null) {
+	private void getElseOmittedBraces(String qualifiedName, CtIf ifStmt, CtStatement nextStmt) {
+		CtBlock<?> elseBlock = (CtBlock<?>) ifStmt.getElseStatement();
+		if (elseBlock.getStatements().size() == 1) {
+			CtStatement elseStmt = ifStmt.getElseStatement();
 			
-			CtBlock<?> elseBlock = (CtBlock<?>) ifStmt.getElseStatement();
-			if (elseBlock.getStatements().size() == 1) {
-				CtStatement elseStmt = ifStmt.getElseStatement();
+			int stmtEndLine = elseStmt.getPosition().getEndLine();
+			int nextStmtLine = nextStmt.getPosition().getLine();
+			
+			if (!elseStmt.prettyprint().contains("{")) {
 				
-				int stmtEndLine = elseStmt.getPosition().getEndLine();
-				int nextStmtLine = nextStmt.getPosition().getLine();
-				
-				if (!elseStmt.prettyprint().contains("{")) {
+				if(stmtEndLine == nextStmtLine) {
 					
-					if(stmtEndLine == nextStmtLine) {
-						
-						if(!hasElseIf(elseStmt) ) {
-							OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-							atom.setBlockStmt(ifStmt);
-							atom.setNextLineStmt(nextStmt);
-							confirmed.add(atom);
-						} else {
-							getIfElseOmitted((CtIf)elseStmt.getDirectChildren().get(0), nextStmt);
-						}
+					if(!hasElseIf(elseStmt) ) {
+						save(qualifiedName, nextStmt, ifStmt);
+					} else {
+						getIfElseOmitted(qualifiedName, (CtIf)elseStmt.getDirectChildren().get(0), nextStmt);
 					}
 				}
 			}
@@ -118,11 +107,12 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 		return false;
 	}
 	
-	private void getLoopOmittedBraces(CtStatement stmt, CtStatement nextStmt) {
+	private void getLoopOmittedBraces(String qualifiedName, CtStatement stmt, CtStatement nextStmt) {
 		
 		if (stmt instanceof CtFor 
 				|| stmt instanceof CtWhile
 				|| stmt instanceof CtForEach) {
+			
 			CtStatement body = null;
 			
 			if(stmt instanceof CtFor) {
@@ -148,41 +138,15 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 							int nextStmtLine = nextStmt.getPosition().getLine();
 							
 							if(stmtEndLine == nextStmtLine) {
-								OmittedCurlyBracesAtom atom = new OmittedCurlyBracesAtom();
-								atom.setBlockStmt(stmt);
-								atom.setNextLineStmt(nextStmt);
-								confirmed.add(atom);
+								save(qualifiedName, stmt, nextStmt);
 							}
 						}
 						
 					} else {
-						getLoopOmittedBraces((CtStatement) childElement, nextStmt);
+						getLoopOmittedBraces(qualifiedName, (CtStatement) childElement, nextStmt);
 					}
 				}
 			}
-		}
-	}
-	
-	private class OmittedCurlyBracesAtom {
-		private CtStatement blockStmt;
-		
-		private CtStatement nextLineStmt;
-
-		public void setBlockStmt(CtStatement blockStmt) {
-			this.blockStmt = blockStmt;
-		}
-
-		public void setNextLineStmt(CtStatement nextLineStmt) {
-			this.nextLineStmt = nextLineStmt;
-		}
-		
-		public String getAtomSnippet() {
-			return blockStmt.prettyprint() 
-					+ nextLineStmt.prettyprint();
-		}
-		
-		public int getLine() {
-			return blockStmt.getPosition().getLine();
 		}
 	}
 
