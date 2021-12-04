@@ -13,9 +13,7 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -39,16 +37,17 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 				
 			} catch (SpoonException e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 
 		}	
 	}
 	
 	private boolean hasTypeConversionAtom(CtExpression<?> expression) {
-		boolean hasExplicitTypeConversion = hasExplicitTypeConversion(expression);
+		boolean hasTypeConversion = hasTypeConversion(expression);
 		boolean hasModulusOperation = hasModulusOperation(expression.prettyprint());
 		
-		if(hasExplicitTypeConversion
+		if(hasTypeConversion
 				&& !hasModulusOperation) {
 			return true;
 		}
@@ -56,40 +55,13 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		return false;
 	}
 	
-	private boolean hasExplicitTypeConversion(CtExpression<?> expression) {
-		Pattern pattern = Pattern.compile("^\\(+(\\s*(byte|short|int|long|float|double|char)\\s*)\\)");
-		Matcher matcher = pattern.matcher(expression.prettyprint());
-		boolean hasTypeConversion = matcher.find();
+	private boolean hasTypeConversion(CtExpression<?> expression) {
+		String castType = getExplicitTypeConversion(expression);
+		String variableType = "";
 		
-		if(hasTypeConversion) {
-			String castType = matcher.group(1);
-			if(expression instanceof CtVariableRead) {
-				CtVariableRead<?> variableRead = (CtVariableRead<?>) expression;
-				if(variableRead.getType() != null) {
-					String variableType = variableRead.getType().toString();
-					if (checkNarrowingConversion(castType, variableType)) {
-						return true;
-					}
-				}
-			} else if(expression instanceof CtLiteral) {
-				CtLiteral<?> literal = (CtLiteral<?>) expression;
-				if(Util.checkNoDecimalNumberNotation(expression.prettyprint())) {
-					if(literal.getType() != null) {
-						String variableType = literal.getType().toString();
-						if (checkNarrowingConversion(castType, variableType)) {
-							return true;
-						}
-					}
-				}
-			} else if(expression instanceof CtUnaryOperator) {
-				CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) expression;
-				if(unaryOperator.getType() != null) {
-					String variableType = unaryOperator.getType().toString();
-					if (checkNarrowingConversion(castType, variableType)) {
-						return true;
-					}
-				}
-			} else if(expression instanceof CtBinaryOperator) {
+		if(castType != null) {
+			
+			if(expression instanceof CtBinaryOperator) {
 				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
 
 				if(binaryOperator.getParent() != null 
@@ -103,17 +75,37 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 					
 					if(hasParentheses) {
 						if(binaryOperator.getType() != null) {
-							String variableType = binaryOperator.getType().toString();
+							variableType = binaryOperator.getType().toString();
 							if (checkNarrowingConversion(castType, variableType)) {
 								return true;
 							}
 						}
 					}
 				}
+			} else if(!(expression instanceof CtInvocation)) {
+				if(expression.getType() != null) {
+					variableType = expression.getType().toString();
+					if (checkNarrowingConversion(castType, variableType)) {
+						return true;
+					}
+				}
 			}
 		}
 		
 		return false;
+	}
+	
+	private String getExplicitTypeConversion(CtExpression<?> expression) {
+		String castType = null;
+
+		Pattern pattern = Pattern.compile(Util.EXPLICIT_CAST_PATTERN);
+		Matcher matcher = pattern.matcher(expression.prettyprint());
+		
+		if(matcher.find()) {
+			castType = matcher.group(1);
+		}
+		
+		return castType;
 	}
 	
 	private boolean hasModulusOperation(String source) {
