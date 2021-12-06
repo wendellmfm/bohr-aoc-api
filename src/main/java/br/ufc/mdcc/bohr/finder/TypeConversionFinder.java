@@ -1,6 +1,7 @@
 package br.ufc.mdcc.bohr.finder;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +16,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
@@ -27,11 +29,14 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 			
 			try {
 				
-				for (CtExpression<?> variableRead : element.getElements(new TypeFilter<CtExpression<?>>(CtExpression.class))) {
-					if(hasTypeConversionAtom(variableRead)) {
-						int lineNumber = variableRead.getPosition().getLine();
-						snippet = variableRead.getOriginalSourceFragment().getSourceCode();
-						Dataset.save(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+				for (CtExpression<?> expression : element.getElements(new TypeFilter<CtExpression<?>>(CtExpression.class))) {
+					List<CtTypeReference<?>> typeCasts = expression.getTypeCasts();
+					if(!typeCasts.isEmpty()) {
+						if(hasTypeConversionAtom(typeCasts.get(0).prettyprint(), expression)) {
+							int lineNumber = expression.getPosition().getLine();
+							snippet = expression.getOriginalSourceFragment().getSourceCode();
+							Dataset.save(qualifiedName, new AoCInfo(AoC.TC, lineNumber, snippet));
+						}
 					}
 				}
 				
@@ -43,8 +48,8 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		}	
 	}
 	
-	private boolean hasTypeConversionAtom(CtExpression<?> expression) {
-		boolean hasTypeConversion = hasTypeConversion(expression);
+	private boolean hasTypeConversionAtom(String castType, CtExpression<?> expression) {
+		boolean hasTypeConversion = hasTypeConversion(castType, expression);
 		boolean hasModulusOperation = hasModulusOperation(expression.prettyprint());
 		
 		if(hasTypeConversion
@@ -55,8 +60,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		return false;
 	}
 	
-	private boolean hasTypeConversion(CtExpression<?> expression) {
-		String castType = getExplicitTypeConversion(expression);
+	private boolean hasTypeConversion(String castType, CtExpression<?> expression) {
 		String variableType = "";
 		
 		if(castType != null) {
@@ -82,7 +86,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 						}
 					}
 				}
-			} else if(!(expression instanceof CtInvocation)) {
+			} else if(!(expression instanceof CtInvocation)) { //Invocation arguments are cover by VariableRead expressions.
 				if(expression.getType() != null) {
 					variableType = expression.getType().toString();
 					if (checkNarrowingConversion(castType, variableType)) {
@@ -93,19 +97,6 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		}
 		
 		return false;
-	}
-	
-	private String getExplicitTypeConversion(CtExpression<?> expression) {
-		String castType = null;
-
-		Pattern pattern = Pattern.compile(Util.EXPLICIT_CAST_PATTERN);
-		Matcher matcher = pattern.matcher(expression.prettyprint());
-		
-		if(matcher.find()) {
-			castType = matcher.group(1);
-		}
-		
-		return castType;
 	}
 	
 	private boolean hasModulusOperation(String source) {
