@@ -1,8 +1,5 @@
 package br.ufc.mdcc.bohr.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
