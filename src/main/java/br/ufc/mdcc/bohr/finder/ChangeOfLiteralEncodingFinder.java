@@ -1,6 +1,9 @@
 package br.ufc.mdcc.bohr.finder;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -75,11 +78,40 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 		if(operand instanceof CtLiteral) {
 			String operandString = operand.prettyprint();
 			
-			if(Util.checkNoDecimalNumberNotation(operandString)) {
+			if(checkNoDecimalNumberNotation(operandString)) {
 				return false;
 			} else {
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	private boolean checkNoDecimalNumberNotation(String expression) {
+		String binaryPattern = "0[bB][01]+";
+		String octalPattern = "0[0-9]+";
+		String hexPattern = "0[xX][0-9a-fA-F]+";
+		
+		boolean binaryNotation = checkNumberNotation(expression, binaryPattern);
+		boolean octalNotation = checkNumberNotation(expression, octalPattern);
+		boolean hexNotation = checkNumberNotation(expression, hexPattern);
+		
+		if(binaryNotation 
+				|| octalNotation
+				|| hexNotation) {
+			return true;
+		} 
+		
+		return false;
+	}
+	
+	private boolean checkNumberNotation(String expression, String notationPattern) {
+		Pattern pattern = Pattern.compile(notationPattern);
+		Matcher matcher = pattern.matcher(expression);
+		
+		if(matcher.find()) {
+			return true;
 		}
 		
 		return false;
