@@ -2,8 +2,42 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class LogicAsControlFlowSample {
+	private int field;
+	
+	private int method(){
+		field = 1;
+		int i = field + 1;
+		
+		return i;
+	}
 	
 	public void methodOne(){
+		int a = 1;
+		
+		if(a > 0 && method()) {
+			a = a * 2;
+		}
+		
+		System.out.println(a);
+	}
+	
+	private int otherMethod(){
+		int i = 1;
+		
+		return i;
+	}
+	
+	public void methodTwo(){
+		int a = 1;
+		
+		if(a > 0 && otherMethod()) {
+			a = a * 2;
+		}
+		
+		System.out.println(a);
+	}
+	
+	public void methodThree(){
 		int a = 1;
 		int b = 5;
 		
@@ -15,7 +49,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void methodOneTransformed() {
+	public void methodThreeTransformed() {
 		int a = 1;
 		int b = 5;
 		
@@ -30,7 +64,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void methodTwo(){
+	public void methodFour(){
 		int a = 1;
 		int b = 5;
 		
@@ -39,7 +73,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void methodTwoTransformed(){
+	public void methodFourTransformed(){
 		int a = 1;
 		int b = 5;
 		
@@ -52,7 +86,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void methodThree(){
+	public void methodFive(){
 		int a = 1;
 		int b = 5;
 		int c = 0;
@@ -64,7 +98,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b + " " + c);
 	}
 	
-	public void methodThreeTransformed(){
+	public void methodFiveTransformed(){
 		int a = 1;
 		int b = 5;
 		int c = 0;
@@ -80,17 +114,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b + " " + c);
 	}
 	
-	public void methodFour(){
-		int a = 1;
-		
-		if(a > 0 && methodThree()) {
-			a = a * 2;
-		}
-		
-		System.out.println(a + " " + b);
-	}
-	
-	public void methodFive(){
+	public void methodSix(){
 		int a = 0;
 		int b = 4;
 		
@@ -101,7 +125,7 @@ public class LogicAsControlFlowSample {
 		System.out.println(a + " " + b);
 	}
 	
-	public void methodFiveTransformed(){
+	public void methodSixTransformed(){
 		int a = 0;
 		int b = 4;
 		

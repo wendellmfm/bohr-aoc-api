@@ -1,5 +1,6 @@
 package br.ufc.mdcc.bohr.finder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.ufc.mdcc.bohr.model.AoC;
@@ -12,19 +13,31 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
+	
+	private List<String> writingMethodsSignatures;
 
 	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
 			String qualifiedName = element.getQualifiedName();
 			
+			writingMethodsSignatures = new ArrayList<>();
+			for (CtMethod<?> method : element.getElements(new TypeFilter<CtMethod<?>>(CtMethod.class))) {
+				
+				List<CtFieldWrite<?>> fields = method.getElements(new TypeFilter<CtFieldWrite<?>>(CtFieldWrite.class));
+				if(!fields.isEmpty()) {
+					writingMethodsSignatures.add(method.getSignature());
+				}
+			}
+			
 			TypeFilter<CtBinaryOperator<?>> binaryOperatorFilter = new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class);
-
 			for (CtBinaryOperator<?> operator : element.getElements(binaryOperatorFilter)) {
 				
 				if(operator.getKind() == BinaryOperatorKind.AND || operator.getKind() == BinaryOperatorKind.OR) {
@@ -58,9 +71,11 @@ public class LogicAsControlFlowFinder extends AbstractProcessor<CtType<?>> {
 	}
 	
 	private boolean hasMethodInvocation(CtExpression<?> handOperand) {
-		List<CtInvocation<?>> methods = handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		if(!methods.isEmpty()) {
-			return true;
+		List<CtInvocation<?>> invocations = handOperand.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		for (CtInvocation<?> invocation : invocations) {
+			if(writingMethodsSignatures.contains(invocation.getExecutable().getSignature())) {
+				return true;
+			}
 		}
 		
 		return false;
