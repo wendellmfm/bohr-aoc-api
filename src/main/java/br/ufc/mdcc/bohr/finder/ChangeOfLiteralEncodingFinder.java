@@ -1,9 +1,6 @@
 package br.ufc.mdcc.bohr.finder;
 
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
 import br.ufc.mdcc.bohr.model.Dataset;
@@ -15,6 +12,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.LiteralBase;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -29,7 +27,7 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 					if((literal.getParent() instanceof CtAssignment)
 							|| literal.getParent() instanceof CtLocalVariable) {
 						
-						if(hasOctalChangeOfLiteralEncoding(literal.prettyprint())) {
+						if(literal.getBase() == LiteralBase.OCTAL) {
 							int lineNumber = literal.getPosition().getEndLine();
 							String snippet = literal.getParent().prettyprint();
 							Dataset.save(qualifiedName, new AoCInfo(AoC.CLE, lineNumber, snippet));
@@ -53,15 +51,6 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 		}
 	}
 	
-	private boolean hasOctalChangeOfLiteralEncoding(String literal) {
-		
-		if(literal.length() > 1 && literal.matches("0[0-9]+")) {
-			return true;
-		}
-		
-		return false;
-	}
-	
 	private boolean hasChangeOfLiteralEncoding(CtBinaryOperator<?> operator) {
 		CtExpression<?> leftHandOperand = operator.getLeftHandOperand();
 		CtExpression<?> rightHandOperand = operator.getRightHandOperand();
@@ -76,45 +65,11 @@ public class ChangeOfLiteralEncodingFinder extends AbstractProcessor<CtType<?>> 
 	
 	private boolean hasLiteralBitwiseOperation(CtExpression<?> operand) {
 		if(operand instanceof CtLiteral) {
-			String operandString = operand.prettyprint();
-			
-			if(checkNoDecimalNumberNotation(operandString)) {
-				return false;
-			} else {
+			if(((CtLiteral<?>) operand).getBase() == LiteralBase.DECIMAL) {
 				return true;
 			}
 		}
 		
 		return false;
 	}
-	
-	private boolean checkNoDecimalNumberNotation(String expression) {
-		String binaryPattern = "0[bB][01]+";
-		String octalPattern = "0[0-9]+";
-		String hexPattern = "0[xX][0-9a-fA-F]+";
-		
-		boolean binaryNotation = checkNumberNotation(expression, binaryPattern);
-		boolean octalNotation = checkNumberNotation(expression, octalPattern);
-		boolean hexNotation = checkNumberNotation(expression, hexPattern);
-		
-		if(binaryNotation 
-				|| octalNotation
-				|| hexNotation) {
-			return true;
-		} 
-		
-		return false;
-	}
-	
-	private boolean checkNumberNotation(String expression, String notationPattern) {
-		Pattern pattern = Pattern.compile(notationPattern);
-		Matcher matcher = pattern.matcher(expression);
-		
-		if(matcher.find()) {
-			return true;
-		}
-		
-		return false;
-	}
-		
 }
