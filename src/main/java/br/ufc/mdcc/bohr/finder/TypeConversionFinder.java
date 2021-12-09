@@ -63,7 +63,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 			if(expression instanceof CtBinaryOperator) {
 				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
 				
-				if(binaryOperator.getKind() == BinaryOperatorKind.MOD) {
+				if(hasModulusOperation(binaryOperator)) {
 					return false;
 				}
 
@@ -102,6 +102,17 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 						return true;
 					}
 				}
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean hasModulusOperation(CtBinaryOperator<?> binaryOperator) {
+		if(binaryOperator.getKind() == BinaryOperatorKind.MOD) {
+			if(binaryOperator.getParent() != null &&
+					!(binaryOperator.getParent() instanceof CtBinaryOperator)) {
+				return true;
 			}
 		}
 		
