@@ -3,8 +3,6 @@ package br.ufc.mdcc.bohr.finder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BinaryOperator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
@@ -12,14 +10,23 @@ import br.ufc.mdcc.bohr.model.Dataset;
 import br.ufc.mdcc.bohr.util.Util;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
+	private final String CHAR = "char";
+	private final String BYTE = "byte";
+	private final String SHORT = "short";
+	private final String INT = "int";
+	private final String LONG = "long";
+	private final String FLOAT = "float";
+	private final String DOUBLE = "double";
 
 	public void process(CtType<?> element) {
 		if (Util.isValid(element)) {
@@ -49,24 +56,16 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 	}
 	
 	private boolean hasTypeConversionAtom(String castType, CtExpression<?> expression) {
-		boolean hasTypeConversion = hasTypeConversion(castType, expression);
-		boolean hasModulusOperation = hasModulusOperation(expression.prettyprint());
-		
-		if(hasTypeConversion
-				&& !hasModulusOperation) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean hasTypeConversion(String castType, CtExpression<?> expression) {
 		String variableType = "";
 		
 		if(castType != null) {
 			
 			if(expression instanceof CtBinaryOperator) {
 				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
+				
+				if(binaryOperator.getKind() == BinaryOperatorKind.MOD) {
+					return false;
+				}
 
 				if(binaryOperator.getParent() != null 
 						&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
@@ -86,6 +85,16 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 						}
 					}
 				}
+			} else if(expression instanceof CtLiteral) {
+				if(expression.getType() != null) {
+					variableType = expression.getType().toString();
+					if (checkNarrowingConversion(castType, variableType)) {
+						CtLiteral<?> literal = (CtLiteral<?>) expression;
+						if(checkLiteralOutOfRange(literal, castType)) {
+							return true;
+						}
+					}
+				}
 			} else if(!(expression instanceof CtInvocation)) { //Invocation arguments are cover by VariableRead expressions.
 				if(expression.getType() != null) {
 					variableType = expression.getType().toString();
@@ -99,27 +108,7 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		return false;
 	}
 	
-	private boolean hasModulusOperation(String source) {
-		Pattern pattern = Pattern.compile("\\(\\s*[\\d\\w]+\\s*%\\s*[\\d\\w]*\\s*\\)");
-		Matcher matcher = pattern.matcher(source);
-		boolean hasModulusOperation = matcher.find();
-		
-		if(hasModulusOperation) {
-			return true;
-		}
-		
-		return false;
-	}
-	
 	private boolean checkNarrowingConversion (String assignmentType, String assignedType) {
-		final String CHAR = "char";
-		final String BYTE = "byte";
-		final String SHORT = "short";
-		final String INT = "int";
-		final String LONG = "long";
-		final String FLOAT = "float";
-		final String DOUBLE = "double";
-		
 		final String[] CHAR_CONVERSIONS = new String[] {BYTE, SHORT};
 		final String[] SHORT_CONVERSIONS = new String[] {BYTE, CHAR};
 		final String[] INT_CONVERSIONS = new String[] {BYTE, SHORT, CHAR};
@@ -154,6 +143,62 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		}
 		
 		return result;
+	}
+	
+	private boolean checkLiteralOutOfRange(CtLiteral<?> literal, String castType) {
+		if(literal.getValue() == null) {
+			return false;
+		}
+		
+		if(literal.getValue() != null && literal.getValue().toString().isBlank()) {
+			return false;
+		}
+		
+		try {
+			
+			String value = literal.getValue().toString();
+			
+			switch (castType) {
+			case BYTE:
+				if(Double.valueOf(value) < Byte.MIN_VALUE && Short.valueOf(value) > Byte.MIN_VALUE) {
+					return true;
+				}
+				break;
+			case SHORT:
+				if(Double.valueOf(value) < Short.MIN_VALUE && Short.valueOf(value) > Short.MIN_VALUE) {
+					return true;
+				}
+				break;
+			case INT:
+				if(Double.valueOf(value) < Integer.MIN_VALUE && Integer.valueOf(value) > Integer.MIN_VALUE) {
+					return true;
+				}
+				break;
+			case LONG:
+				if(Double.valueOf(value) < Long.MIN_VALUE && Long.valueOf(value) > Long.MIN_VALUE) {
+					return true;
+				}
+				break;
+			case FLOAT:
+				if(Double.valueOf(value) < Float.MIN_VALUE && Float.valueOf(value) > Float.MIN_VALUE) {
+					return true;
+				}
+				break;
+			case DOUBLE:
+				if(Double.valueOf(value) < Double.MIN_VALUE && Double.valueOf(value) > Double.MIN_VALUE) {
+					return true;
+				}
+				break;
+			default:
+				break;
+			}
+			
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+			//e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 }
