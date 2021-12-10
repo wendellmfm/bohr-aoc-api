@@ -3,6 +3,8 @@ package br.ufc.mdcc.bohr.finder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BinaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import br.ufc.mdcc.bohr.model.AoC;
 import br.ufc.mdcc.bohr.model.AoCInfo;
@@ -15,6 +17,8 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -56,48 +60,38 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 	}
 	
 	private boolean hasTypeConversionAtom(String castType, CtExpression<?> expression) {
-		String variableType = "";
-		
+	
 		if(castType != null) {
 			
-			if(expression instanceof CtBinaryOperator) {
-				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
+			if(expression instanceof CtLiteral) {
 				
+				CtLiteral<?> literal = (CtLiteral<?>) expression;
+				if(hasLiteralCase(literal, castType)) {
+					return true;
+				}
+				
+			} else if(expression instanceof CtUnaryOperator) { 
+				
+				CtUnaryOperator<?> unary = (CtUnaryOperator<?>) expression;
+				if(hasUnaryCase(unary, castType)) {
+					return true;
+				}
+				
+			} else if(expression instanceof CtBinaryOperator) {
+				
+				CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) expression;
 				if(hasModulusOperation(binaryOperator)) {
 					return false;
 				}
+				
+				if(hasBinaryOperatorCase(binaryOperator, castType)) {
+					return true;
+				}
 
-				if(binaryOperator.getParent() != null 
-						&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
-					String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
-					
-					source = Util.removeExplicitCast(source).trim();
-					
-					boolean hasParentheses = source.charAt(0) == '(' 
-							&& source.charAt(source.length() - 1) == ')';
-					
-					if(hasParentheses) {
-						if(binaryOperator.getType() != null) {
-							variableType = binaryOperator.getType().toString();
-							if (checkNarrowingConversion(castType, variableType)) {
-								return true;
-							}
-						}
-					}
-				}
-			} else if(expression instanceof CtLiteral) {
+			} else if(!(expression instanceof CtInvocation)) { //Invocation arguments are covered by VariableRead expressions.
+				
 				if(expression.getType() != null) {
-					variableType = expression.getType().toString();
-					if (checkNarrowingConversion(castType, variableType)) {
-						CtLiteral<?> literal = (CtLiteral<?>) expression;
-						if(checkLiteralOutOfRange(literal, castType)) {
-							return true;
-						}
-					}
-				}
-			} else if(!(expression instanceof CtInvocation)) { //Invocation arguments are cover by VariableRead expressions.
-				if(expression.getType() != null) {
-					variableType = expression.getType().toString();
+					String variableType = expression.getType().toString();
 					if (checkNarrowingConversion(castType, variableType)) {
 						return true;
 					}
@@ -107,7 +101,66 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		
 		return false;
 	}
+	
+	private boolean hasLiteralCase(CtLiteral<?> literal, String castType) {
+		
+		if(literal.getType() != null) {
+			String variableType = literal.getType().toString();
+			if (checkNarrowingConversion(castType, variableType)) {
+				if(checkLiteralOutOfRange(literal.getValue().toString(), castType)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean hasUnaryCase(CtUnaryOperator<?> unary, String castType) {
+		
+		if(unary.getType() != null) {
+			String variableType = unary.getType().toString();
+			if(unary.getKind() == UnaryOperatorKind.NEG) { // Handle literal negative numbers.
+				String literalValue = extractNegativeLiteral(unary);
+				if (checkNarrowingConversion(castType, variableType)) {
+					if(checkLiteralOutOfRange(literalValue, castType)) {
+						return true;
+					}
+				}
+			} else {
+				if (checkNarrowingConversion(castType, variableType)) {
+					return true;
+				}
+			}
+		}
 
+		return false;
+	}
+	
+	private boolean hasBinaryOperatorCase(CtBinaryOperator<?> binaryOperator, String castType) {
+		
+		if(binaryOperator.getParent() != null 
+				&& !(binaryOperator.getParent() instanceof BinaryOperator)) {
+			String source = binaryOperator.getOriginalSourceFragment().getSourceCode();
+			
+			source = Util.removeExplicitCast(source).trim();
+			
+			boolean hasParentheses = source.charAt(0) == '(' 
+					&& source.charAt(source.length() - 1) == ')';
+			
+			if(hasParentheses) {
+				if(binaryOperator.getType() != null) {
+					String variableType = binaryOperator.getType().toString();
+					if (checkNarrowingConversion(castType, variableType)) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	private boolean hasModulusOperation(CtBinaryOperator<?> binaryOperator) {
 		if(binaryOperator.getKind() == BinaryOperatorKind.MOD) {
 			if(binaryOperator.getParent() != null &&
@@ -117,6 +170,21 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		}
 		
 		return false;
+	}
+
+	private String extractNegativeLiteral(CtUnaryOperator<?> unary) {
+		String result = "";
+		
+		Pattern pattern = Pattern.compile("(-\\s*\\d+)");
+		Matcher matcher = pattern.matcher(unary.prettyprint());
+		
+		boolean hasTypeConversion = matcher.find();
+		
+		if(hasTypeConversion) {
+			result = matcher.group(0);
+		}
+		
+		return result;
 	}
 	
 	private boolean checkNarrowingConversion (String assignmentType, String assignedType) {
@@ -156,47 +224,37 @@ public class TypeConversionFinder extends AbstractProcessor<CtType<?>> {
 		return result;
 	}
 	
-	private boolean checkLiteralOutOfRange(CtLiteral<?> literal, String castType) {
-		if(literal.getValue() == null) {
-			return false;
-		}
-		
-		if(literal.getValue() != null && literal.getValue().toString().isBlank()) {
-			return false;
-		}
+	private boolean checkLiteralOutOfRange(String value, String castType) {
 		
 		try {
-			
-			String value = literal.getValue().toString();
-			
 			switch (castType) {
 			case BYTE:
-				if(Double.valueOf(value) < Byte.MIN_VALUE && Short.valueOf(value) > Byte.MIN_VALUE) {
+				if(Double.valueOf(value) < Byte.MIN_VALUE || Double.valueOf(value) > Byte.MAX_VALUE) {
 					return true;
 				}
 				break;
 			case SHORT:
-				if(Double.valueOf(value) < Short.MIN_VALUE && Short.valueOf(value) > Short.MIN_VALUE) {
+				if(Double.valueOf(value) < Short.MIN_VALUE || Double.valueOf(value) > Short.MAX_VALUE) {
 					return true;
 				}
 				break;
 			case INT:
-				if(Double.valueOf(value) < Integer.MIN_VALUE && Integer.valueOf(value) > Integer.MIN_VALUE) {
+				if(Double.valueOf(value) < Integer.MIN_VALUE || Double.valueOf(value) > Integer.MAX_VALUE) {
 					return true;
 				}
 				break;
 			case LONG:
-				if(Double.valueOf(value) < Long.MIN_VALUE && Long.valueOf(value) > Long.MIN_VALUE) {
+				if(Double.valueOf(value) < Long.MIN_VALUE || Double.valueOf(value) > Long.MAX_VALUE) {
 					return true;
 				}
 				break;
 			case FLOAT:
-				if(Double.valueOf(value) < Float.MIN_VALUE && Float.valueOf(value) > Float.MIN_VALUE) {
+				if(Double.valueOf(value) < Float.MIN_VALUE || Double.valueOf(value) > Float.MAX_VALUE) {
 					return true;
 				}
 				break;
 			case DOUBLE:
-				if(Double.valueOf(value) < Double.MIN_VALUE && Double.valueOf(value) > Double.MIN_VALUE) {
+				if(Double.valueOf(value) < Double.MIN_VALUE || Double.valueOf(value) > Double.MAX_VALUE) {
 					return true;
 				}
 				break;
