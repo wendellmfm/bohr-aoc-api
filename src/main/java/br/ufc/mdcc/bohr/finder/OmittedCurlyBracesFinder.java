@@ -37,6 +37,7 @@ public class OmittedCurlyBracesFinder extends AbstractProcessor<CtType<?>> {
 						
 					} catch (SpoonException e) {
 						// TODO: handle exception
+						e.printStackTrace();
 					}
 				}
 			}
