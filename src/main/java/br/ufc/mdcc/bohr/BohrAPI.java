@@ -44,9 +44,9 @@ public class BohrAPI {
 	}
 
 	private static void configure() {
+		spoon.addProcessor("br.ufc.mdcc.bohr.finder.InfixOperatorPrecedenceFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.PreAndPostIncrementDecrementFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.ConditionalOperatorFinder");
-		spoon.addProcessor("br.ufc.mdcc.bohr.finder.InfixOperatorPrecedenceFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.OmittedCurlyBracesFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.LogicAsControlFlowFinder");
 		spoon.addProcessor("br.ufc.mdcc.bohr.finder.ArithmeticAsLogicFinder");
