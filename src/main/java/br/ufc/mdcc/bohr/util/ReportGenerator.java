@@ -22,8 +22,7 @@ public class ReportGenerator {
 		for (AoCSuite suite : aocSuiteList) {
 			for (AoCInfo aocInfo : suite.getAtomsOfConfusion()) {
 				String snippet = aocInfo.getSnippet();
-				snippet = snippet.replaceAll("\r\n", "");
-				snippet = snippet.replaceAll("\t", " ");
+				snippet = snippet.replaceAll("\\r\\n|\\r|\\n|\\t", " ");
 				
 				if(snippet.contains(",")) {
 					snippet = snippet.replaceAll(",", "");
