@@ -16,7 +16,7 @@ import br.ufc.mdcc.bohr.model.AoCSuite;
 public class ReportGenerator {
 	private final static String REPORT_PATH = "./atomsreports";
 
-	public static void generateCSVFile(Collection<AoCSuite> aocSuiteList) {
+	public static void generateCSVFile(Collection<AoCSuite> aocSuiteList, String reportName) {
 		ArrayList<List<String>> rows = new ArrayList<>();
 		
 		for (AoCSuite suite : aocSuiteList) {
@@ -36,13 +36,20 @@ public class ReportGenerator {
 			}
 		}
 		
-		writeCSV(rows);
+		writeCSV(rows, reportName);
 	}
 
-	private static void writeCSV(ArrayList<List<String>> rows) {
+	private static void writeCSV(ArrayList<List<String>> rows, String reportName) {
 		createReportDirectory();
 		
-		String fullReportName = getReportName().toString();
+		//String fullReportName = getReportName().toString();
+		String fullReportName = "";
+		
+		if(reportName != null) {
+			fullReportName = reportName.concat(".csv");
+		} else {
+			fullReportName = getReportName().toString();
+		}
 		
 		FileWriter csvWriter = null;
 		try {

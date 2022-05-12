@@ -5,7 +5,7 @@ public class ConditionalOperatorSample {
 
 	}
 
-	public void firstMethod() {
+	public void methodOne() {
 		int a = 4;
 		
 		int b = a == 3 ? 2 : 1;
@@ -13,7 +13,7 @@ public class ConditionalOperatorSample {
 		System.out.println(b);
 	}
 	
-	public String firstTransformedMethod() {
+	public void methodOneTransformed() {
 		int a = 4;
 		int b = 3;
 		int c;
@@ -27,7 +27,7 @@ public class ConditionalOperatorSample {
 		System.out.println(c);
 	}
 
-	public String secondMethod() {
+	public void methodTwo() {
 		int a = 3;
 		int b = 5;
 		int c = 2;
@@ -37,7 +37,7 @@ public class ConditionalOperatorSample {
 		System.out.println(d);
 	}
 
-	public String secondTransformedMethod() {
+	public void methodTwoTransformed() {
 		int a = 3;
 		int b = 5;
 		int c = 2;
@@ -52,7 +52,7 @@ public class ConditionalOperatorSample {
 		System.out.println(d);
 	}
 	
-	public String thirdMethod() {
+	public void methodThree() {
 		int a = 2;
 		int b = 3;
 		int c = 1;
@@ -62,7 +62,7 @@ public class ConditionalOperatorSample {
 		System.out.println(d);
 	}
 	
-	public String thirdTransformedMethod() {
+	public void methodThreeTransformed() {
 		int a = 2;
 		int b = 3;
 		int c = 1;
@@ -76,4 +76,21 @@ public class ConditionalOperatorSample {
 		
 		System.out.println(d);
 	}
+	
+	public int methodFive(int i) {
+		int a = i;
+		int b = 2;
+		int c = 3;
+		
+		return  a == 3 ? b : c;
+	}
+	
+	public void methodSix() {
+		int a = 2;
+		int b = 3;
+		int c = 1;
+		
+		methodFive(a == 3 ? b : c);
+	}
+	
 }

@@ -12,25 +12,25 @@ public class BohrAPI {
 
 	private static SpoonAPI spoon;
 
-	public static Collection<AoCSuite> findAoC(String sourceCodePath, boolean generateReport) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath, boolean generateReport, String reportName) {
 		build(sourceCodePath);
 		configure();
 		process();
 		
 		if(generateReport) {
-			ReportGenerator.generateCSVFile(Dataset.list());
+			ReportGenerator.generateCSVFile(Dataset.list(), reportName);
 		}
 		
 		return Dataset.list();
 	}
 	
-	public static Collection<AoCSuite> findAoC(String sourceCodePath, String[] finders, boolean generateReport) {
+	public static Collection<AoCSuite> findAoC(String sourceCodePath, String[] finders, boolean generateReport, String reportName) {
 		build(sourceCodePath);
 		configure(finders);
 		process();
 		
 		if(generateReport) {
-			ReportGenerator.generateCSVFile(Dataset.list());
+			ReportGenerator.generateCSVFile(Dataset.list(), reportName);
 		}
 		
 		return Dataset.list();

@@ -30,7 +30,7 @@ public class InfixOperatorPrecedenceFinderTest {
 	void testProcess() {
 		String path = "./src/test/resources/InfixOperatorPrecedence/";
 		String[] finders = new String[] { "br.ufc.mdcc.bohr.finder.InfixOperatorPrecedenceFinder" };
-		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders, false);
+		Collection<AoCSuite> aocSuiteList = BohrAPI.findAoC(path, finders, false, null);
 
 		assertTrue(aocSuiteList.size() == 1, "There are more sample classes than expected. Actual number: " + aocSuiteList.size());
 
